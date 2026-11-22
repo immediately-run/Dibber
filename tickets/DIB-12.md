@@ -7,7 +7,7 @@ depends_on: [DIB-5]
 order: 140
 tags: [spec, readers]
 project: wide-audience
-repos: [immediately-run/baton, immediately-run/fieldhouse, immediately-run/grove]
+repos: [immediately-run/baton, immediately-run/fieldhouse, immediately-run/grove, immediately-run/baton-board]
 ---
 
 **Brief:** suggested in the 2026-11-22 planning session on what Dibber lacks for a wide audience.
@@ -25,6 +25,8 @@ A newcomer who follows a Readers link should find the claim true.
 
 - For each listed reader: confirm what it reads and writes, then link the README entry to the
   exact code or spec section. Remove or reword any claim that doesn't hold.
+- List the board viewer (`dibber-board`, DIB-13 and DIB-18) as a reader of its own. Today's
+  "Grove renders a store as a wiki with a board" is true only through that viewer's components.
 - In each reader's repository, a test that runs Dibber's `conformance/` fixtures (vendored or
   fetched at a pinned commit), with a link from its docs to Dibber.
 
