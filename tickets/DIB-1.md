@@ -1,7 +1,7 @@
 ---
 id: DIB-1
 title: "DIB-1 — A config file Dibber owns: .dibber/config.json, the store's folder and id prefix"
-status: available
+status: in-review
 description: R-DIB-1 and R-DIB-4 leave the store's folder and prefix to "the repository's tools"; without Baton there is nowhere to say them. Add an optional .dibber/config.json.
 depends_on: []
 order: 10
@@ -36,11 +36,13 @@ coordinator has no such file, so every tool (validator, CLI, setup, skills) woul
 
 ### Exit criteria
 
-- [ ] `.dibber/config.json` in this repository validates against `config.schema.json`
-- [ ] every id under `tickets/` starts with the prefix `.dibber/config.json` names (a check script, run in DIB-6's validator once that exists)
+- [x] `.dibber/config.json` in this repository validates against `config.schema.json`
+- [x] every id under `tickets/` starts with the prefix `.dibber/config.json` names (a check script, run in DIB-6's validator once that exists)
 
 ## Status
 
 _filed 2026-11-22._
 
 _2026-11-22: the config is `.dibber/config.json`, a directory at the repository root (owner, in the planning session), not a root `dibber.json`._
+
+_2026-11-22: implemented on branch claude/affectionate-goodall-95x077; closes when it lands: R-DIB-14, config.schema.json, this repository's .dibber/config.json._

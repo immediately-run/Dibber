@@ -1,7 +1,7 @@
 ---
 id: DIB-11
 title: "DIB-11 — This repository is the worked example of a Dibber-tracked project"
-status: available
+status: in-progress
 description: Dibber's own repository shows what a Dibber-tracked project looks like, in use, with every piece a newcomer would set up. That means config, tickets moving through to the archive with their PRs, agent instructions, and the board.
 depends_on: [DIB-1, DIB-9]
 order: 85
@@ -37,7 +37,7 @@ points it out.
 
 ### Exit criteria
 
-- [ ] `npx dibber check` passes on this repository in its CI (enabling CI here is the owner's step; see DIB-6)
+- [ ] `npx @immediately-run/dibber check` passes on this repository in its CI (enabling CI here is the owner's step; see DIB-6)
 - [ ] a test: every file `dibber init --yes` would create, other than the sample ticket, exists in this repository
 
 ## Status
@@ -45,3 +45,5 @@ points it out.
 _filed 2026-11-22._
 
 _2026-11-22: rewritten from the owner's direction that this repository is the example. It replaces the invented demo store (`examples/recipe-app/`)._
+
+_2026-11-22: this repository now carries .dibber/config.json, the installed skills, AGENTS.md and CLAUDE.md. Left: the README section (DIB-17), the board descriptor (DIB-13) and CI (owner)._

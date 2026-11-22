@@ -1,7 +1,7 @@
 ---
 id: DIB-2
 title: "DIB-2 — Say when Dibber alone is enough, and when to add a coordinator"
-status: available
+status: in-review
 description: Dibber alone fits one person driving a coding agent on their own machine. Several runners, several people, or a more complex LLM provider setup need a coordinator such as Baton. Put that boundary in the spec, and fit R-DIB-4's allocation rule to the one-writer case.
 depends_on: []
 order: 20
@@ -39,11 +39,13 @@ claims. Those are Baton's job.
 
 ### Exit criteria
 
-- [ ] SPEC.md carries the section, and the Versions note says it amends Dibber 1 in place (no store changes validity)
-- [ ] DIB-7's `new` test: with a ticket on another local branch, `new` skips its number
+- [x] SPEC.md carries the section, and the Versions note says it amends Dibber 1 in place (no store changes validity)
+- [x] DIB-7's `new` test: with a ticket on another local branch, `new` skips its number
 
 ## Status
 
 _filed 2026-11-22._
 
 _2026-11-22: rewritten from the owner's statement of scope. The earlier version specified a git-as-lock recipe for several agents filing at once. That is a coordinator's job, so it is dropped; several writers at once is what Baton is for._
+
+_2026-11-22: implemented on branch claude/affectionate-goodall-95x077; closes when it lands: SPEC.md section and one-writer allocation; the new-skips-a-branch's-number test._

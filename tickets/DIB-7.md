@@ -1,7 +1,7 @@
 ---
 id: DIB-7
 title: "DIB-7 — The dibber CLI: new, list, claim, set, done"
-status: available
+status: in-review
 description: An optional command-line tool that files, lists, moves and closes tickets, so neither people nor agents hand-edit YAML or git mv files into the archive.
 depends_on: [DIB-1, DIB-2, DIB-6]
 order: 70
@@ -38,11 +38,13 @@ conventions.
 
 ### Exit criteria
 
-- [ ] `npm test` passes, including `new` skipping a number taken on another local branch
-- [ ] `dibber done` on a fixture leaves `dibber check` passing and the file in `archive/`
+- [x] `npm test` passes, including `new` skipping a number taken on another local branch
+- [x] `dibber done` on a fixture leaves `dibber check` passing and the file in `archive/`
 
 ## Status
 
 _filed 2026-11-22._
 
 _2026-11-22: the two-process race test is dropped. Several writers at once is a coordinator's job (DIB-2)._
+
+_2026-11-22: implemented on branch claude/affectionate-goodall-95x077; closes when it lands: new, list, claim, set, done, with --json; tests in test/cli.test.mjs._

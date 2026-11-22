@@ -1,7 +1,7 @@
 ---
 id: DIB-8
 title: "DIB-8 — One-command setup: dibber init and a template repository"
-status: available
+status: in-review
 description: Zero to first ticket in one command. Creates .dibber/config.json, tickets/, archive/, a sample ticket and the agent instructions.
 depends_on: [DIB-3, DIB-7]
 order: 80
@@ -19,7 +19,7 @@ folders and frontmatter by hand.
 
 ### What to build
 
-- `npx dibber init` asks for a prefix (with a default from the repository name), then writes
+- `npx @immediately-run/dibber init` asks for a prefix (with a default from the repository name), then writes
   `.dibber/config.json`, `tickets/`, `tickets/archive/`, one sample ticket (`<PREFIX>-1.md`, "Try
   Dibber: move me to done") and the agent instructions from DIB-9. It skips files that already
   exist and says what it skipped.
@@ -29,9 +29,11 @@ folders and frontmatter by hand.
 
 ### Exit criteria
 
-- [ ] a test runs `dibber init --yes` in an empty git repository, then `dibber check` passes and `dibber list` shows the sample ticket
-- [ ] running `init` twice changes nothing the second time (the test diffs the tree)
+- [x] a test runs `dibber init --yes` in an empty git repository, then `dibber check` passes and `dibber list` shows the sample ticket
+- [x] running `init` twice changes nothing the second time (the test diffs the tree)
 
 ## Status
 
 _filed 2026-11-22._
+
+_2026-11-22: implemented on branch claude/affectionate-goodall-95x077; closes when it lands: dibber init writes config, store, first ticket, skills and AGENTS.md/CLAUDE.md, never overwriting. The template repository is split out as DIB-19. --immediately-run waits on DIB-13._

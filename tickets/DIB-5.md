@@ -1,7 +1,7 @@
 ---
 id: DIB-5
 title: "DIB-5 — Conformance fixtures: example stores that are valid and invalid"
-status: available
+status: in-review
 description: A set of small example stores, each marked valid or invalid with the rule it breaks, so the validator and every reader can prove they read Dibber the same way.
 depends_on: []
 order: 50
@@ -32,11 +32,13 @@ that the README's Readers section is true (DIB-12).
 
 ### Exit criteria
 
-- [ ] every invalid fixture names exactly one rule in `expect.json`
-- [ ] every R-DIB rule that can be checked mechanically has at least one invalid fixture (a test lists the rules that have none)
+- [x] every invalid fixture names exactly one rule in `expect.json`
+- [x] every R-DIB rule that can be checked mechanically has at least one invalid fixture (a test lists the rules that have none)
 
 ## Status
 
 _filed 2026-11-22._
 
 _2026-11-22: gains the every-key store, which DIB-11 no longer provides now that this repository is the example._
+
+_2026-11-22: implemented on branch claude/affectionate-goodall-95x077; closes when it lands: 27 fixtures (9 valid, 18 invalid) under conformance/, every checkable rule covered._

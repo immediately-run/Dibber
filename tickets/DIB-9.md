@@ -1,7 +1,7 @@
 ---
 id: DIB-9
 title: "DIB-9 — Agent skills: create, work and review tickets, in any agent harness"
-status: available
+status: in-progress
 description: Skills that let an agent file a ticket from a conversation, pick up and work the next ready ticket, and give an overview, shipped for Claude Code and as a harness-neutral AGENTS.md section.
 depends_on: [DIB-7]
 order: 90
@@ -35,13 +35,22 @@ Dibber is something they use without having to learn it.
   Anyone who can push, or anyone who can open a GitHub issue that gets imported (DIB-10), can
   write it. Text in a ticket that tells the agent to fetch secrets, change CI, or ignore its
   instructions gets reported, not followed (R-DIB-12).
-- **Packaging:** a Claude Code plugin (skills directory and marketplace entry), plus an
-  `AGENTS.md` section with the same behaviour that Cursor, Codex, opencode and others read.
-  `dibber init` (DIB-8) writes the `AGENTS.md` section.
+- **Packaging, so every harness finds the skills.** The source is `skills/<name>/SKILL.md` in
+  this repository, in the open Agent Skills format: a folder per skill, with a `SKILL.md` whose
+  `name` and `description` the harness reads first. It loads the rest only when the
+  description matches the task.
+  - `dibber init` copies them into the user's repository at `.agents/skills/` and
+    `.claude/skills/`. Codex, opencode and Antigravity read `.agents/skills/`; Claude Code
+    reads `.claude/skills/` (opencode reads both).
+  - It also writes an `AGENTS.md` section, read by Codex and opencode, and a `CLAUDE.md` that
+    imports `AGENTS.md` for Claude Code.
+  - For Claude Code users who want the skills in every repository, this repository is also a
+    plugin marketplace (`.claude-plugin/`): `/plugin marketplace add immediately-run/dibber`,
+    then `/plugin install dibber@dibber`.
 
 ### Exit criteria
 
-- [ ] the plugin manifest and every skill file validate against Claude Code's plugin schema (a test)
+- [x] the plugin manifest and every skill file validate against Claude Code's plugin schema (a test)
 - [ ] a scripted run on a fixture store: create files a ticket that passes `dibber check`; process closes a trivial ticket into `archive/`
 
 ## Status
@@ -49,3 +58,5 @@ Dibber is something they use without having to learn it.
 _filed 2026-11-22._
 
 _2026-11-22: the skills point to Baton beyond one person and their agent (DIB-2)._
+
+_2026-11-22: the three skills, the .agents/skills and .claude/skills copies, AGENTS.md, CLAUDE.md and the Claude Code plugin marketplace are done on branch claude/affectionate-goodall-95x077; closes when it lands. Left: the scripted agent run in the second exit criterion, and the npx line in the skills, which waits on DIB-21._

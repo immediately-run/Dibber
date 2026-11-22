@@ -24,7 +24,7 @@ vibe coder decides in about thirty seconds whether a project is for them.
   providers), from DIB-2.
 - **"Why not GitHub Issues?"** Your agent reads tickets as files, with no API, login or rate
   limit. It works offline. A ticket is reviewed in the same PR as the code. Nothing to host.
-- **A 30-second start:** `npx dibber init`, then "ask your agent to file a ticket" with DIB-9's
+- **A 30-second start:** `npx @immediately-run/dibber init`, then "ask your agent to file a ticket" with DIB-9's
   skills, then see it on the board in `dibber-board` (DIB-13, DIB-18).
 - A picture: this repository's own board or `tickets/` tree.
 - "This repository is an example" (DIB-11): links to a good open ticket, a closed one, a project

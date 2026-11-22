@@ -1,7 +1,7 @@
 ---
 id: DIB-6
 title: "DIB-6 — dibber check: a validator, plus a ready-made GitHub Action and pre-commit hook"
-status: available
+status: in-review
 description: ticket.schema.json exists but nothing applies it. A validator that checks a store against the spec is the guardrail that keeps agent-written tickets valid.
 depends_on: [DIB-1, DIB-5]
 order: 60
@@ -38,9 +38,11 @@ board shows nothing. A check that runs on every push catches it.
 
 ### Exit criteria
 
-- [ ] `npm test` passes, covering every conformance fixture
-- [ ] `npx dibber check` passes on this repository's own `tickets/`
+- [x] `npm test` passes, covering every conformance fixture
+- [ ] `npx @immediately-run/dibber check` passes on this repository's own `tickets/`
 
 ## Status
 
 _filed 2026-11-22._
+
+_2026-11-22: implemented on branch claude/affectionate-goodall-95x077; closes when it lands: dibber check, action.yml, .pre-commit-hooks.yaml, docs/checking.md. The npx criterion waits on publishing (DIB-21); from source it passes. Enabling CI in this repository's .github/ is the owner's step. Running it on baton and fieldhouse found the conflict filed as DIB-20._

@@ -1,7 +1,7 @@
 ---
 id: DIB-3
 title: "DIB-3 — Default to .md tickets; MDX as the opt-in"
-status: available
+status: in-review
 description: A stray < or { in prose breaks an .mdx ticket, which agents do often and newcomers cannot debug. Make .md the default in the spec's examples, the template and the tools.
 depends_on: []
 order: 30
@@ -29,9 +29,11 @@ renders on GitHub and everywhere else with no such failure.
 
 ### Exit criteria
 
-- [ ] `grep -n '\.mdx' README.md` shows only the opt-in mention
-- [ ] the CLI's `new` test asserts a `.md` file by default and `.mdx` with the option
+- [x] `grep -n '\.mdx' README.md` shows only the opt-in mention
+- [x] the CLI's `new` test asserts a `.md` file by default and `.mdx` with the option
 
 ## Status
 
 _filed 2026-11-22. This repository's own store already uses `.md`._
+
+_2026-11-22: implemented on branch claude/affectionate-goodall-95x077; closes when it lands: R-DIB-1 names .md the default; README examples are .md; the CLI writes .md unless --mdx._
