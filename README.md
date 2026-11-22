@@ -50,6 +50,9 @@ When it is done it moves to `tickets/archive/B-7.md` with `status: done`.
   `.dibber/config.json` (the store's folder and id prefix).
 - [`ticket.schema.json`](ticket.schema.json) — the JSON Schema every ticket's frontmatter
   satisfies. A repository can add a stricter schema of its own.
+- [`skills/`](skills/), [`bin/`](bin/), [`src/`](src/) — optional tooling: the `dibber`
+  command (`check`, `list`, `new`, `claim`, `done`, `init`) and the agent skills `dibber init`
+  installs for Claude Code, Codex, opencode and Antigravity. The format needs none of it.
 - [`tickets/`](tickets/) — Dibber's own work, kept as a Dibber store: an example of what a
   Dibber-tracked project looks like.
 
