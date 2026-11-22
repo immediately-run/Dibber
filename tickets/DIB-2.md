@@ -7,6 +7,7 @@ depends_on: []
 order: 20
 tags: [spec]
 project: wide-audience
+prs: [https://github.com/immediately-run/Dibber/pull/1]
 ---
 
 **Brief:** from the owner, 2026-11-22: Dibber is enough by itself for a single user driving a coding agent directly on their machine; multiple runners, multiple humans or a more complex LLM provider setup also need Baton.
@@ -49,3 +50,5 @@ _filed 2026-11-22._
 _2026-11-22: rewritten from the owner's statement of scope. The earlier version specified a git-as-lock recipe for several agents filing at once. That is a coordinator's job, so it is dropped; several writers at once is what Baton is for._
 
 _2026-11-22: implemented on branch claude/affectionate-goodall-95x077; closes when it lands: SPEC.md section and one-writer allocation; the new-skips-a-branch's-number test._
+
+_2026-11-22: in review, https://github.com/immediately-run/Dibber/pull/1._

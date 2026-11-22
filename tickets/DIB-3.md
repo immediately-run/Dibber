@@ -7,6 +7,7 @@ depends_on: []
 order: 30
 tags: [spec, docs]
 project: wide-audience
+prs: [https://github.com/immediately-run/Dibber/pull/1]
 ---
 
 **Brief:** suggested in the 2026-11-22 planning session on what Dibber lacks for a wide audience.
@@ -37,3 +38,5 @@ renders on GitHub and everywhere else with no such failure.
 _filed 2026-11-22. This repository's own store already uses `.md`._
 
 _2026-11-22: implemented on branch claude/affectionate-goodall-95x077; closes when it lands: R-DIB-1 names .md the default; README examples are .md; the CLI writes .md unless --mdx._
+
+_2026-11-22: in review, https://github.com/immediately-run/Dibber/pull/1._

@@ -7,6 +7,7 @@ depends_on: []
 order: 50
 tags: [spec, tests]
 project: wide-audience
+prs: [https://github.com/immediately-run/Dibber/pull/1]
 ---
 
 **Brief:** suggested in the 2026-11-22 planning session on what Dibber lacks for a wide audience.
@@ -42,3 +43,5 @@ _filed 2026-11-22._
 _2026-11-22: gains the every-key store, which DIB-11 no longer provides now that this repository is the example._
 
 _2026-11-22: implemented on branch claude/affectionate-goodall-95x077; closes when it lands: 27 fixtures (9 valid, 18 invalid) under conformance/, every checkable rule covered._
+
+_2026-11-22: in review, https://github.com/immediately-run/Dibber/pull/1._

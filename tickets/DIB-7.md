@@ -7,6 +7,7 @@ depends_on: [DIB-1, DIB-2, DIB-6]
 order: 70
 tags: [tooling]
 project: wide-audience
+prs: [https://github.com/immediately-run/Dibber/pull/1]
 ---
 
 **Brief:** suggested in the 2026-11-22 planning session on what Dibber lacks for a wide audience.
@@ -48,3 +49,5 @@ _filed 2026-11-22._
 _2026-11-22: the two-process race test is dropped. Several writers at once is a coordinator's job (DIB-2)._
 
 _2026-11-22: implemented on branch claude/affectionate-goodall-95x077; closes when it lands: new, list, claim, set, done, with --json; tests in test/cli.test.mjs._
+
+_2026-11-22: in review, https://github.com/immediately-run/Dibber/pull/1._

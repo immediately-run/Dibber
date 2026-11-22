@@ -7,6 +7,7 @@ depends_on: []
 order: 10
 tags: [spec, tooling]
 project: wide-audience
+prs: [https://github.com/immediately-run/Dibber/pull/1]
 ---
 
 **Brief:** suggested in the 2026-11-22 planning session on what Dibber lacks for a wide audience.
@@ -46,3 +47,5 @@ _filed 2026-11-22._
 _2026-11-22: the config is `.dibber/config.json`, a directory at the repository root (owner, in the planning session), not a root `dibber.json`._
 
 _2026-11-22: implemented on branch claude/affectionate-goodall-95x077; closes when it lands: R-DIB-14, config.schema.json, this repository's .dibber/config.json._
+
+_2026-11-22: in review, https://github.com/immediately-run/Dibber/pull/1._

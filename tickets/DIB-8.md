@@ -7,6 +7,7 @@ depends_on: [DIB-3, DIB-7]
 order: 80
 tags: [tooling, onboarding]
 project: wide-audience
+prs: [https://github.com/immediately-run/Dibber/pull/1]
 ---
 
 **Brief:** suggested in the 2026-11-22 planning session on what Dibber lacks for a wide audience.
@@ -37,3 +38,5 @@ folders and frontmatter by hand.
 _filed 2026-11-22._
 
 _2026-11-22: implemented on branch claude/affectionate-goodall-95x077; closes when it lands: dibber init writes config, store, first ticket, skills and AGENTS.md/CLAUDE.md, never overwriting. The template repository is split out as DIB-19. --immediately-run waits on DIB-13._
+
+_2026-11-22: in review, https://github.com/immediately-run/Dibber/pull/1._

@@ -7,6 +7,7 @@ depends_on: [DIB-7]
 order: 90
 tags: [agents, skills]
 project: wide-audience
+prs: [https://github.com/immediately-run/Dibber/pull/1]
 ---
 
 **Brief:** from the owner's list, 2026-11-22: agent harness skills that implement ticket creation, processing and overview.
@@ -60,3 +61,5 @@ _filed 2026-11-22._
 _2026-11-22: the skills point to Baton beyond one person and their agent (DIB-2)._
 
 _2026-11-22: the three skills, the .agents/skills and .claude/skills copies, AGENTS.md, CLAUDE.md and the Claude Code plugin marketplace are done on branch claude/affectionate-goodall-95x077; closes when it lands. Left: the scripted agent run in the second exit criterion, and the npx line in the skills, which waits on DIB-21._
+
+_2026-11-22: partly in, https://github.com/immediately-run/Dibber/pull/1._

@@ -7,6 +7,7 @@ depends_on: [DIB-1, DIB-5]
 order: 60
 tags: [tooling]
 project: wide-audience
+prs: [https://github.com/immediately-run/Dibber/pull/1]
 ---
 
 **Brief:** suggested in the 2026-11-22 planning session on what Dibber lacks for a wide audience.
@@ -46,3 +47,5 @@ board shows nothing. A check that runs on every push catches it.
 _filed 2026-11-22._
 
 _2026-11-22: implemented on branch claude/affectionate-goodall-95x077; closes when it lands: dibber check, action.yml, .pre-commit-hooks.yaml, docs/checking.md. The npx criterion waits on publishing (DIB-21); from source it passes. Enabling CI in this repository's .github/ is the owner's step. Running it on baton and fieldhouse found the conflict filed as DIB-20._
+
+_2026-11-22: in review, https://github.com/immediately-run/Dibber/pull/1._
