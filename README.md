@@ -7,7 +7,10 @@ required — a ticket is a file you can read, diff, review and merge like any ot
 
 It is a format, not a product. Coordinators, boards and wikis can read and write it; none of
 them owns it. A dibber is the electronic punch an orienteer carries from control to control:
-the ticket travels with the work and records what was done along the way.
+the ticket travels with the work and records what was done along the way. It is also how you
+call dibs on a piece of work — though making the dibs stick, one holder at a time, takes a
+coordinator such as [Baton](https://github.com/immediately-run/baton): a file in git can say who
+is on it, but cannot stop two people writing their names at once.
 
 ## A ticket
 
