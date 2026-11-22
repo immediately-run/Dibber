@@ -1,0 +1,22 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/immediately-run/dibber/config.schema.json",
+  "title": "Dibber 1 — repository settings (.dibber/config.json)",
+  "description": "A repository's Dibber settings (SPEC.md R-DIB-14). Keys this schema does not name are allowed: they belong to a tool.",
+  "type": "object",
+  "properties": {
+    "store": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^(?!/)(?!.*(^|/)\\.\\.(/|$))[^\\\\]+$",
+      "default": "tickets",
+      "description": "The store's folder, relative to the repository root, with no leading slash and no '..' segment."
+    },
+    "prefix": {
+      "type": "string",
+      "pattern": "^[A-Z][A-Z0-9]*$",
+      "description": "The id prefix (R-DIB-4): upper-case letters and digits, starting with a letter, without the dash."
+    }
+  },
+  "additionalProperties": true
+}

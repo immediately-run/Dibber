@@ -14,7 +14,7 @@ is on it, but cannot stop two people writing their names at once.
 
 ## A ticket
 
-`tickets/B-7.mdx`:
+`tickets/B-7.md`:
 
 ```markdown
 ---
@@ -41,11 +41,13 @@ Show live runners only by default; a toggle shows the terminated ones.
 _filed 2026-11-22._
 ```
 
-When it is done it moves to `tickets/archive/B-7.mdx` with `status: done`.
+When it is done it moves to `tickets/archive/B-7.md` with `status: done`.
 
 ## The files
 
 - [`SPEC.md`](SPEC.md) — the format, rule by rule (`R-DIB-n`).
+- [`config.schema.json`](config.schema.json) — the schema of a repository's optional
+  `.dibber/config.json` (the store's folder and id prefix).
 - [`ticket.schema.json`](ticket.schema.json) — the JSON Schema every ticket's frontmatter
   satisfies. A repository can add a stricter schema of its own.
 - [`tickets/`](tickets/) — Dibber's own work, kept as a Dibber store: an example of what a
