@@ -3,7 +3,7 @@ id: DIB-14
 title: "DIB-14 — A newcomer's guide: tickets in ten minutes, and the words Jira and Linear use"
 status: available
 description: A guide for people who have never used issue tracking. Start with three statuses, learn the rest when needed, and see a table mapping Jira, Linear and GitHub Issues words to Dibber's.
-depends_on: []
+depends_on: [DIB-2]
 order: 100
 tags: [docs, onboarding]
 project: wide-audience
@@ -11,7 +11,7 @@ project: wide-audience
 
 **Brief:** suggested in the 2026-11-22 planning session on what Dibber lacks for a wide audience.
 **Spec:** R-DIB-5, R-DIB-6, R-DIB-8, R-DIB-11.
-**Depends on:** none.
+**Depends on:** DIB-2.
 
 ### Why
 
@@ -30,6 +30,9 @@ enough to start. The eight statuses, and "done only in `archive/`", are a lot to
   issue → `parent`; blocked by → `depends_on`; labels → `tags`; project and milestone → `project`;
   assignee → `assignee` (advisory: a note of who is on it, not a lock); priority and estimate →
   DIB-4's outcome.
+- "Dibber alone, or with Baton": in plain words, from DIB-2. You and your coding agent on your
+  machine: Dibber is all you need. Several agents running at once, a team, or several LLM
+  providers: add Baton, and keep your tickets as they are.
 - The same table is reused by the migration docs (DIB-16).
 
 ### Exit criteria
@@ -40,3 +43,5 @@ enough to start. The eight statuses, and "done only in `archive/`", are a lot to
 ## Status
 
 _filed 2026-11-22._
+
+_2026-11-22: gains the "Dibber alone, or with Baton" section (DIB-2)._

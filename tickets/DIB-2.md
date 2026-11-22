@@ -1,42 +1,49 @@
 ---
 id: DIB-2
-title: "DIB-2 — Ticket numbers without a coordinator, when several agents file at once"
+title: "DIB-2 — Say when Dibber alone is enough, and when to add a coordinator"
 status: available
-description: R-DIB-4's "second to merge renumbers" breaks down for one person running several agent sessions. Specify a cheap allocation recipe that uses git as the lock.
+description: Dibber alone fits one person driving a coding agent on their own machine. Several runners, several people, or a more complex LLM provider setup need a coordinator such as Baton. Put that boundary in the spec, and fit R-DIB-4's allocation rule to the one-writer case.
 depends_on: []
 order: 20
 tags: [spec]
 project: wide-audience
 ---
 
-**Brief:** suggested in the 2026-11-22 planning session on what Dibber lacks for a wide audience.
-**Spec:** amends R-DIB-4 (Allocation).
+**Brief:** from the owner, 2026-11-22: Dibber is enough by itself for a single user driving a coding agent directly on their machine; multiple runners, multiple humans or a more complex LLM provider setup also need Baton.
+**Spec:** amends the opening, R-DIB-4 (Allocation) and Coordination state.
 **Depends on:** none.
 
 ### Why
 
-Vibe coders run several agent sessions in parallel, each on its own branch. Under R-DIB-4 today,
-each takes "the next free number" and two of them collide; the second to merge renumbers, which
-breaks every `depends_on` and every mention of the old id. This is the format's weak spot
-for exactly the audience this project targets.
+A newcomer needs to know straight away whether Dibber is the whole answer or half of it. The
+spec says what Dibber is not ("no coordination state"), but not who it is enough for. Without
+that line, the tooling tickets drift into rebuilding a coordinator: locks, races, parallel
+claims. Those are Baton's job.
 
 ### What to build
 
-- A spec recipe for allocating without a coordinator: the ticket file is created in its own
-  commit pushed straight to the default branch, from a fresh fetch. A push refused because the
-  remote moved means someone else took a number, so refetch and retry. That makes git the lock,
-  with no server. `fieldhouse/scripts/ticket.mjs` (`new`) already works this way and is the
-  reference.
-- The fallback when pushing to the default branch is not allowed (protected branch): keep
-  today's rule, and say what the renumbering tool must rewrite (`depends_on`, `parent`, body
-  header lines).
-- Keep "where a coordinator is in use, the number is the coordinator's".
+- **A short section near the top of SPEC.md, "Dibber alone, or with a coordinator".**
+  - Dibber alone is for one person driving a coding agent on their own machine: one writer at a
+    time, the person as the only scheduler.
+  - With several runners, several people, or a more complex LLM provider setup (routing work to
+    several models or providers, budgets, retries), add a coordinator such as
+    [Baton](https://github.com/immediately-run/baton). It allocates ids, holds claims and runs
+    the work, and the tickets stay Dibber.
+  - Moving from one to the other changes no ticket file.
+- **R-DIB-4 Allocation, for one writer:** without a coordinator, the next free number across the
+  store, its archive and the repository's local branches. If an occasional collision gets
+  through anyway (the same person on two branches), the second to merge renumbers, and the
+  rule names what a renumber must rewrite: `depends_on`, `parent`, and the body's header lines.
+- **Coordination state:** one sentence pointing back to the new section. A store that needs
+  claims to be exclusive has outgrown Dibber alone.
 
 ### Exit criteria
 
-- [ ] SPEC.md's R-DIB-4 states the recipe and the fallback; the Versions note says it amends Dibber 1 in place
-- [ ] DIB-7's CLI `new` follows the recipe, with a test where two concurrent `new` calls get different ids
+- [ ] SPEC.md carries the section, and the Versions note says it amends Dibber 1 in place (no store changes validity)
+- [ ] DIB-7's `new` test: with a ticket on another local branch, `new` skips its number
 
 ## Status
 
 _filed 2026-11-22._
+
+_2026-11-22: rewritten from the owner's statement of scope. The earlier version specified a git-as-lock recipe for several agents filing at once. That is a coordinator's job, so it is dropped; several writers at once is what Baton is for._

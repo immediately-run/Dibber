@@ -23,7 +23,8 @@ that the README's Readers section is true (DIB-12).
 
 - `conformance/valid/<name>/` and `conformance/invalid/<name>/`, each a small store with an
   `expect.json` naming the rule (`R-DIB-n`) an invalid store breaks and the file that breaks it.
-- At least: a minimal store; nested folders; a page with `kind: doc` next to tickets; an archive;
+- At least: a minimal store; an every-key store, with every status in `ticket.schema.json` and
+  every key in R-DIB-5 used at least once (the board's test data, DIB-13); nested folders; a page with `kind: doc` next to tickets; an archive;
   qualified `depends_on`. Invalid cases: a missing `title`; `done` outside `archive/`; a file
   name that differs from its id; a reused id across store and archive; a `depends_on` cycle; an
   unknown status.
@@ -37,3 +38,5 @@ that the README's Readers section is true (DIB-12).
 ## Status
 
 _filed 2026-11-22._
+
+_2026-11-22: gains the every-key store, which DIB-11 no longer provides now that this repository is the example._

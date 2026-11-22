@@ -48,7 +48,8 @@ When it is done it moves to `tickets/archive/B-7.mdx` with `status: done`.
 - [`SPEC.md`](SPEC.md) — the format, rule by rule (`R-DIB-n`).
 - [`ticket.schema.json`](ticket.schema.json) — the JSON Schema every ticket's frontmatter
   satisfies. A repository can add a stricter schema of its own.
-- [`tickets/`](tickets/) — Dibber's own work, kept as a Dibber store.
+- [`tickets/`](tickets/) — Dibber's own work, kept as a Dibber store: an example of what a
+  Dibber-tracked project looks like.
 
 ## Readers
 

@@ -19,12 +19,16 @@ vibe coder decides in about thirty seconds whether a project is for them.
 
 ### What to build
 
-- **Opening:** what it is in one line, and who it's for.
+- **Opening:** what it is in one line, and who it's for: you and your coding agent, on your
+  machine. One more line says when to add Baton (several runners, a team, several LLM
+  providers), from DIB-2.
 - **"Why not GitHub Issues?"** Your agent reads tickets as files, with no API, login or rate
   limit. It works offline. A ticket is reviewed in the same PR as the code. Nothing to host.
 - **A 30-second start:** `npx dibber init`, then "ask your agent to file a ticket" with DIB-9's
   skills, then see it on the board in `dibber-board` (DIB-13, DIB-18).
-- A picture: the demo store (DIB-11) as a board or file tree.
+- A picture: this repository's own board or `tickets/` tree.
+- "This repository is an example" (DIB-11): links to a good open ticket, a closed one, a project
+  page and the config.
 - The orienteering name and "calling dibs", kept short and playful.
 - Links onward: guide (DIB-14), customizing (DIB-15), migrating (DIB-16), the spec, Readers.
 - No emoji, matching the immediately.run house style.
@@ -38,3 +42,5 @@ vibe coder decides in about thirty seconds whether a project is for them.
 ## Status
 
 _filed 2026-11-22._
+
+_2026-11-22: the audience line and the example section follow the owner's direction (DIB-2, DIB-11)._

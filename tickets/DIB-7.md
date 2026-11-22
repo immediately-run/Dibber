@@ -23,14 +23,14 @@ conventions.
 
 ### What to build
 
-- `dibber new --title … [--depends-on …] [--tags …]` allocates the id by DIB-2's recipe and
+- `dibber new --title … [--depends-on …] [--tags …]` allocates the next free id by R-DIB-4 as DIB-2 amends it, and
   writes the file with the body skeleton from R-DIB-11 (header lines, What to build, Exit
   criteria, `## Status` with `_filed <date>._`).
 - `dibber list [--ready] [--status …] [--json]` gives the overview. "Ready" means live, with
   every `depends_on` done, sorted by `order`.
 - `dibber claim <id> [--as <name>]` changes `available` to `in-progress` and sets `assignee`
-  (default: the git user name). It is advisory: the help text says so and points to a
-  coordinator for a real lock.
+  (default: the git user name). It is advisory: the help text says so, and says that several
+  runners or people working at once is when to add Baton (DIB-2).
 - `dibber set <id> <status> [--pr URL]` and `dibber done <id> [--pr URL]`, where `done` moves the
   file to `archive/` in the same commit and appends a Status entry.
 - Every write runs DIB-6's checks before committing. `--json` output on every command, for agents.
@@ -38,9 +38,11 @@ conventions.
 
 ### Exit criteria
 
-- [ ] `npm test` passes, including a two-process `new` race that yields two distinct ids
+- [ ] `npm test` passes, including `new` skipping a number taken on another local branch
 - [ ] `dibber done` on a fixture leaves `dibber check` passing and the file in `archive/`
 
 ## Status
 
 _filed 2026-11-22._
+
+_2026-11-22: the two-process race test is dropped. Several writers at once is a coordinator's job (DIB-2)._

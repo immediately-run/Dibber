@@ -1,37 +1,47 @@
 ---
 id: DIB-11
-title: "DIB-11 — A demo store: a small project's tickets, at every stage"
+title: "DIB-11 — This repository is the worked example of a Dibber-tracked project"
 status: available
-description: An example store of 10–15 tickets for an imaginary app, covering every status, dependencies, children and a project page. It serves as template, screenshot source and test data for the board.
-depends_on: [DIB-3]
+description: Dibber's own repository shows what a Dibber-tracked project looks like, in use, with every piece a newcomer would set up. That means config, tickets moving through to the archive with their PRs, agent instructions, and the board.
+depends_on: [DIB-1, DIB-9]
 order: 85
 tags: [docs, examples]
 project: wide-audience
 ---
 
-**Brief:** suggested in the 2026-11-22 planning session on what Dibber lacks for a wide audience.
-**Depends on:** DIB-3.
+**Brief:** from the owner, 2026-11-22: the Dibber repository can be the example of what a Dibber-tracked project looks like.
+**Depends on:** DIB-1, DIB-9.
 
 ### Why
 
-People learn the format faster from a store that looks lived-in than from a spec. The README's
-screenshot (DIB-17) and the board (DIB-13) need real-looking data, and the conformance fixtures
-(DIB-5) are deliberately minimal.
+A store that is really used teaches more than an invented one, and it can't drift from
+practice because it *is* the practice. This repository already keeps its work in `tickets/`.
+What's missing is everything else a newcomer would have after `dibber init`, plus a page that
+points it out.
 
 ### What to build
 
-- `examples/recipe-app/` (or another small, friendly app): `.dibber/config.json`, `tickets/` with 10–15
-  tickets across `available`, `in-progress`, `in-review`, `deprioritized` and `deferred`, a few
-  in `archive/` (`done`, `superseded`), a `depends_on` chain, one parent with children, and
-  `tickets/projects/` with one project page.
-- Ticket bodies written the way the skills (DIB-9) will write them, so the example also shows
-  good practice.
+- **This repository carries what `dibber init` writes:** `.dibber/config.json` (DIB-1), and the
+  agent instructions from DIB-9 in `AGENTS.md` and as the Claude Code plugin. Work on Dibber
+  itself is done through those skills, so the example is the way the repository works, not a
+  showcase.
+- **Tickets close the Dibber way:** each landed ticket moves to `archive/` with `status: done`,
+  `prs` filled in and a dated Status entry. Over time the archive is the example of a finished
+  ticket.
+- **The board descriptor** from DIB-13, so the repository opens as its own board once DIB-13
+  lands.
+- **A "This repository is an example" section** in the README (DIB-17 places it), pointing at a
+  good open ticket, a closed one, a project page, and the config.
+- The invented demo store this ticket used to specify is dropped. Test coverage of every status
+  and key moves to DIB-5's fixtures.
 
 ### Exit criteria
 
-- [ ] `npx dibber check examples/recipe-app` passes
-- [ ] a test asserts that every status in `ticket.schema.json` appears in the example except `withdrawn`
+- [ ] `npx dibber check` passes on this repository in its CI (enabling CI here is the owner's step; see DIB-6)
+- [ ] a test: every file `dibber init --yes` would create, other than the sample ticket, exists in this repository
 
 ## Status
 
 _filed 2026-11-22._
+
+_2026-11-22: rewritten from the owner's direction that this repository is the example. It replaces the invented demo store (`examples/recipe-app/`)._
