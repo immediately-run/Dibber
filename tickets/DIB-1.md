@@ -1,8 +1,8 @@
 ---
 id: DIB-1
-title: "DIB-1 — A config file Dibber owns: the store's folder and id prefix"
+title: "DIB-1 — A config file Dibber owns: .dibber/config.json, the store's folder and id prefix"
 status: available
-description: R-DIB-1 and R-DIB-4 leave the store's folder and prefix to "the repository's tools"; without Baton there is nowhere to say them. Add an optional dibber.json.
+description: R-DIB-1 and R-DIB-4 leave the store's folder and prefix to "the repository's tools"; without Baton there is nowhere to say them. Add an optional .dibber/config.json.
 depends_on: []
 order: 10
 tags: [spec, tooling]
@@ -22,19 +22,25 @@ coordinator has no such file, so every tool (validator, CLI, setup, skills) woul
 
 ### What to build
 
-- An optional `dibber.json` at the repository root: `{ "store": "tickets", "prefix": "DIB" }`,
-  with a JSON Schema of its own (`dibber.schema.json`).
-- A spec rule saying a reader takes the store and prefix from `dibber.json` when it is there,
-  and otherwise from `tickets/` and the prefix the existing ids share. A coordinator's own
-  settings may still name them, but they must not disagree with `dibber.json`.
-- This repository's own `dibber.json`, prefix `DIB` (already in use by `DIB-1`…).
+- An optional `.dibber/` directory at the repository root, holding `config.json`:
+  `{ "store": "tickets", "prefix": "DIB" }`. `.dibber/` is where Dibber's own per-repository
+  files live, so later ones (templates, agent instructions) have a home without cluttering the
+  root.
+- A JSON Schema for it, `config.schema.json`, published in this repository beside
+  `ticket.schema.json`.
+- A spec rule saying a reader takes the store and prefix from `.dibber/config.json` when it is
+  there, and otherwise from `tickets/` and the prefix the existing ids share. A coordinator's own
+  settings may still name them, but they must not disagree with `.dibber/config.json`.
+- This repository's own `.dibber/config.json`, prefix `DIB` (already in use by `DIB-1`…).
 - A note in the Versions section: an optional file, so this amends Dibber 1 in place.
 
 ### Exit criteria
 
-- [ ] `dibber.json` in this repository validates against `dibber.schema.json`
-- [ ] every id under `tickets/` starts with the prefix `dibber.json` names (a check script, run in DIB-6's validator once that exists)
+- [ ] `.dibber/config.json` in this repository validates against `config.schema.json`
+- [ ] every id under `tickets/` starts with the prefix `.dibber/config.json` names (a check script, run in DIB-6's validator once that exists)
 
 ## Status
 
 _filed 2026-11-22._
+
+_2026-11-22: the config is `.dibber/config.json`, a directory at the repository root (owner, in the planning session), not a root `dibber.json`._

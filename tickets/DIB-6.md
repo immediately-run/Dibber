@@ -22,7 +22,7 @@ board shows nothing. A check that runs on every push catches it.
 ### What to build
 
 - `dibber check [path]`, a Node command (published to npm, run with `npx`, no install). It reads
-  `dibber.json` (DIB-1), validates every ticket against `ticket.schema.json` plus any
+  `.dibber/config.json` (DIB-1), validates every ticket against `ticket.schema.json` plus any
   `item.schema.json`, and checks file name = id, `done` only in `archive/`, no reused id, no
   dangling or cyclic `depends_on`, and a local `parent`. Errors name the file, the key and the
   rule, in plain words.

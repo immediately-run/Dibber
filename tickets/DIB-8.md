@@ -2,7 +2,7 @@
 id: DIB-8
 title: "DIB-8 — One-command setup: dibber init and a template repository"
 status: available
-description: Zero to first ticket in one command. Creates dibber.json, tickets/, archive/, a sample ticket and the agent instructions.
+description: Zero to first ticket in one command. Creates .dibber/config.json, tickets/, archive/, a sample ticket and the agent instructions.
 depends_on: [DIB-3, DIB-7]
 order: 80
 tags: [tooling, onboarding]
@@ -20,7 +20,7 @@ folders and frontmatter by hand.
 ### What to build
 
 - `npx dibber init` asks for a prefix (with a default from the repository name), then writes
-  `dibber.json`, `tickets/`, `tickets/archive/`, one sample ticket (`<PREFIX>-1.md`, "Try
+  `.dibber/config.json`, `tickets/`, `tickets/archive/`, one sample ticket (`<PREFIX>-1.md`, "Try
   Dibber: move me to done") and the agent instructions from DIB-9. It skips files that already
   exist and says what it skipped.
 - Non-interactive flags (`--prefix`, `--yes`), so an agent can run it.

@@ -20,7 +20,7 @@ screenshot (DIB-17) and the board (DIB-13) need real-looking data, and the confo
 
 ### What to build
 
-- `examples/recipe-app/` (or another small, friendly app): `dibber.json`, `tickets/` with 10–15
+- `examples/recipe-app/` (or another small, friendly app): `.dibber/config.json`, `tickets/` with 10–15
   tickets across `available`, `in-progress`, `in-review`, `deprioritized` and `deferred`, a few
   in `archive/` (`done`, `superseded`), a `depends_on` chain, one parent with children, and
   `tickets/projects/` with one project page.
