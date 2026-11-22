@@ -70,6 +70,7 @@ reused. The page states the current version only. Tools that read the format are
   | `project` | a project page's name | the project the ticket belongs with ([R-DIB-10](#5-tags-and-projects)) |
   | `repos` | a list of repositories | the other repositories its work changes, `owner/name` or a name the reader maps |
   | `prs` | a list of URLs | the pull requests that carry its work |
+  | `assignee` | a name or handle | who says they are working on it: advisory, never a lock ([Coordination state](#coordination-state)) |
   | `updated` | a date | when the ticket last changed in substance |
   | `not_before` | a date or time | the earliest it should be started |
   | `kind` | `ticket` | optional: any other value makes the file a page ([R-DIB-1](#1-the-store)) |
@@ -148,6 +149,13 @@ that tracks them keeps them itself, may show them to people, and never reads the
 ticket file as its record. A ticket file a coordinator writes such state into still reads as
 Dibber — readers ignore keys they do not know — but the state there is that coordinator's own
 concern.
+
+**`assignee` is not a hold.** A person working without a coordinator, usually alone, still wants
+to see who said they would do a ticket, so `assignee` records it ([R-DIB-5](#3-frontmatter)). It
+is advisory: it stops no one else taking the ticket, two branches can each write a different
+name, and a coordinator never reads it as its record of who holds a ticket. A coordinator may
+write it, as a courtesy to people reading the file, but what it holds is the coordinator's own
+record.
 
 ## Versions
 

@@ -32,6 +32,7 @@
     "project": { "type": "string" },
     "repos": { "type": "array", "items": { "type": "string" } },
     "prs": { "type": "array", "items": { "type": "string" } },
+    "assignee": { "type": "string", "minLength": 1, "description": "Advisory: who says they are working on the ticket (R-DIB-5). Never a lock; a coordinator keeps its own record of who holds a ticket (Coordination state)." },
     "updated": { "type": ["string", "object"] },
     "not_before": { "type": ["string", "object"] },
     "kind": { "const": "ticket", "description": "Optional. A file whose kind is anything else is a page, not a ticket (R-DIB-1)." }

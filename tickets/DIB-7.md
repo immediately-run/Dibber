@@ -28,8 +28,9 @@ conventions.
   criteria, `## Status` with `_filed <date>._`).
 - `dibber list [--ready] [--status …] [--json]` gives the overview. "Ready" means live, with
   every `depends_on` done, sorted by `order`.
-- `dibber claim <id>` changes `available` to `in-progress`. It is advisory: the help text says
-  so and points to a coordinator for a real lock.
+- `dibber claim <id> [--as <name>]` changes `available` to `in-progress` and sets `assignee`
+  (default: the git user name). It is advisory: the help text says so and points to a
+  coordinator for a real lock.
 - `dibber set <id> <status> [--pr URL]` and `dibber done <id> [--pr URL]`, where `done` moves the
   file to `archive/` in the same commit and appends a Status entry.
 - Every write runs DIB-6's checks before committing. `--json` output on every command, for agents.

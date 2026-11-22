@@ -28,7 +28,8 @@ enough to start. The eight statuses, and "done only in `archive/`", are a lot to
 - A table mapping Jira, Linear and GitHub Issues terms to Dibber: backlog and todo → `available`;
   in progress; in review; done; canceled → `withdrawn`; duplicate → `superseded`; epic and parent
   issue → `parent`; blocked by → `depends_on`; labels → `tags`; project and milestone → `project`;
-  priority, assignee and estimate → DIB-4's outcome.
+  assignee → `assignee` (advisory: a note of who is on it, not a lock); priority and estimate →
+  DIB-4's outcome.
 - The same table is reused by the migration docs (DIB-16).
 
 ### Exit criteria

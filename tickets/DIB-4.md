@@ -12,7 +12,7 @@ project: wide-audience
 **Brief:** suggested in the 2026-11-22 planning session on what Dibber lacks for a wide audience.
 **Spec:** R-DIB-5, Coordination state.
 **Depends on:** none.
-**Waits on:** the owner's decision between the options below.
+**Waits on:** the owner's decision on `priority` and `type` (assignee is decided; see Status).
 
 ### Why
 
@@ -36,9 +36,12 @@ is who holds the work, which the spec deliberately leaves to coordinators.
 
 ### Exit criteria
 
-- [ ] the decision is recorded in this ticket's Status
-- [ ] SPEC.md and `ticket.schema.json` match it (no change for c)
+- [x] the assignee decision is recorded in this ticket's Status, and SPEC.md and `ticket.schema.json` carry `assignee`
+- [ ] the priority and type decision is recorded in this ticket's Status
+- [ ] SPEC.md and `ticket.schema.json` match it (no change if neither is added)
 
 ## Status
 
 _filed 2026-11-22._
+
+_2026-11-22: assignee decided by the owner: an optional, advisory `assignee` for solo users. Added to R-DIB-5's table, to `ticket.schema.json`, and to Coordination state, which says it is not a hold. Priority and type are still open: option a less assignee, or c._
