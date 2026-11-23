@@ -9,7 +9,7 @@
       "name": "dibber",
       "source": "./",
       "description": "Skills to file a ticket, work the next one, and summarize the board, for a repository that keeps its tickets as Dibber files.",
-      "version": "0.1.1-rc.0"
+      "version": "0.2.0"
     }
   ]
 }
