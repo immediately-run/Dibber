@@ -1,0 +1,20 @@
+---
+title: Tickets
+description: Every open ticket, by status, with the next one to start. A query over this folder, never a hand-kept list.
+nav: Board
+order: 0
+render: safe
+---
+
+This folder is a [Dibber](https://github.com/immediately-run/dibber) ticket store: one file per
+ticket. This page is a query over it, so a ticket added to the folder shows up here with no edit.
+
+## Next to start
+
+The ready ticket with the lowest `order`: `available`, and everything it depends on done.
+
+<NextAvailable />
+
+## The board
+
+<RoadmapBoard />

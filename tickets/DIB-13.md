@@ -1,13 +1,14 @@
 ---
 id: DIB-13
 title: "DIB-13 — Optional immediately.run board: open any Dibber store in the board viewer"
-status: available
+status: in-progress
 description: Open a repository's Dibber store on immediately.run and see it as a read-only kanban board, a ticket page and project pages, through the Grove-based viewer now called baton-board (dibber-board after DIB-18). It renders plain Dibber stores, not only the immediately.run roadmap's.
 depends_on: [DIB-3, DIB-5]
 order: 150
 tags: [integrations, immediately-run]
 project: wide-audience
-repos: [immediately-run/baton-board]
+repos: [immediately-run/dibber-board]
+assignee: Claude
 ---
 
 **Brief:** from the owner's list, 2026-11-22: optional immediately.run integration that displays tickets or the whole kanban board. Renderer decided by the owner the same day: the Grove-based viewer in `immediately-run/baton-board`.
@@ -65,7 +66,7 @@ in it today. Read on 2026-11-22 at `eeb12d6`:
 
 ### Exit criteria
 
-- [ ] the viewer's `npm test` renders DIB-5's every-key store with every ticket in its status's column and every qualified dependency shown as outside the store
+- [x] the viewer's `npm test` renders DIB-5's every-key store with every ticket in its status's column and every qualified dependency shown as outside the store
 - [ ] the viewer's existing tests still pass, and a new test finds the same set of tickets in the docs, baton and fieldhouse corpora under R-DIB-1 as under the `roadmap-item` tag
 - [ ] a Playwright run opens this repository's `tickets/` on immediately.run and finds every live DIB ticket on the board (needs a browser)
 
@@ -76,3 +77,7 @@ _filed 2026-11-22._
 _2026-11-22: renderer decided by the owner: the Grove viewer with custom components in `immediately-run/baton-board`, not `kanban-board`. Its rename to `dibber-board` is DIB-18. Rewritten from what the viewer does at `eeb12d6`._
 
 _2026-11-22: test data is DIB-5's every-key store; the invented demo store is dropped (DIB-11)._
+
+_2026-11-23: claimed by Claude._
+
+_2026-11-23: Viewer and descriptor built on branch claude/gallant-pascal-qdrrdj in dibber-board and here. The viewer reads R-DIB-1 tickets, gives every live status a column and folds the closed ones, labels qualified dependencies as in another repository, and shows assignee and children; its README documents the EXPEDITE/OP/Requires: queue rule as its own (R-DIB-9). `dibber init --immediately-run` writes `immediately.run.json`, `home.mdx` and `_layout.mdx` into the store, and this repository's `tickets/` carries them. The descriptor has no record set: the board reads the bundle's entries, not a layout, and the layout grammar's single `select` glob and single terminal status could not express `.md`+`.mdx` or four closed statuses anyway. Left: fieldhouse and hq in the corpus test (outside the session), and the Playwright run on immediately.run once both branches are on main._

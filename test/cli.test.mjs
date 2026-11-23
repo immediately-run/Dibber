@@ -201,3 +201,21 @@ test('check --json reports problems with rule and file, and exits 1', async () =
   assert.equal(out.ok, false);
   assert.deepEqual(out.errors.map((e) => [e.rule, e.file]), [['R-DIB-6', 'tickets/APP-7.md']]);
 });
+
+test('init --immediately-run adds the board files to the store, and check still passes (DIB-13)', async () => {
+  const { dir } = repo();
+  const r = await dibber(dir, 'init', '--yes', '--prefix', 'APP', '--immediately-run');
+  assert.equal(r.code, 0, r.stderr);
+  const marker = JSON.parse(readFileSync(join(dir, 'tickets', 'immediately.run.json'), 'utf8'));
+  assert.deepEqual(marker.opensWith, { app: 'github:immediately-run/dibber-board', version: '1.0' });
+  assert.match(readFileSync(join(dir, 'tickets', 'home.mdx'), 'utf8'), /<RoadmapBoard \/>/);
+  assert.match(readFileSync(join(dir, 'tickets', '_layout.mdx'), 'utf8'), /<RoadmapMeta \/>/);
+  assert.match(r.stdout, /immediately\.run\/present\/github\/<owner>\/<repo>\/main\/bundle\/tickets\/home\.mdx/);
+  const c = await dibber(dir, 'check');
+  assert.equal(c.code, 0, c.stdout + c.stderr);
+  assert.match(c.stdout, /tickets\/: 1 ticket, no problems/);
+  // Without the flag, none of them is written.
+  const { dir: plain } = repo();
+  await dibber(plain, 'init', '--yes', '--prefix', 'APP');
+  assert.ok(!existsSync(join(plain, 'tickets', 'immediately.run.json')));
+});
