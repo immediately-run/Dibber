@@ -40,10 +40,12 @@ Dibber is something they use without having to learn it.
   this repository, in the open Agent Skills format: a folder per skill, with a `SKILL.md` whose
   `name` and `description` the harness reads first. It loads the rest only when the
   description matches the task.
-  - `dibber init` writes them into the user's repository at `.agents/skills/`, read by Codex,
-    opencode and Antigravity, and links each `.claude/skills/<name>` there for Claude Code, so
-    there is one copy. `--copy-skills` writes a copy instead, for checkouts without symlinks
-    (Windows without `core.symlinks`).
+  - `dibber init` copies them into the user's repository at `.agents/skills/` (read by Codex,
+    opencode and Antigravity) and `.claude/skills/` (read by Claude Code). They are copies, not
+    links: users never edit them, and a symlink becomes a text file on a Windows checkout
+    without `core.symlinks`, so the skills would silently vanish. `--link-skills` links
+    instead. `dibber check` warns about a broken install, and `init --update-skills` repairs
+    it.
   - It also writes an `AGENTS.md` section, read by Codex and opencode, and a `CLAUDE.md` that
     imports `AGENTS.md` for Claude Code.
   - For Claude Code users who want the skills in every repository, this repository is also a
@@ -66,3 +68,5 @@ _2026-11-22: the three skills, the .agents/skills and .claude/skills copies, AGE
 _2026-11-22: partly in, https://github.com/immediately-run/Dibber/pull/1._
 
 _2026-11-23: skills are one copy: .claude/skills links to .agents/skills in users' repositories, and both link to skills/ here; checked with headless Claude Code, which lists all three skills through the links._
+
+_2026-11-23: the skills are copied by default again, with --link-skills to opt in; dibber check warns about a broken install (a link checked out as a text file) and init --update-skills repairs it. Only this repository links .agents/skills and .claude/skills to skills/._

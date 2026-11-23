@@ -4,10 +4,11 @@
 // Errors break a rule. Warnings are conventions (R-DIB-10, R-DIB-11) a store may not follow
 // yet; they never fail a check.
 
-import { readFileSync, existsSync } from 'node:fs';
+import { readFileSync, existsSync, readdirSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import Ajv from 'ajv';
+import { SKILL_HOMES, skillInstallProblem } from './init.mjs';
 import { readStore, rel, LIVE, CLOSED, CLOSED_WITHDRAWN, STATUSES, ID_RE, QUALIFIED_RE, asList } from './store.mjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
@@ -159,6 +160,17 @@ export function checkStore(root) {
       const got = m[1].trim();
       const plainIds = got.replace(/\[([^\]]+)\]\([^)]*\)/g, '$1').replace(/`/g, '');
       if (plainIds !== want) warn('R-DIB-11', t.file, `the **Depends on:** line says "${got}" but depends_on is ${deps.length ? `[${deps.join(', ')}]` : 'empty'}`);
+    }
+  }
+
+  // The repository's installed Dibber skills (not the format): a broken one means an agent
+  // harness silently loses it, so say so and how to fix it.
+  for (const home of SKILL_HOMES) {
+    let names = [];
+    try { names = readdirSync(join(root, home)); } catch {}
+    for (const name of names.filter((n) => n.startsWith('dibber-')).sort()) {
+      const problem = skillInstallProblem(join(root, home, name));
+      if (problem) warn('setup', `${home}/${name}`, `the agent skill ${problem}, so agents will not find it; run \`dibber init --yes --update-skills\` to write it again as a copy`);
     }
   }
 

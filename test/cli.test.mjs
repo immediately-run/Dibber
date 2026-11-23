@@ -33,32 +33,48 @@ test('init --yes in an empty repository: check passes and list shows the first t
   for (const p of ['AGENTS.md', 'CLAUDE.md', '.agents/skills/dibber-work-ticket/SKILL.md', '.claude/skills/dibber-overview/SKILL.md']) assert.ok(existsSync(join(dir, p)), p);
 });
 
-test('init keeps one copy of each skill: .claude/skills links to .agents/skills', async () => {
+test('init copies the skills into both homes by default, so every checkout works', async () => {
   const { dir } = repo();
   await dibber(dir, 'init', '--yes', '--prefix', 'APP');
   for (const name of ['dibber-new-ticket', 'dibber-overview', 'dibber-work-ticket']) {
-    const link = join(dir, '.claude/skills', name);
-    assert.ok(lstatSync(link).isSymbolicLink(), name);
-    assert.equal(readlinkSync(link), join('..', '..', '.agents', 'skills', name));
-    assert.ok(lstatSync(join(dir, '.agents/skills', name, 'SKILL.md')).isFile());
+    for (const home of ['.agents/skills', '.claude/skills']) {
+      assert.ok(lstatSync(join(dir, home, name)).isDirectory(), `${home}/${name} is a real folder`);
+      assert.ok(lstatSync(join(dir, home, name, 'SKILL.md')).isFile());
+    }
   }
 });
 
-test('init --copy-skills writes real copies, for checkouts without symlinks', async () => {
+test('init --link-skills links .claude/skills to .agents/skills instead', async () => {
   const { dir } = repo();
-  await dibber(dir, 'init', '--yes', '--prefix', 'APP', '--copy-skills');
+  await dibber(dir, 'init', '--yes', '--prefix', 'APP', '--link-skills');
   const link = join(dir, '.claude/skills/dibber-overview');
-  assert.ok(!lstatSync(link).isSymbolicLink());
-  assert.equal(readFileSync(join(link, 'SKILL.md'), 'utf8'), readFileSync(join(dir, '.agents/skills/dibber-overview/SKILL.md'), 'utf8'));
+  assert.ok(lstatSync(link).isSymbolicLink());
+  assert.equal(readlinkSync(link), join('..', '..', '.agents', 'skills', 'dibber-overview'));
 });
 
-test('init --update-skills refreshes .agents/skills and leaves the links alone', async () => {
+test('a skill link checked out as a text file: check warns, init repairs it as a copy', async () => {
+  const { dir } = repo();
+  await dibber(dir, 'init', '--yes', '--prefix', 'APP', '--link-skills');
+  // What git writes on Windows without core.symlinks: a file holding the link's target.
+  const broken = join(dir, '.claude/skills/dibber-overview');
+  execFileSync('rm', [broken]);
+  writeFileSync(broken, '../../.agents/skills/dibber-overview');
+  const c = JSON.parse((await dibber(dir, 'check', '--json')).stdout);
+  assert.deepEqual(c.warnings.map((w) => [w.rule, w.file]), [['setup', '.claude/skills/dibber-overview']]);
+  assert.match(c.warnings[0].message, /dibber init --yes --update-skills/);
+  const r = JSON.parse((await dibber(dir, 'init', '--yes', '--update-skills', '--json')).stdout);
+  assert.deepEqual(r.repaired, ['.claude/skills/dibber-overview']);
+  assert.ok(lstatSync(join(broken, 'SKILL.md')).isFile());
+  assert.deepEqual(JSON.parse((await dibber(dir, 'check', '--json')).stdout).warnings, []);
+});
+
+test('init --update-skills refreshes stale copies', async () => {
   const { dir } = repo();
   await dibber(dir, 'init', '--yes', '--prefix', 'APP');
   writeFileSync(join(dir, '.agents/skills/dibber-overview/SKILL.md'), 'stale\n');
   const r = JSON.parse((await dibber(dir, 'init', '--yes', '--prefix', 'APP', '--update-skills', '--json')).stdout);
   assert.deepEqual(r.updated, ['.agents/skills/dibber-overview/SKILL.md']);
-  assert.notEqual(readFileSync(join(dir, '.claude/skills/dibber-overview/SKILL.md'), 'utf8'), 'stale\n');
+  assert.notEqual(readFileSync(join(dir, '.agents/skills/dibber-overview/SKILL.md'), 'utf8'), 'stale\n');
 });
 
 test('init twice changes nothing the second time', async () => {
