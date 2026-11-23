@@ -33,9 +33,9 @@ through its `landing-html` input, so the page inlines its CSS, script and icon. 
 - **Analytics:** optional Plausible. With `analytics.plausibleDomain` set in `site/site.json`,
   the page counts visits and the events `Copy prompt`, `Copy npx`, `GitHub`, `npm`, `Spec`
   and `Baton`. With it null, the page loads nothing from anywhere else.
-- **Owner's steps:** set `landing-html: 'site/index.html'` in `cache.yml` (re-rendered with
-  new-project-template's `zip-cache-stub.mjs`, `renderStub({ landingHtml: 'site/index.html' })`);
-  create the Plausible site, if wanted, and set its domain.
+- **Publishing:** `cache.yml` passes `landing-html: 'site/index.html'`, the form
+  new-project-template's `renderStub({ landingHtml })` writes. The owner's step left is creating
+  the Plausible site, if wanted, and setting its domain.
 
 ### Exit criteria
 
@@ -48,3 +48,5 @@ through its `landing-html` input, so the page inlines its CSS, script and icon. 
 _filed 2026-11-23._
 
 _2026-11-23: the owner asked for the site and that it be simple and sticky. One self-contained page instead of several, because the Pages cache job publishes a single landing file. The agent install steps are on the page itself, so the paste line is the short site URL. docs/install.md and llms.txt live in the repository. Left: the owner's cache.yml change, then the scripted agent run._
+
+_2026-11-23: cache.yml now passes landing-html: 'site/index.html' (the owner asked for the change), so the page is published on the next push to main._
