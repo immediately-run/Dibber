@@ -52,3 +52,5 @@ and cut over last.
 _filed 2026-11-22._
 
 _2026-11-23: The owner renamed the repository to `immediately-run/dibber-board`. Checked in the host code before the rename: a marker naming `baton-board` still resolves, through the GitHub API's redirect, since the Pages zip at the old name 404s; it is slower, keeps the old appKey and grants, and whether the browser follows the redirect on a preflighted request was not tested live. The viewer's own half (package name, `repository.url`, README, NOTICE) is on dibber-board's branch claude/gallant-pascal-qdrrdj. Left: one marker PR per consumer (baton, fieldhouse, hq), and the cutover._
+
+_2026-11-23: Baton's marker now names dibber-board (baton#387, merged). Left: fieldhouse's and hq's markers, then the cutover._
