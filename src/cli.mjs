@@ -120,7 +120,8 @@ export async function run(argv, { cwd = process.cwd(), interactive = true } = {}
       else {
         printProblems(stdout, errors, '✗');
         printProblems(stdout, warnings, '!');
-        stdout.push(errors.length ? `${errors.length} problem${errors.length === 1 ? '' : 's'} in ${store.storeRel}/ (${store.tickets.length} tickets).` : `✓ ${store.storeRel}/: ${store.tickets.length} tickets, no problems${warnings.length ? ` (${warnings.length} warning${warnings.length === 1 ? '' : 's'})` : ''}.`);
+        const n = `${store.tickets.length} ticket${store.tickets.length === 1 ? '' : 's'}`;
+        stdout.push(errors.length ? `${errors.length} problem${errors.length === 1 ? '' : 's'} in ${store.storeRel}/ (${n}).` : `✓ ${store.storeRel}/: ${n}, no problems${warnings.length ? ` (${warnings.length} warning${warnings.length === 1 ? '' : 's'})` : ''}.`);
       }
       code = errors.length || (flags.strict && warnings.length) ? 1 : 0;
     } else if (cmd === 'list') {

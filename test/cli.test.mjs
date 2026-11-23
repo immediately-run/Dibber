@@ -27,7 +27,9 @@ test('init --yes in an empty repository: check passes and list shows the first t
   assert.equal(r.code, 0, r.stderr);
   assert.ok(existsSync(join(dir, '.dibber', 'config.json')));
   assert.deepEqual(JSON.parse(readFileSync(join(dir, '.dibber', 'config.json'), 'utf8')), { store: 'tickets', prefix: 'RA' });
-  assert.equal((await dibber(dir, 'check')).code, 0);
+  const c = await dibber(dir, 'check');
+  assert.equal(c.code, 0);
+  assert.match(c.stdout, /tickets\/: 1 ticket, no problems/);
   const list = JSON.parse((await dibber(dir, 'list', '--json')).stdout);
   assert.deepEqual(list.map((x) => x.id), ['RA-1']);
   for (const p of ['AGENTS.md', 'CLAUDE.md', '.agents/skills/dibber-work-ticket/SKILL.md', '.claude/skills/dibber-overview/SKILL.md']) assert.ok(existsSync(join(dir, p)), p);
