@@ -22,17 +22,23 @@
     "templates/",
     "ticket.schema.json",
     "config.schema.json",
-    "SPEC.md"
+    "SPEC.md",
+    "NOTICE"
   ],
   "engines": {
     "node": ">=18"
   },
   "scripts": {
     "test": "node --test",
-    "check": "node bin/dibber.mjs check"
+    "check": "node bin/dibber.mjs check",
+    "check:release": "node scripts/check-release.mjs",
+    "version": "node scripts/check-release.mjs --sync && git add .claude-plugin"
   },
   "dependencies": {
     "ajv": "^8.17.1",
     "yaml": "^2.8.1"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

@@ -1,6 +1,8 @@
 {
   "name": "dibber",
-  "owner": { "name": "immediately.run" },
+  "owner": {
+    "name": "immediately.run"
+  },
   "description": "Dibber: tickets as files in git.",
   "plugins": [
     {
