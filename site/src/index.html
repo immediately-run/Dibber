@@ -1,0 +1,159 @@
+<!doctype html>
+<!-- Dibber's website: one self-contained page ([DIB-22](../../tickets/DIB-22.md)).
+     Edit this file, style.css and site.js, then run `npm run site`; it writes site/index.html,
+     which the Pages cache job publishes as the site's root page. -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dibber: tickets as files in your repo</title>
+<meta name="description" content="Dibber keeps tickets as plain Markdown files next to your code. Your coding agent reads them, works them and closes them. No server, no account, no lock-in.">
+<meta property="og:title" content="Dibber: tickets as files in your repo">
+<meta property="og:description" content="Plain Markdown tickets next to your code, for you and your coding agent. No server, no account, no lock-in.">
+<meta property="og:type" content="website">
+<link rel="icon" type="image/png" href="{{FAVICON}}">
+<style>:root { --icon: url("{{ICON}}"); }
+{{STYLE}}</style>
+{{ANALYTICS}}
+</head>
+<body>
+<header class="top">
+  <a class="brand" href="#"><span class="icon brand-icon" aria-hidden="true"></span>Dibber</a>
+  <nav>
+    <a href="#how">How it works</a>
+    <a href="#agents">For agents</a>
+    <a href="https://github.com/immediately-run/dibber/blob/main/SPEC.md" data-event="Spec">Spec</a>
+    <a class="gh" href="https://github.com/immediately-run/dibber" data-event="GitHub">GitHub</a>
+  </nav>
+</header>
+
+<main>
+<section class="hero">
+  <div class="hero-text">
+    <h1>Your to-do list belongs in your repo.</h1>
+    <p class="lead">Dibber keeps tickets as plain Markdown files next to your code. Your coding agent reads them, works them and closes them, and you review every change in the same pull request.</p>
+
+    <div class="prompt">
+      <p class="prompt-label">Paste this into Claude Code, Codex, opencode or Antigravity:</p>
+      <div class="copyable">
+        <code id="prompt">Set up Dibber ticket tracking in this repo by following https://immediately-run.github.io/dibber/</code>
+        <button type="button" data-copy="prompt" data-event="Copy prompt">Copy</button>
+      </div>
+      <p class="or">Or in a terminal:
+        <span class="copyable inline"><code id="npx">npx -y @immediately-run/dibber init</code><button type="button" data-copy="npx" data-event="Copy npx">Copy</button></span>
+      </p>
+    </div>
+    <p class="facts">Free and open source · No account · No server · Nothing to host</p>
+  </div>
+  <div class="icon mascot" role="img" aria-label="Dibber, a squirrel in an orienteering hard hat with a compass"></div>
+</section>
+
+<section class="file">
+  <h2>A ticket is just a file.</h2>
+  <div class="file-grid">
+    <pre class="tree" aria-label="A repository using Dibber"><span class="dim">my-app/</span>
+├─ src/
+├─ tickets/
+│  ├─ APP-1.md  <span class="tag done">done</span>
+│  ├─ APP-2.md  <span class="tag doing">in progress</span>
+│  └─ APP-3.md  <span class="tag ready">ready</span>
+└─ .dibber/config.json</pre>
+    <pre class="ticket" aria-label="tickets/APP-3.md"><span class="fname">tickets/APP-3.md</span><span class="fm">---
+id: APP-3
+title: "APP-3 — Add a dark mode toggle"
+status: available
+depends_on: [APP-2]
+---</span>
+
+<b>### Why</b>
+Reading at night hurts.
+
+<b>### Exit criteria</b>
+- [ ] a test: the toggle switches the theme
+- [ ] a test: the choice survives a reload
+
+<b>## Status</b>
+<i>_filed 2026-11-23._</i></pre>
+  </div>
+  <p class="caption">GitHub renders it. Your editor opens it. Your agent greps it. Nothing to host, nothing to lose.</p>
+</section>
+
+<section class="loop" id="how">
+  <h2>File it. Work it. Close it.</h2>
+  <ol class="steps">
+    <li>
+      <span class="num">1</span>
+      <h3>File it</h3>
+      <p class="say">“Add a dark mode toggle.”</p>
+      <p>Your agent writes <code>tickets/APP-3.md</code>: what, why, and checks that prove it’s done.</p>
+    </li>
+    <li>
+      <span class="num">2</span>
+      <h3>Work it</h3>
+      <p class="say">“What’s next? Go.”</p>
+      <p>It picks the next ready ticket, builds it, and runs the checks.</p>
+    </li>
+    <li>
+      <span class="num">3</span>
+      <h3>Close it</h3>
+      <p class="say">“Ship it.”</p>
+      <p>The ticket says <code>status: done</code> and stays put, so the code can link back to why it exists.</p>
+    </li>
+  </ol>
+</section>
+
+<section class="why">
+  <h2>Why files?</h2>
+  <div class="cards">
+    <div class="card"><h3>No lock-in</h3><p>Tickets live in git with your code. Clone the repo and you have the tracker.</p></div>
+    <div class="card"><h3>Reviewed with the code</h3><p>A ticket change is a diff in the same pull request as the work.</p></div>
+    <div class="card"><h3>Links that last</h3><p>Closing a ticket never moves it, so links from code, commits and PRs keep working.</p></div>
+    <div class="card"><h3>Written down</h3><p>The format is a short <a href="https://github.com/immediately-run/dibber/blob/main/SPEC.md" data-event="Spec">spec</a> with a JSON Schema and a test suite. The tool is optional.</p></div>
+  </div>
+  <p class="team">Just you and your agent? That’s all you need. Several agents or a team? Add <a href="https://github.com/immediately-run/baton" data-event="Baton">Baton</a> for real claims. Your tickets stay the same.</p>
+</section>
+
+<section class="name">
+  <span class="icon name-icon" aria-hidden="true"></span>
+  <div>
+    <h2>Why “Dibber”?</h2>
+    <p>In orienteering, a dibber is the chip you punch at every checkpoint, so the course remembers where you’ve been. A Dibber ticket does the same for your work.</p>
+    <p>It’s also how you call dibs.</p>
+  </div>
+</section>
+
+<section class="agents" id="agents">
+  <h2>For coding agents</h2>
+  <p class="agents-intro">If a person asked you to set up Dibber in their repository, do this. People: this is exactly what your agent will do.</p>
+  <ol class="agent-steps">
+    <li>Check that Node.js 18 or later is installed (<code>node --version</code>). If it isn't, tell the person and stop.</li>
+    <li>Pick a short upper-case ticket prefix from the repository's name, such as <code>APP</code> for <code>my-app</code>. Ask the person only if there's no obvious one.</li>
+    <li>Run <code>npx -y @immediately-run/dibber init --yes --prefix APP</code>, using your prefix. It adds <code>tickets/</code>, <code>.dibber/config.json</code>, an <code>AGENTS.md</code> section, and three skills in <code>.agents/skills/</code> and <code>.claude/skills/</code>. It never overwrites a file.</li>
+    <li>Run <code>npx -y @immediately-run/dibber check</code>. It must report no problems.</li>
+    <li>Tell the person what was added, and commit it when they agree. The skills load in your next session.</li>
+    <li>Ask what they'd like to work on first, and file it as their first ticket.</li>
+  </ol>
+  <p class="agents-more">The same steps as Markdown: <a href="https://raw.githubusercontent.com/immediately-run/dibber/main/docs/install.md">docs/install.md</a>. The whole project for agents: <a href="https://raw.githubusercontent.com/immediately-run/dibber/main/llms.txt">llms.txt</a>.</p>
+</section>
+
+<section class="again">
+  <h2>Try it in your repo.</h2>
+  <div class="copyable">
+    <code id="prompt2">Set up Dibber ticket tracking in this repo by following https://immediately-run.github.io/dibber/</code>
+    <button type="button" data-copy="prompt2" data-event="Copy prompt">Copy</button>
+  </div>
+</section>
+</main>
+
+<footer>
+  <nav>
+    <a href="https://github.com/immediately-run/dibber" data-event="GitHub">GitHub</a>
+    <a href="https://www.npmjs.com/package/@immediately-run/dibber" data-event="npm">npm</a>
+    <a href="https://github.com/immediately-run/dibber/blob/main/SPEC.md" data-event="Spec">Spec</a>
+    <a href="https://raw.githubusercontent.com/immediately-run/dibber/main/llms.txt">llms.txt</a>
+  </nav>
+  <p>Apache-2.0. {{ANALYTICS_NOTE}}</p>
+</footer>
+<script>{{SCRIPT}}</script>
+</body>
+</html>
