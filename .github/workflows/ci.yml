@@ -1,0 +1,59 @@
+# ci.yml — test every push and pull request; publish to npm when a GitHub Release is published.
+#
+# Publishing uses npm trusted publishing (OIDC): no npm token is stored anywhere. The
+# package's trusted publisher on npmjs.com names this repository, this file (ci.yml) and the
+# `npm` environment; docs/releasing.md has the one-time setup and the release steps.
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - name: dibber check (this repository's own tickets)
+        run: node bin/dibber.mjs check
+      - name: versions agree (package.json, plugin.json, marketplace.json)
+        run: node scripts/check-release.mjs
+
+  publish:
+    if: github.event_name == 'release'
+    needs: test
+    runs-on: ubuntu-latest
+    environment: npm
+    permissions:
+      contents: read
+      id-token: write # the OIDC token npm trusted publishing exchanges for a one-time publish credential
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      # No registry-url: it writes an .npmrc whose token would take precedence over OIDC.
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
+      - name: npm 11.5.1 or later (trusted publishing needs it)
+        run: npm install -g npm@11 && npm --version
+      - run: npm ci
+      - name: the release tag matches the version being published
+        env:
+          TAG: ${{ github.event.release.tag_name }}
+        run: node scripts/check-release.mjs "$TAG"
+      - name: npm publish
+        env:
+          PRERELEASE: ${{ github.event.release.prerelease }}
+        run: |
+          if [ "$PRERELEASE" = "true" ]; then npm publish --tag next; else npm publish; fi
