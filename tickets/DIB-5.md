@@ -1,13 +1,14 @@
 ---
 id: DIB-5
 title: "DIB-5 — Conformance fixtures: example stores that are valid and invalid"
-status: in-review
+status: done
 description: A set of small example stores, each marked valid or invalid with the rule it breaks, so the validator and every reader can prove they read Dibber the same way.
 depends_on: []
 order: 50
 tags: [spec, tests]
 project: wide-audience
-prs: [https://github.com/immediately-run/Dibber/pull/1]
+prs: [https://github.com/immediately-run/Dibber/pull/1, https://github.com/immediately-run/dibber/pull/1]
+updated: 2026-11-23
 ---
 
 **Brief:** suggested in the 2026-11-22 planning session on what Dibber lacks for a wide audience.
@@ -45,3 +46,5 @@ _2026-11-22: gains the every-key store, which DIB-11 no longer provides now that
 _2026-11-22: implemented on branch claude/affectionate-goodall-95x077; closes when it lands: 27 fixtures (9 valid, 18 invalid) under conformance/, every checkable rule covered._
 
 _2026-11-22: in review, https://github.com/immediately-run/Dibber/pull/1._
+
+_2026-11-23: done: PR #1 merged, https://github.com/immediately-run/dibber/pull/1._

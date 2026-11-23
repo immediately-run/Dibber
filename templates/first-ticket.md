@@ -20,8 +20,8 @@ Nothing. Try the loop instead:
 
 1. Ask your agent "what's on the board?". It lists this ticket.
 2. Ask it to file a ticket for something you actually want, such as "add a dark mode".
-3. Close this one: ask your agent to mark it done, or run `dibber done {{ID}}`. The file moves
-   to `{{STORE}}/archive/`.
+3. Close this one: ask your agent to mark it done, or run `dibber done {{ID}}`. Its status
+   becomes `done`, and the file stays where it is.
 
 ### Exit criteria
 

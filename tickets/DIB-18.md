@@ -37,8 +37,8 @@ and cut over last.
   entry, and `repository.url`.
 - **One PR per consumer, in any order:** the `opensWith` marker in baton's
   `tickets/immediately.run.json`, fieldhouse's, hq's and docs'; baton's README; Fieldhouse's
-  `projects/one-ticketing-system.mdx`. Archived tickets that name `baton-board` stay as they are:
-  the archive is the record.
+  `projects/one-ticketing-system.mdx`. Closed tickets that name `baton-board` stay as they are:
+  they are the record.
 - **Cutover last, in its own step:** archive `baton-board`, or drop the redirect's reliance,
   once a search finds no live marker naming it.
 

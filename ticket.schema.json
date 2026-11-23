@@ -22,7 +22,7 @@
     "title": { "type": "string", "minLength": 1 },
     "status": {
       "enum": ["available", "in-progress", "in-review", "deprioritized", "done", "withdrawn", "superseded", "deferred"],
-      "description": "R-DIB-6: live (available, in-progress, in-review, deprioritized); closed done (done, only in archive/); closed withdrawn (withdrawn, superseded, deferred)."
+      "description": "R-DIB-6: live (available, in-progress, in-review, deprioritized); closed done (done); closed withdrawn (withdrawn, superseded, deferred)."
     },
     "description": { "type": "string" },
     "depends_on": { "type": "array", "items": { "$ref": "#/definitions/ref" }, "uniqueItems": true },

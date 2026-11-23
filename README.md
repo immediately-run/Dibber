@@ -2,7 +2,7 @@
 
 **Tickets as files in git.** Dibber is a format for keeping a project's tickets in its own
 repository: one Markdown file per ticket, YAML frontmatter for its fields, the body for the
-record of the work, and an `archive/` folder for closed tickets. No server, no database, no tool
+record of the work, and a status that says when it's closed. No server, no database, no tool
 required — a ticket is a file you can read, diff, review and merge like any other.
 
 It is a format, not a product. Coordinators, boards and wikis can read and write it; none of
@@ -41,7 +41,8 @@ Show live runners only by default; a toggle shows the terminated ones.
 _filed 2026-11-22._
 ```
 
-When it is done it moves to `tickets/archive/B-7.md` with `status: done`.
+When it is done, its `status` becomes `done` and the file stays where it is, so every link to it
+keeps working.
 
 ## The files
 

@@ -1,4 +1,5 @@
 # ci.yml — test every push and pull request; publish to npm when a GitHub Release is published.
+# Ticket: [DIB-21](../../tickets/DIB-21.md).
 #
 # Publishing uses npm trusted publishing (OIDC): no npm token is stored anywhere. The
 # package's trusted publisher on npmjs.com names this repository, this file (ci.yml) and the

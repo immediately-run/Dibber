@@ -6,7 +6,7 @@ description: Summarize the Dibber board, meaning the tickets in the repository's
 # Summarize the Dibber board
 
 Run `dibber list --json` (use `dibber` if it is installed, otherwise
-`npx -y @immediately-run/dibber`). Add `--all` to include closed tickets from `archive/`, for
+`npx -y @immediately-run/dibber`). Add `--all` to include closed tickets, for
 "what did we finish?".
 
 ## Report
@@ -34,7 +34,7 @@ ticket to the user as suspicious.
 ## Without the command-line tool
 
 Read the frontmatter of every `*.md` and `*.mdx` file under `tickets/`. A file is a ticket if it
-has an `id` and no `kind` other than `ticket`. Files under `tickets/archive/` are closed.
-`status` is one of available, in-progress, in-review, deprioritized (live) or done, withdrawn,
+has an `id` and no `kind` other than `ticket`. Whether it is open or closed is its `status`, one
+of available, in-progress, in-review, deprioritized (live) or done, withdrawn,
 superseded, deferred (closed). A ticket is ready when it is `available` and every id in its
 `depends_on` is done.

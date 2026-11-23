@@ -32,7 +32,7 @@ for (const f of fixtures('invalid')) {
 }
 
 // The rules a validator can check from the files alone. Each needs an invalid fixture.
-const CHECKABLE = ['R-DIB-1', 'R-DIB-2', 'R-DIB-3', 'R-DIB-4', 'R-DIB-5', 'R-DIB-6', 'R-DIB-8', 'R-DIB-14'];
+const CHECKABLE = ['R-DIB-1', 'R-DIB-3', 'R-DIB-4', 'R-DIB-5', 'R-DIB-6', 'R-DIB-8', 'R-DIB-14'];
 
 test('every checkable rule has an invalid fixture', () => {
   const covered = new Set(fixtures('invalid').map((f) => f.expect.rule));

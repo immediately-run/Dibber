@@ -1,13 +1,14 @@
 ---
 id: DIB-8
 title: "DIB-8 — One-command setup: dibber init and a template repository"
-status: in-review
+status: done
 description: Zero to first ticket in one command. Creates .dibber/config.json, tickets/, archive/, a sample ticket and the agent instructions.
 depends_on: [DIB-3, DIB-7]
 order: 80
 tags: [tooling, onboarding]
 project: wide-audience
-prs: [https://github.com/immediately-run/Dibber/pull/1]
+prs: [https://github.com/immediately-run/Dibber/pull/1, https://github.com/immediately-run/dibber/pull/1]
+updated: 2026-11-23
 ---
 
 **Brief:** suggested in the 2026-11-22 planning session on what Dibber lacks for a wide audience.
@@ -40,3 +41,5 @@ _filed 2026-11-22._
 _2026-11-22: implemented on branch claude/affectionate-goodall-95x077; closes when it lands: dibber init writes config, store, first ticket, skills and AGENTS.md/CLAUDE.md, never overwriting. The template repository is split out as DIB-19. --immediately-run waits on DIB-13._
 
 _2026-11-22: in review, https://github.com/immediately-run/Dibber/pull/1._
+
+_2026-11-23: done: PR #1 merged, https://github.com/immediately-run/dibber/pull/1._

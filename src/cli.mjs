@@ -1,4 +1,4 @@
-// cli.mjs — the `dibber` command. Optional: the format needs no tool (SPEC.md), and every
+// cli.mjs — the `dibber` command ([DIB-7](../tickets/DIB-7.md)). Optional: the format needs no tool (SPEC.md), and every
 // command here does what a person could do by editing files. `--json` on every command, for
 // agents.
 
@@ -25,9 +25,9 @@ Usage: dibber <command> [options]        (every command takes --json and --root 
                                    file a ticket with the next free id
   claim <id> [--as NAME] [--force] available → in-progress, with you as assignee
   set <id> <status> [--pr URL] [--note "…"]
-                                   change a status; a closed one moves it to archive/
+                                   change a status; the file stays where it is
   done <id> [--pr URL] [--note "…"]
-                                   close a ticket as done: status done, moved to archive/
+                                   close a ticket as done; the file stays where it is
 
 Statuses: ${STATUSES.join(', ')}.
 Dibber alone fits one person driving a coding agent on their own machine. Several runners,
@@ -72,7 +72,7 @@ function formatList(rows) {
     ['In review', (r) => r.status === 'in-review'],
     ['Waiting', (r) => r.status === 'available' && !r.ready],
     ['Parked', (r) => r.status === 'deprioritized'],
-    ['Closed', (r) => r.archived],
+    ['Closed', (r) => r.closed],
   ];
   const out = [];
   for (const [label, pick] of groups) {
@@ -125,7 +125,7 @@ export async function run(argv, { cwd = process.cwd(), interactive = true } = {}
       }
       code = errors.length || (flags.strict && warnings.length) ? 1 : 0;
     } else if (cmd === 'list') {
-      const rows = listTickets(root, { ready: flags.ready, status: flags.status, archived: flags.all });
+      const rows = listTickets(root, { ready: flags.ready, status: flags.status, closed: flags.all });
       if (flags.json) json(rows);
       else stdout.push(formatList(rows));
     } else if (cmd === 'new') {

@@ -1,4 +1,5 @@
 // check.mjs — judge a store against Dibber 1: every rule that can be checked from the files.
+// Tickets: [DIB-6](../tickets/DIB-6.md), [DIB-5](../tickets/DIB-5.md), [DIB-24](../tickets/DIB-24.md).
 // Each problem names the rule it breaks (R-DIB-n), the file, and what to do, in plain words.
 //
 // Errors break a rule. Warnings are conventions (R-DIB-10, R-DIB-11) a store may not follow
@@ -9,7 +10,7 @@ import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import Ajv from 'ajv';
 import { SKILL_HOMES, skillInstallProblem } from './init.mjs';
-import { readStore, rel, LIVE, CLOSED, CLOSED_WITHDRAWN, STATUSES, ID_RE, QUALIFIED_RE, asList } from './store.mjs';
+import { readStore, rel, CLOSED, STATUSES, ID_RE, QUALIFIED_RE, asList } from './store.mjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const TICKET_SCHEMA = JSON.parse(readFileSync(join(HERE, '..', 'ticket.schema.json'), 'utf8'));
@@ -88,12 +89,6 @@ export function checkStore(root) {
     if (validateItem && !validateItem(meta)) {
       for (const e of validateItem.errors) err('R-DIB-3', file, `the store's item.schema.json: ${describeSchemaError(e)}`);
     }
-    const status = meta.status;
-    if (STATUSES.includes(status)) {
-      if (status === 'done' && !t.archived) err('R-DIB-6', file, '`done` is legal only in archive/; move the file there (`dibber done` does)');
-      else if (CLOSED_WITHDRAWN.includes(status) && !t.archived) err('R-DIB-2', file, `\`${status}\` closes the ticket, so it belongs in archive/`);
-      else if (LIVE.includes(status) && t.archived) err('R-DIB-2', file, `\`${status}\` is a live status, but the file is in archive/`);
-    }
   }
 
   // Store-wide: ids unique (R-DIB-4), relations resolve and form no cycle (R-DIB-8).
@@ -106,22 +101,18 @@ export function checkStore(root) {
       byId.set(id, t);
       continue;
     }
-    // Report the live copy when one of the two is archived, else the later path.
-    const [keep, report] = prev.archived && !t.archived ? [prev, t] : !prev.archived && t.archived ? [t, prev] : [prev, t];
-    const where = keep.archived ? 'in the archive' : `in ${keep.file}`;
-    err('R-DIB-4', report.file, `the id \`${id}\` is already taken ${where}; an id is never reused`);
-    byId.set(id, keep);
+    err('R-DIB-4', t.file, `the id \`${id}\` is already taken by ${prev.file}; an id is never reused`);
   }
 
   for (const t of store.tickets) {
     const deps = asList(t.meta.depends_on);
     for (const d of deps) {
       if (QUALIFIED_RE.test(d)) continue; // another repository's ticket: the reader's configuration resolves it
-      if (!byId.has(d)) err('R-DIB-8', t.file, `\`depends_on\` names \`${d}\`, which is not a ticket in this store or its archive`);
+      if (!byId.has(d)) err('R-DIB-8', t.file, `\`depends_on\` names \`${d}\`, which is not a ticket in this store`);
     }
     const parent = t.meta.parent;
     if (typeof parent === 'string' && ID_RE.test(parent) && !byId.has(parent)) {
-      err('R-DIB-8', t.file, `\`parent\` names \`${parent}\`, which is not a ticket in this store or its archive`);
+      err('R-DIB-8', t.file, `\`parent\` names \`${parent}\`, which is not a ticket in this store`);
     }
   }
 

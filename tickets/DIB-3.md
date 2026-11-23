@@ -1,13 +1,14 @@
 ---
 id: DIB-3
 title: "DIB-3 — Default to .md tickets; MDX as the opt-in"
-status: in-review
+status: done
 description: A stray < or { in prose breaks an .mdx ticket, which agents do often and newcomers cannot debug. Make .md the default in the spec's examples, the template and the tools.
 depends_on: []
 order: 30
 tags: [spec, docs]
 project: wide-audience
-prs: [https://github.com/immediately-run/Dibber/pull/1]
+prs: [https://github.com/immediately-run/Dibber/pull/1, https://github.com/immediately-run/dibber/pull/1]
+updated: 2026-11-23
 ---
 
 **Brief:** suggested in the 2026-11-22 planning session on what Dibber lacks for a wide audience.
@@ -40,3 +41,5 @@ _filed 2026-11-22. This repository's own store already uses `.md`._
 _2026-11-22: implemented on branch claude/affectionate-goodall-95x077; closes when it lands: R-DIB-1 names .md the default; README examples are .md; the CLI writes .md unless --mdx._
 
 _2026-11-22: in review, https://github.com/immediately-run/Dibber/pull/1._
+
+_2026-11-23: done: PR #1 merged, https://github.com/immediately-run/dibber/pull/1._

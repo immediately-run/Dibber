@@ -3,8 +3,8 @@
 **Version:** Dibber 1 · **Status:** current
 
 **Dibber** is a way of keeping tickets in a git repository: one Markdown file per ticket, its
-frontmatter the ticket's fields, its body the record of the work, closed tickets moved to an
-archive. It is a format, not a product: no server, no database and no tool is needed to read or
+frontmatter the ticket's fields, its body the record of the work, and a closed ticket kept where
+it is with a status that says so. It is a format, not a product: no server, no database and no tool is needed to read or
 write it, and a repository that uses no coordinator at all can keep its tickets this way.
 
 It is named for the orienteer's dibber, the electronic punch a runner carries from control to
@@ -39,9 +39,13 @@ ticket file.
   ticket is one file, named after its id: `<id>.md`, or `<id>.mdx` (read alike) in a store
   rendered as MDX ([R-DIB-13](#7-a-store-that-is-also-a-wiki)). Plain `.md` is the default,
   since a stray `<` or `{` in prose does not compile as MDX.
-- **R-DIB-2 (the archive).** A closed ticket ([R-DIB-6](#3-frontmatter)) moves to the store's
-  `archive/` folder, keeping its name and id, in the commit that closes it. A ticket is never
-  deleted: the archive is the record of what was done and what was dropped.
+- **R-DIB-2 (closed in place, never deleted).** A ticket's file never moves: closing it changes
+  its `status` ([R-DIB-6](#3-frontmatter)), not its path. A link to a ticket file, from code, a
+  commit, a pull request or another page, keeps working for as long as the repository does. A
+  ticket is never deleted either: the store is the record of what was done and what was dropped.
+  Whether a ticket is closed is read from its `status` alone. A store may still hold an
+  `archive/` folder, from before this rule or from a tool that keeps one; readers treat it like
+  any other folder, and nothing is moved into it.
 - **R-DIB-3 (the schema).** Every ticket's frontmatter satisfies [`ticket.schema.json`](ticket.schema.json),
   this format's schema. A store may also carry its own `item.schema.json`, a stricter shape of
   its own (more required keys, its id pattern, keys of its own), which every ticket in it must
@@ -64,8 +68,8 @@ ticket file.
   suffix such as `R3-51a`, `R3-274e1`); it never allocates new ones under them.
   - **Allocation.** Concurrent branches must not take the same number. Where a coordinator is in
     use, the number is the coordinator's to give: git is never the counter. Without one (one
-    writer at a time), the next number is one more than the highest taken across the store, its
-    archive and the repository's local branches. If an occasional collision gets through
+    writer at a time), the next number is one more than the highest taken across the store and
+    the repository's local branches. If an occasional collision gets through
     anyway (the same person on two branches), the second to merge renumbers, rewriting every
     `depends_on` and `parent` that names the old id and the body's header lines. Several writers
     at once is what a coordinator is for.
@@ -107,7 +111,7 @@ ticket file.
   | Class | Values |
   |---|---|
   | live | `available` (ready to be taken), `in-progress`, `in-review`, `deprioritized` |
-  | closed, done | `done`, legal only in `archive/` |
+  | closed, done | `done` |
   | closed, withdrawn | `withdrawn`, `superseded` (another ticket replaces it), `deferred` (not now, maybe never) |
 
   A coordinator that tracks a ticket's progress itself may weigh `status` as evidence rather than
@@ -115,8 +119,8 @@ ticket file.
 
 ## 4. Relations
 
-- **R-DIB-7 (one file, one writer).** A change to a ticket changes its own file alone (and, at
-  closure, moves it to the archive): separate tickets never share a write target, so any number
+- **R-DIB-7 (one file, one writer).** A change to a ticket changes its own file alone:
+  separate tickets never share a write target, so any number
   of tickets can be worked in parallel without conflict. A relation that would need a second
   file written — a ticket's list of children, a reverse dependency — is derived by reading, never
   stored, except as the body's courtesy line `**Used by:**` ([R-DIB-11](#6-the-body)).
@@ -189,7 +193,10 @@ store moves to it.
 
 Amended in place since Dibber 1 was first published: `.dibber/config.json`
 ([R-DIB-14](#1-the-store)), the optional `assignee` key, `.md` as the default file name, and the
-one-writer allocation rule ([R-DIB-4](#2-ids)).
+one-writer allocation rule ([R-DIB-4](#2-ids)), and closing in place
+([R-DIB-2](#1-the-store)), which replaced moving a closed ticket to `archive/`. Every store valid
+before stays valid; a reader that took closure from the `archive/` path reads `status` instead,
+as R-DIB-6 always said it should.
 
 ## Readers
 

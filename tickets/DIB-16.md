@@ -23,7 +23,7 @@ keeps relations and history is the difference between trying Dibber and not.
 - `dibber import github|linear|jira <export>`, reading each tool's own export (GitHub's REST or
   `gh issue list --json`, Linear's CSV or JSON, Jira's CSV), with no API token handled by Dibber.
   The user runs the export themselves.
-- Mapping by DIB-14's table. Closed issues go to `archive/`. Parent and sub-issues become
+- Mapping by DIB-14's table. Closed issues become closed tickets, in place. Parent and sub-issues become
   `parent`, and blocked-by becomes `depends_on`. The original key and URL go in a body header
   line (`**Imported from:**`) so old links stay traceable. Comments go under `## Status` as dated
   entries.

@@ -31,7 +31,7 @@ in it today. Read on 2026-11-22 at `eeb12d6`:
   `kind` is a ticket.
 - **`withdrawn` has no column.** `STATUS_ORDER` (`roadmapData.ts`) lacks it, so a withdrawn
   ticket falls to the unknown-status tail. It also keeps a live `done` as a deprecated alias,
-  where R-DIB-6 allows `done` only in `archive/`.
+  where Dibber now reads closure from `status` alone, in any folder (R-DIB-2, DIB-24).
 - **Roadmap-only rules.** The queue rule (`EXPEDITE` and `OP` tags) and the `Requires:` clause
   read from `description` are the immediately.run roadmap's conventions, not Dibber's (R-DIB-9).
 - **Cross-repository dependencies look broken.** A qualified `depends_on` (`baton:B-111`) is
@@ -51,13 +51,12 @@ in it today. Read on 2026-11-22 at `eeb12d6`:
   - The queue rule (`EXPEDITE`, `OP`) and the `Requires:` clause stay as the viewer's own
     conventions, documented in its README (R-DIB-9). A store that doesn't use them sees no
     queue chips.
-  - All of R-DIB-6's statuses get columns. Closed tickets go in a collapsed column read from
-    `archive/`.
+  - All of R-DIB-6's statuses get columns. Closed tickets, by `status`, go in a collapsed column.
   - A qualified dependency still holds the ticket (R-DIB-8), but the board labels it "waits on
     `baton:B-111` in another repository", not as a missing ticket.
   - Cards show `assignee` and a parent's children.
 - **A descriptor template:** the `tickets/immediately.run.json` a Dibber store needs to open in
-  the viewer (`opensWith`, a record set selecting `.md` and `.mdx`, the archive as frozen).
+  the viewer (`opensWith`, a record set selecting `.md` and `.mdx`, closed tickets by status).
   `dibber init --immediately-run` (DIB-8) writes it.
 - **This repository's own `tickets/`** carries the descriptor, so Dibber's board is the first
   example.

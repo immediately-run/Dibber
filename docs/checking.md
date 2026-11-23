@@ -1,8 +1,8 @@
 # Checking tickets on every push
 
 `dibber check` reads every ticket in the store and reports anything that breaks the
-[Dibber spec](../SPEC.md): a missing title, an unknown status, a `done` ticket outside
-`archive/`, a dependency on a ticket that doesn't exist. Each problem names the rule, the file
+[Dibber spec](../SPEC.md): a missing title, an unknown status, a file not named after its id,
+a dependency on a ticket that doesn't exist. Each problem names the rule, the file
 and what to do.
 
 ```

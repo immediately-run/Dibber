@@ -44,7 +44,7 @@ https://github.com/immediately-run/dibber/blob/main/SPEC.md
 ## Without the command-line tool
 
 Write `tickets/<ID>.md` yourself. The id is the store's prefix and one more than the highest
-number in `tickets/` and `tickets/archive/`. Use this shape, then run `dibber check` if you can:
+number in `tickets/`, at any depth, closed tickets included. Use this shape, then run `dibber check` if you can:
 
 ```markdown
 ---

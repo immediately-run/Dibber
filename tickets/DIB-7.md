@@ -1,13 +1,14 @@
 ---
 id: DIB-7
 title: "DIB-7 — The dibber CLI: new, list, claim, set, done"
-status: in-review
+status: done
 description: An optional command-line tool that files, lists, moves and closes tickets, so neither people nor agents hand-edit YAML or git mv files into the archive.
 depends_on: [DIB-1, DIB-2, DIB-6]
 order: 70
 tags: [tooling]
 project: wide-audience
-prs: [https://github.com/immediately-run/Dibber/pull/1]
+prs: [https://github.com/immediately-run/Dibber/pull/1, https://github.com/immediately-run/dibber/pull/1]
+updated: 2026-11-23
 ---
 
 **Brief:** suggested in the 2026-11-22 planning session on what Dibber lacks for a wide audience.
@@ -51,3 +52,5 @@ _2026-11-22: the two-process race test is dropped. Several writers at once is a 
 _2026-11-22: implemented on branch claude/affectionate-goodall-95x077; closes when it lands: new, list, claim, set, done, with --json; tests in test/cli.test.mjs._
 
 _2026-11-22: in review, https://github.com/immediately-run/Dibber/pull/1._
+
+_2026-11-23: done: PR #1 merged, https://github.com/immediately-run/dibber/pull/1._
