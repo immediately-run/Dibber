@@ -1,11 +1,13 @@
 ---
 id: DIB-29
 title: DIB-29 — Project pages list their tickets on immediately.run
-status: in-progress
+status: done
 depends_on: []
 tags: [immediately-run]
 project: wide-audience
 assignee: claude
+prs: [https://github.com/immediately-run/dibber/pull/11]
+updated: 2026-11-23
 ---
 
 **Brief:** from the owner, 2026-11-23: keep going until dibber-board works.
@@ -30,3 +32,5 @@ Add <ProjectMembers /> to templates/immediately-run/_layout.mdx and to this repo
 _filed 2026-11-23._
 
 _2026-11-23: claimed by claude._
+
+_2026-11-23: done, https://github.com/immediately-run/dibber/pull/11._
