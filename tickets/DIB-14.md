@@ -17,7 +17,7 @@ project: wide-audience
 
 SPEC.md is written for tool authors: numbered rules and precise edge cases. Someone new to
 tickets needs to know what a ticket is for, what to write in one, and that three statuses are
-enough to start. The eight statuses, and "done only in `archive/`", are a lot to take in at once.
+enough to start. The eight statuses are a lot to take in at once.
 
 ### What to build
 

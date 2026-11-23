@@ -2,7 +2,7 @@
 id: DIB-11
 title: "DIB-11 — This repository is the worked example of a Dibber-tracked project"
 status: in-progress
-description: Dibber's own repository shows what a Dibber-tracked project looks like, in use, with every piece a newcomer would set up. That means config, tickets moving through to the archive with their PRs, agent instructions, and the board.
+description: Dibber's own repository shows what a Dibber-tracked project looks like, in use, with every piece a newcomer would set up. That means config, tickets closing with their PRs, agent instructions, and the board.
 depends_on: [DIB-1, DIB-9]
 order: 85
 tags: [docs, examples]
@@ -26,8 +26,8 @@ points it out.
   agent instructions from DIB-9 in `AGENTS.md` and as the Claude Code plugin. Work on Dibber
   itself is done through those skills, so the example is the way the repository works, not a
   showcase.
-- **Tickets close the Dibber way:** each landed ticket moves to `archive/` with `status: done`,
-  `prs` filled in and a dated Status entry. Over time the archive is the example of a finished
+- **Tickets close the Dibber way:** each landed ticket gets `status: done` in place, with
+  `prs` filled in and a dated Status entry. Over time the closed tickets are the example of a finished
   ticket.
 - **The board descriptor** from DIB-13, so the repository opens as its own board once DIB-13
   lands.

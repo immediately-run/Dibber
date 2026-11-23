@@ -55,7 +55,7 @@ Dibber is something they use without having to learn it.
 ### Exit criteria
 
 - [x] the plugin manifest and every skill file validate against Claude Code's plugin schema (a test)
-- [ ] a scripted run on a fixture store: create files a ticket that passes `dibber check`; process closes a trivial ticket into `archive/`
+- [ ] a scripted run on a fixture store: create files a ticket that passes `dibber check`; process closes a trivial ticket (`status: done`, file in place)
 
 ## Status
 

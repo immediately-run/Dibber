@@ -1,13 +1,14 @@
 ---
 id: DIB-2
 title: "DIB-2 — Say when Dibber alone is enough, and when to add a coordinator"
-status: in-review
+status: done
 description: Dibber alone fits one person driving a coding agent on their own machine. Several runners, several people, or a more complex LLM provider setup need a coordinator such as Baton. Put that boundary in the spec, and fit R-DIB-4's allocation rule to the one-writer case.
 depends_on: []
 order: 20
 tags: [spec]
 project: wide-audience
-prs: [https://github.com/immediately-run/Dibber/pull/1]
+prs: [https://github.com/immediately-run/Dibber/pull/1, https://github.com/immediately-run/dibber/pull/1]
+updated: 2026-11-23
 ---
 
 **Brief:** from the owner, 2026-11-22: Dibber is enough by itself for a single user driving a coding agent directly on their machine; multiple runners, multiple humans or a more complex LLM provider setup also need Baton.
@@ -52,3 +53,5 @@ _2026-11-22: rewritten from the owner's statement of scope. The earlier version 
 _2026-11-22: implemented on branch claude/affectionate-goodall-95x077; closes when it lands: SPEC.md section and one-writer allocation; the new-skips-a-branch's-number test._
 
 _2026-11-22: in review, https://github.com/immediately-run/Dibber/pull/1._
+
+_2026-11-23: done: PR #1 merged, https://github.com/immediately-run/dibber/pull/1._

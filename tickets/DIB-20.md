@@ -28,3 +28,5 @@ The owner picks one. (a) Keep the spec: Baton and Fieldhouse move those tickets 
 ## Status
 
 _filed 2026-11-22._
+
+_2026-11-23: since DIB-24, closed tickets stay in place and closure is read from status alone, so the R-DIB-2 errors on both stores are gone: fieldhouse's store passes dibber check, and baton's has only the 3 non-string prs entries. What is left is only whether deferred reads as closed or open. Recommendation: withdraw this ticket unless deferred should show as open._

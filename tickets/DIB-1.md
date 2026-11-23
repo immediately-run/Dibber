@@ -1,13 +1,14 @@
 ---
 id: DIB-1
 title: "DIB-1 — A config file Dibber owns: .dibber/config.json, the store's folder and id prefix"
-status: in-review
+status: done
 description: R-DIB-1 and R-DIB-4 leave the store's folder and prefix to "the repository's tools"; without Baton there is nowhere to say them. Add an optional .dibber/config.json.
 depends_on: []
 order: 10
 tags: [spec, tooling]
 project: wide-audience
-prs: [https://github.com/immediately-run/Dibber/pull/1]
+prs: [https://github.com/immediately-run/Dibber/pull/1, https://github.com/immediately-run/dibber/pull/1]
+updated: 2026-11-23
 ---
 
 **Brief:** suggested in the 2026-11-22 planning session on what Dibber lacks for a wide audience.
@@ -49,3 +50,5 @@ _2026-11-22: the config is `.dibber/config.json`, a directory at the repository 
 _2026-11-22: implemented on branch claude/affectionate-goodall-95x077; closes when it lands: R-DIB-14, config.schema.json, this repository's .dibber/config.json._
 
 _2026-11-22: in review, https://github.com/immediately-run/Dibber/pull/1._
+
+_2026-11-23: done: PR #1 merged, https://github.com/immediately-run/dibber/pull/1._
