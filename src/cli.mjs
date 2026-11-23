@@ -12,9 +12,10 @@ const HELP = `dibber — tickets as files in git (https://github.com/immediately
 
 Usage: dibber <command> [options]        (every command takes --json and --root <dir>)
 
-  init [--prefix P] [--store DIR] [--yes] [--no-agents] [--update-skills]
+  init [--prefix P] [--store DIR] [--yes] [--no-agents] [--update-skills] [--copy-skills]
                                    set this repository up: .dibber/config.json, the store,
-                                   a first ticket, AGENTS.md and the agent skills
+                                   a first ticket, AGENTS.md and the agent skills; --copy-skills
+                                   copies them into .claude/skills/ instead of linking
   check [--strict]                 check the store against the Dibber spec; --strict fails
                                    on warnings too
   list [--ready] [--status S] [--all]
@@ -149,7 +150,7 @@ export async function run(argv, { cwd = process.cwd(), interactive = true } = {}
     } else if (cmd === 'init') {
       let prefix = flags.prefix;
       if (!prefix && !flags.yes && interactive) prefix = (await ask('Ticket id prefix (e.g. APP for APP-1)?', defaultPrefix(root))).toUpperCase();
-      const r = init(root, { prefix, store: flags.store, agents: !flags['no-agents'], updateSkills: flags['update-skills'] });
+      const r = init(root, { prefix, store: flags.store, agents: !flags['no-agents'], updateSkills: flags['update-skills'], copySkills: flags['copy-skills'] });
       if (flags.json) json(r);
       else {
         for (const f of r.created) stdout.push(`  created ${f}`);

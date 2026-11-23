@@ -2,8 +2,8 @@
 // its archive, a first ticket, and the agent instructions and skills every supported harness
 // discovers. It never overwrites a file; it says what it skipped.
 
-import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync, appendFileSync, statSync } from 'node:fs';
-import { basename, dirname, join } from 'node:path';
+import { existsSync, lstatSync, mkdirSync, readFileSync, readdirSync, writeFileSync, appendFileSync, statSync, symlinkSync } from 'node:fs';
+import { basename, dirname, join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { today } from './tickets.mjs';
 import { readStore } from './store.mjs';
@@ -15,10 +15,12 @@ const TEMPLATES = join(PACKAGE_ROOT, 'templates');
 
 /**
  * Where each agent harness discovers a repository's skills. `.agents/skills/` is read by
- * Codex, opencode and Antigravity; Claude Code reads `.claude/skills/`. The same files go in
- * both.
+ * Codex, opencode and Antigravity, and holds the files; Claude Code reads `.claude/skills/`,
+ * where each Dibber skill is a symlink to its `.agents/skills/` folder, so there is one copy.
  */
-export const SKILL_HOMES = ['.agents/skills', '.claude/skills'];
+export const SKILL_HOME = '.agents/skills';
+export const SKILL_LINK_HOME = '.claude/skills';
+export const SKILL_HOMES = [SKILL_HOME, SKILL_LINK_HOME];
 
 export const AGENTS_MARKER = '<!-- dibber:agents -->';
 
@@ -43,6 +45,29 @@ function copyTree(from, to, report, overwrite) {
   }
 }
 
+/**
+ * Make `link` a relative symlink to the directory `target`. Falls back to a copy where the
+ * file system or platform refuses symlinks (Windows without developer mode), or when `copy`.
+ */
+function linkOrCopy(target, link, report, { copy = false, overwrite = false } = {}) {
+  let existing = null;
+  try { existing = lstatSync(link); } catch {}
+  if (existing?.isSymbolicLink() || (existing && !overwrite)) {
+    report.skipped.push(link);
+    return;
+  }
+  if (existing) return copyTree(target, link, report, overwrite); // an older copy: refresh it
+  mkdirSync(dirname(link), { recursive: true });
+  if (!copy) {
+    try {
+      symlinkSync(relative(dirname(link), target), link, 'dir');
+      report.created.push(link);
+      return;
+    } catch {}
+  }
+  copyTree(target, link, report, overwrite);
+}
+
 function writeOnce(path, content, report, overwrite = false) {
   if (existsSync(path) && (!overwrite || readFileSync(path, 'utf8') === content)) {
     report.skipped.push(path);
@@ -57,7 +82,8 @@ function writeOnce(path, content, report, overwrite = false) {
 
 /**
  * Set up `root`. Options: `prefix`, `store` (default `tickets`), `agents` (default true),
- * `updateSkills` (overwrite the installed skills with this version's).
+ * `updateSkills` (overwrite the installed skills with this version's), `copySkills` (copy
+ * the skills into `.claude/skills/` instead of linking them).
  * Returns `{ created, updated, skipped }` as paths relative to `root`.
  */
 export function init(root, opts = {}) {
@@ -85,8 +111,9 @@ export function init(root, opts = {}) {
   }
 
   if (opts.agents !== false) {
-    for (const home of SKILL_HOMES) {
-      for (const name of skillNames()) copyTree(join(SKILLS_DIR, name), join(root, home, name), report, opts.updateSkills);
+    for (const name of skillNames()) {
+      copyTree(join(SKILLS_DIR, name), join(root, SKILL_HOME, name), report, opts.updateSkills);
+      linkOrCopy(join(root, SKILL_HOME, name), join(root, SKILL_LINK_HOME, name), report, { copy: opts.copySkills, overwrite: opts.updateSkills });
     }
     const section = readFileSync(join(TEMPLATES, 'AGENTS.section.md'), 'utf8').replaceAll('{{STORE}}', config.store);
     const agentsPath = join(root, 'AGENTS.md');

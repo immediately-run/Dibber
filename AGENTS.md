@@ -23,7 +23,8 @@ one Markdown file per ticket in `tickets/`, and closed ones in `tickets/archive/
   the format is a pull request against `SPEC.md`, and the Versions section says whether it
   amends Dibber 1 or starts a new version.
 - In this repository, run the tool from source: `node bin/dibber.mjs <command>`.
-- `skills/` is the source of the agent skills. `.agents/skills/` and `.claude/skills/` are
-  this repository's installed copies, exactly as `dibber init` writes them; after changing
-  `skills/`, run `node bin/dibber.mjs init --yes --update-skills`. A test fails if they differ.
+- `skills/` is the source of the agent skills. `.agents/skills` and `.claude/skills` are
+  symlinks to it, so there is one copy to edit. In a user's repository, `dibber init` writes the
+  files to `.agents/skills/` and links each `.claude/skills/<name>` to them (`--copy-skills`
+  copies instead, for checkouts without symlinks).
 - `npm test` must pass: the conformance fixtures, the CLI, and this repository's own tickets.

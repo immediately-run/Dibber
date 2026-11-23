@@ -40,9 +40,10 @@ Dibber is something they use without having to learn it.
   this repository, in the open Agent Skills format: a folder per skill, with a `SKILL.md` whose
   `name` and `description` the harness reads first. It loads the rest only when the
   description matches the task.
-  - `dibber init` copies them into the user's repository at `.agents/skills/` and
-    `.claude/skills/`. Codex, opencode and Antigravity read `.agents/skills/`; Claude Code
-    reads `.claude/skills/` (opencode reads both).
+  - `dibber init` writes them into the user's repository at `.agents/skills/`, read by Codex,
+    opencode and Antigravity, and links each `.claude/skills/<name>` there for Claude Code, so
+    there is one copy. `--copy-skills` writes a copy instead, for checkouts without symlinks
+    (Windows without `core.symlinks`).
   - It also writes an `AGENTS.md` section, read by Codex and opencode, and a `CLAUDE.md` that
     imports `AGENTS.md` for Claude Code.
   - For Claude Code users who want the skills in every repository, this repository is also a
@@ -63,3 +64,5 @@ _2026-11-22: the skills point to Baton beyond one person and their agent (DIB-2)
 _2026-11-22: the three skills, the .agents/skills and .claude/skills copies, AGENTS.md, CLAUDE.md and the Claude Code plugin marketplace are done on branch claude/affectionate-goodall-95x077; closes when it lands. Left: the scripted agent run in the second exit criterion, and the npx line in the skills, which waits on DIB-21._
 
 _2026-11-22: partly in, https://github.com/immediately-run/Dibber/pull/1._
+
+_2026-11-23: skills are one copy: .claude/skills links to .agents/skills in users' repositories, and both link to skills/ here; checked with headless Claude Code, which lists all three skills through the links._

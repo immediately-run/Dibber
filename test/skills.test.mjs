@@ -2,7 +2,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
-import { readdirSync, readFileSync, existsSync } from 'node:fs';
+import { readdirSync, readFileSync, existsSync, lstatSync, realpathSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { splitFrontmatter } from '../src/store.mjs';
@@ -24,11 +24,13 @@ for (const name of names) {
     assert.equal(typeof meta.description, 'string');
     assert.ok(meta.description.length > 80 && meta.description.length <= 1024, `${meta.description.length} chars`);
   });
-  for (const home of SKILL_HOMES) {
-    test(`${home}/${name} in this repository matches skills/${name}`, () => {
-      assert.equal(readFileSync(join(ROOT, home, name, 'SKILL.md'), 'utf8'), readFileSync(join(ROOT, 'skills', name, 'SKILL.md'), 'utf8'));
-    });
-  }
+}
+
+for (const home of SKILL_HOMES) {
+  test(`${home} in this repository is a symlink to skills/, so there is one copy`, () => {
+    assert.ok(lstatSync(join(ROOT, home)).isSymbolicLink());
+    assert.equal(realpathSync(join(ROOT, home)), realpathSync(join(ROOT, 'skills')));
+  });
 }
 
 test('every skill states the trust rule', () => {

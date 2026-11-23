@@ -2,7 +2,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
-import { mkdtempSync, readFileSync, existsSync, writeFileSync, readdirSync } from 'node:fs';
+import { mkdtempSync, readFileSync, existsSync, writeFileSync, readdirSync, lstatSync, readlinkSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { run } from '../src/cli.mjs';
@@ -18,7 +18,8 @@ function repo(name = 'recipe-app') {
   return { dir, git };
 }
 const dibber = async (dir, ...args) => run(args, { cwd: dir, interactive: false });
-const tree = (dir) => execFileSync('find', ['.', '-path', './.git', '-prune', '-o', '-type', 'f', '-print'], { cwd: dir, encoding: 'utf8' }).split('\n').filter(Boolean).sort();
+const tree = (dir) => execFileSync('find', ['.', '-path', './.git', '-prune', '-o', '(', '-type', 'f', '-o', '-type', 'l', ')', '-print'], { cwd: dir, encoding: 'utf8' }).split('\n').filter(Boolean).sort();
+const snapshot = (dir) => tree(dir).map((f) => [f, lstatSync(join(dir, f)).isSymbolicLink() ? `-> ${readlinkSync(join(dir, f))}` : readFileSync(join(dir, f), 'utf8')]);
 
 test('init --yes in an empty repository: check passes and list shows the first ticket', async () => {
   const { dir } = repo();
@@ -32,13 +33,41 @@ test('init --yes in an empty repository: check passes and list shows the first t
   for (const p of ['AGENTS.md', 'CLAUDE.md', '.agents/skills/dibber-work-ticket/SKILL.md', '.claude/skills/dibber-overview/SKILL.md']) assert.ok(existsSync(join(dir, p)), p);
 });
 
+test('init keeps one copy of each skill: .claude/skills links to .agents/skills', async () => {
+  const { dir } = repo();
+  await dibber(dir, 'init', '--yes', '--prefix', 'APP');
+  for (const name of ['dibber-new-ticket', 'dibber-overview', 'dibber-work-ticket']) {
+    const link = join(dir, '.claude/skills', name);
+    assert.ok(lstatSync(link).isSymbolicLink(), name);
+    assert.equal(readlinkSync(link), join('..', '..', '.agents', 'skills', name));
+    assert.ok(lstatSync(join(dir, '.agents/skills', name, 'SKILL.md')).isFile());
+  }
+});
+
+test('init --copy-skills writes real copies, for checkouts without symlinks', async () => {
+  const { dir } = repo();
+  await dibber(dir, 'init', '--yes', '--prefix', 'APP', '--copy-skills');
+  const link = join(dir, '.claude/skills/dibber-overview');
+  assert.ok(!lstatSync(link).isSymbolicLink());
+  assert.equal(readFileSync(join(link, 'SKILL.md'), 'utf8'), readFileSync(join(dir, '.agents/skills/dibber-overview/SKILL.md'), 'utf8'));
+});
+
+test('init --update-skills refreshes .agents/skills and leaves the links alone', async () => {
+  const { dir } = repo();
+  await dibber(dir, 'init', '--yes', '--prefix', 'APP');
+  writeFileSync(join(dir, '.agents/skills/dibber-overview/SKILL.md'), 'stale\n');
+  const r = JSON.parse((await dibber(dir, 'init', '--yes', '--prefix', 'APP', '--update-skills', '--json')).stdout);
+  assert.deepEqual(r.updated, ['.agents/skills/dibber-overview/SKILL.md']);
+  assert.notEqual(readFileSync(join(dir, '.claude/skills/dibber-overview/SKILL.md'), 'utf8'), 'stale\n');
+});
+
 test('init twice changes nothing the second time', async () => {
   const { dir } = repo();
   await dibber(dir, 'init', '--yes', '--prefix', 'APP');
-  const before = tree(dir).map((f) => [f, readFileSync(join(dir, f), 'utf8')]);
+  const before = snapshot(dir);
   const r = await dibber(dir, 'init', '--yes', '--prefix', 'APP', '--json');
   assert.deepEqual(JSON.parse(r.stdout).created, []);
-  const after = tree(dir).map((f) => [f, readFileSync(join(dir, f), 'utf8')]);
+  const after = snapshot(dir);
   assert.deepEqual(after, before);
 });
 
