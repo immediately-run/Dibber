@@ -123,7 +123,11 @@ export function findTicket(store, id) {
   return t;
 }
 
-/** Ready: live, available, and every local dependency done (R-DIB-8). */
+/** What satisfies a dependency (R-DIB-8): done, or superseded, whose work goes on in the
+ *  ticket that replaced it ([DIB-20](../tickets/DIB-20.md)). */
+export const SATISFIES_DEPENDENCY = ['done', 'superseded'];
+
+/** Ready: live, available, and every local dependency done or superseded (R-DIB-8). */
 export function readiness(store, t) {
   const waits = [];
   for (const d of asList(t.meta.depends_on)) {
@@ -133,7 +137,7 @@ export function readiness(store, t) {
     }
     const dep = store.tickets.find((x) => x.meta.id === d);
     if (!dep) waits.push({ id: d, why: 'not found' });
-    else if (dep.meta.status !== 'done') waits.push({ id: d, why: dep.meta.status });
+    else if (!SATISFIES_DEPENDENCY.includes(dep.meta.status)) waits.push({ id: d, why: dep.meta.status });
   }
   return { ready: t.meta.status === 'available' && waits.length === 0, waits };
 }

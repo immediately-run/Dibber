@@ -89,7 +89,7 @@ ticket file.
   | `title` | text | its title, conventionally `<id> — <what>` |
   | `status` | a status ([R-DIB-6](#3-frontmatter)) | live, done or withdrawn |
   | `description` | text | one paragraph, what and why, for a list or a search |
-  | `depends_on` | a list of ids, local or qualified | tickets this one waits for: it is ready only once each is done ([R-DIB-8](#4-relations)) |
+  | `depends_on` | a list of ids, local or qualified | tickets this one waits for: it is ready only once each is done or superseded ([R-DIB-8](#4-relations)) |
   | `parent` | a local id | the ticket this one is a child of ([R-DIB-8](#4-relations)) |
   | `order` | a number | rank among ready tickets, lower first |
   | `tags` | a list of words | free labels ([R-DIB-9](#5-tags-and-projects)) |
@@ -125,7 +125,11 @@ ticket file.
   file written — a ticket's list of children, a reverse dependency — is derived by reading, never
   stored, except as the body's courtesy line `**Used by:**` ([R-DIB-11](#6-the-body)).
 - **R-DIB-8 (dependencies and children).** `depends_on` is the ticket's whole list of waits on
-  other tickets: a dependency written only in prose is one no reader can see. A dependency on
+  other tickets: a dependency written only in prose is one no reader can see. A ticket is ready
+  when it is `available` and every ticket it depends on is `done` or `superseded`: a superseded
+  ticket's work goes on in the ticket that replaced it, so it no longer holds anyone. A
+  `withdrawn` or `deferred` dependency still holds the ticket, since nothing did that work; drop
+  it from `depends_on`, or depend on what replaced it. A dependency on
   another repository's ticket is a qualified id; `parent` is always local. A ticket is a child of
   the ticket its `parent` names: filing children is how a large ticket is split. Dependencies form
   no cycle.
@@ -194,9 +198,11 @@ store moves to it.
 Amended in place since Dibber 1 was first published: `.dibber/config.json`
 ([R-DIB-14](#1-the-store)), the optional `assignee` key, `.md` as the default file name, and the
 one-writer allocation rule ([R-DIB-4](#2-ids)), and closing in place
-([R-DIB-2](#1-the-store)), which replaced moving a closed ticket to `archive/`. Every store valid
-before stays valid; a reader that took closure from the `archive/` path reads `status` instead,
-as R-DIB-6 always said it should.
+([R-DIB-2](#1-the-store)), which replaced moving a closed ticket to `archive/`, and a
+`superseded` dependency counting as done for readiness ([R-DIB-8](#4-relations)). Every store
+valid before stays valid; a reader that took closure from the `archive/` path reads `status`
+instead, as R-DIB-6 always said it should, and a reader that counts only `done` holds a ticket
+on a superseded dependency longer than it need, never starting work too early.
 
 ## Readers
 

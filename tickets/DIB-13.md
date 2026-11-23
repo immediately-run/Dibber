@@ -1,7 +1,7 @@
 ---
 id: DIB-13
 title: "DIB-13 — Optional immediately.run board: open any Dibber store in the board viewer"
-status: in-progress
+status: done
 description: Open a repository's Dibber store on immediately.run and see it as a read-only kanban board, a ticket page and project pages, through the Grove-based viewer now called baton-board (dibber-board after DIB-18). It renders plain Dibber stores, not only the immediately.run roadmap's.
 depends_on: [DIB-3, DIB-5]
 order: 150
@@ -9,7 +9,8 @@ tags: [integrations, immediately-run]
 project: wide-audience
 repos: [immediately-run/dibber-board]
 assignee: Claude
-prs: [https://github.com/immediately-run/dibber-board/pull/6, https://github.com/immediately-run/dibber/pull/7]
+prs: [https://github.com/immediately-run/dibber-board/pull/6, https://github.com/immediately-run/dibber/pull/7, https://github.com/immediately-run/dibber-board/pull/7]
+updated: 2026-11-23
 ---
 
 **Brief:** from the owner's list, 2026-11-22: optional immediately.run integration that displays tickets or the whole kanban board. Renderer decided by the owner the same day: the Grove-based viewer in `immediately-run/baton-board`.
@@ -68,7 +69,7 @@ in it today. Read on 2026-11-22 at `eeb12d6`:
 ### Exit criteria
 
 - [x] the viewer's `npm test` renders DIB-5's every-key store with every ticket in its status's column and every qualified dependency shown as outside the store
-- [ ] the viewer's existing tests still pass, and a new test finds the same set of tickets in the docs, baton and fieldhouse corpora under R-DIB-1 as under the `roadmap-item` tag
+- [x] the viewer's existing tests still pass, and a new test finds the same set of tickets in the docs, baton and fieldhouse corpora under R-DIB-1 as under the `roadmap-item` tag
 - [x] a Playwright run opens this repository's `tickets/` on immediately.run and finds every live DIB ticket on the board (needs a browser)
 
 ## Status
@@ -88,3 +89,5 @@ _2026-11-23: in-review, https://github.com/immediately-run/dibber-board/pull/6._
 _2026-11-23: in-review, https://github.com/immediately-run/dibber/pull/7._
 
 _2026-11-23: dibber-board#6 and dibber#7 merged. Playwright on immediately.run, main at fcedc56: the board shows all 15 live DIB tickets in their status columns (available 12, in-progress 2, in-review 1, deprioritized 0) and the 10 closed ones in the folded column; the owner also opened it and confirmed it works. Left: the second criterion's fieldhouse corpus (and hq), outside the session that built this; the docs and baton corpora pass._
+
+_2026-11-23: The corpus test now covers all four ticket repositories the viewer renders: baton, docs, fieldhouse and hq. R-DIB-1 and the roadmap-item tag pick the same tickets in each (373, 1405, 64, 6), in dibber-board#7, https://github.com/immediately-run/dibber-board/pull/7._

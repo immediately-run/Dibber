@@ -173,6 +173,21 @@ test('a dependency closed in place counts as done', async () => {
   assert.deepEqual(JSON.parse((await dibber(dir, 'list', '--ready', '--json')).stdout).map((x) => x.id), ['APP-2']);
 });
 
+test('a superseded dependency counts as done; a withdrawn or deferred one still holds (R-DIB-8, DIB-20)', async () => {
+  const { dir } = repo();
+  await dibber(dir, 'init', '--yes', '--prefix', 'APP');
+  await dibber(dir, 'new', '--title', 'Replaced', '--depends-on', 'APP-1');
+  await dibber(dir, 'set', 'APP-1', 'superseded');
+  assert.deepEqual(JSON.parse((await dibber(dir, 'list', '--ready', '--json')).stdout).map((x) => x.id), ['APP-2']);
+  for (const status of ['withdrawn', 'deferred']) {
+    const { dir: d } = repo();
+    await dibber(d, 'init', '--yes', '--prefix', 'APP');
+    await dibber(d, 'new', '--title', 'Waits', '--depends-on', 'APP-1');
+    await dibber(d, 'set', 'APP-1', status);
+    assert.deepEqual(JSON.parse((await dibber(d, 'list', '--ready', '--json')).stdout).map((x) => x.id), [], status);
+  }
+});
+
 test('claim refuses a ticket that waits on another, unless forced', async () => {
   const { dir } = repo();
   await dibber(dir, 'init', '--yes', '--prefix', 'APP');
