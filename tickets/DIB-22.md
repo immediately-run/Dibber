@@ -6,6 +6,7 @@ depends_on: [DIB-9, DIB-14, DIB-21]
 order: 158
 tags: [docs, onboarding, agents]
 project: wide-audience
+prs: [https://github.com/immediately-run/dibber/pull/10]
 ---
 
 **Brief:** from the owner, 2026-11-23: a friendly GitHub Pages site for Dibber, with a "For Agents" section.
@@ -50,3 +51,5 @@ _filed 2026-11-23._
 _2026-11-23: the owner asked for the site and that it be simple and sticky. One self-contained page instead of several, because the Pages cache job publishes a single landing file. The agent install steps are on the page itself, so the paste line is the short site URL. docs/install.md and llms.txt live in the repository. Left: the owner's cache.yml change, then the scripted agent run._
 
 _2026-11-23: cache.yml now passes landing-html: 'site/index.html' (the owner asked for the change), so the page is published on the next push to main._
+
+_2026-11-23: in PR #10, https://github.com/immediately-run/dibber/pull/10._
