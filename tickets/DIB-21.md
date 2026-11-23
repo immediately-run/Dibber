@@ -32,8 +32,8 @@ The skills, `AGENTS.md` and the docs say `npx -y @immediately-run/dibber`, which
 
 ### Exit criteria
 
-- [ ] `npx -y @immediately-run/dibber --help` prints the usage
-- [ ] a GitHub Release publishes its version to npm through the workflow, with provenance (`npm view @immediately-run/dibber dist.attestations` shows it)
+- [x] `npx -y @immediately-run/dibber --help` prints the usage
+- [x] a GitHub Release publishes its version to npm through the workflow, with provenance (`npm view @immediately-run/dibber dist.attestations` shows it)
 
 ## Status
 
@@ -42,3 +42,7 @@ _filed 2026-11-22._
 _2026-11-23: 0.1.0 was published to npm by the owner by hand. A publish workflow (.github/workflows/ci.yml, requested by the owner) now publishes each GitHub Release through npm trusted publishing; docs/releasing.md has the owner's one-time npm and GitHub setup. Left: that setup, then the first release from the workflow and its tag._
 
 _2026-11-23: workflow in review, https://github.com/immediately-run/dibber/pull/2._
+
+_2026-11-23: tested by the owner with the pre-release v0.1.1-rc.0 (run 45127532061): published under next with public access by the GitHub Actions trusted publisher, with an SLSA provenance attestation signed for ci.yml@refs/tags/v0.1.1-rc.0. Left: the npx check once the tarball is served, and disallowing tokens on npm._
+
+_2026-11-23: npx -y @immediately-run/dibber@next ran help, init, list and check in an empty repository once npm served the tarball (5 minutes after the publish). Left: disallowing tokens on npm (owner)._
