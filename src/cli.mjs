@@ -13,9 +13,11 @@ const HELP = `dibber — tickets as files in git (https://github.com/immediately
 Usage: dibber <command> [options]        (every command takes --json and --root <dir>)
 
   init [--prefix P] [--store DIR] [--yes] [--no-agents] [--update-skills] [--link-skills]
-                                   set this repository up: .dibber/config.json, the store,
+      [--immediately-run]          set this repository up: .dibber/config.json, the store,
                                    a first ticket, AGENTS.md and the agent skills; --link-skills
-                                   links .claude/skills/ to .agents/skills/ instead of copying
+                                   links .claude/skills/ to .agents/skills/ instead of copying;
+                                   --immediately-run adds the files that open the store as a
+                                   board on immediately.run
   check [--strict]                 check the store against the Dibber spec; --strict fails
                                    on warnings too
   list [--ready] [--status S] [--all]
@@ -151,7 +153,7 @@ export async function run(argv, { cwd = process.cwd(), interactive = true } = {}
     } else if (cmd === 'init') {
       let prefix = flags.prefix;
       if (!prefix && !flags.yes && interactive) prefix = (await ask('Ticket id prefix (e.g. APP for APP-1)?', defaultPrefix(root))).toUpperCase();
-      const r = init(root, { prefix, store: flags.store, agents: !flags['no-agents'], updateSkills: flags['update-skills'], linkSkills: flags['link-skills'] });
+      const r = init(root, { prefix, store: flags.store, agents: !flags['no-agents'], updateSkills: flags['update-skills'], linkSkills: flags['link-skills'], immediatelyRun: flags['immediately-run'] });
       if (flags.json) json(r);
       else {
         for (const f of r.created) stdout.push(`  created ${f}`);
@@ -159,6 +161,9 @@ export async function run(argv, { cwd = process.cwd(), interactive = true } = {}
         for (const f of r.repaired) stdout.push(`  repaired ${f} (it was broken; written again)`);
         for (const f of r.skipped) stdout.push(`  kept    ${f} (already there)`);
         stdout.push(`\nDibber is set up: tickets in ${r.store}/, ids ${r.prefix}-1, ${r.prefix}-2, …\nNext: ask your agent "what's on the board?", or run: dibber list`);
+        if (r.created.includes(`${r.store}/immediately.run.json`)) {
+          stdout.push(`Once pushed to a public GitHub repository, the board opens at https://immediately.run/present/github/<owner>/<repo>/main/bundle/${r.store}/home.mdx`);
+        }
       }
     } else {
       throw new Refusal(`unknown command \`${cmd}\`; dibber --help lists them`);
