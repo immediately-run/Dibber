@@ -1,11 +1,13 @@
 ---
 id: DIB-24
 title: "DIB-24 — Close tickets in place: a closed ticket keeps its file"
-status: available
+status: done
 depends_on: []
 order: 25
 tags: [spec, tooling]
 project: wide-audience
+prs: [https://github.com/immediately-run/dibber/pull/4]
+updated: 2026-11-23
 ---
 
 **Brief:** from the owner, 2026-11-23: archived tickets should not move to tickets/archive/, because moving them forces file paths to be rewritten; leave them where they were under tickets/.
@@ -27,3 +29,5 @@ R-DIB-2 becomes 'closed in place, never deleted': closing changes `status`, neve
 ## Status
 
 _filed 2026-11-23._
+
+_2026-11-23: done in the PR that carries the work, https://github.com/immediately-run/dibber/pull/4._
