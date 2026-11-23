@@ -18,15 +18,27 @@ keeps them itself ([Coordination state](#coordination-state)).
 reused. The page states the current version only. Tools that read the format are listed under
 [Readers](#readers); none of them owns it.
 
+## Dibber alone, or with a coordinator
+
+Dibber alone is enough for one person driving a coding agent on their own machine: one writer
+at a time, with the person as the only scheduler. Several runners, several people, or a more complex LLM provider setup (routing work across models or
+providers, budgets, retries) need a coordinator as well, such as
+[Baton](https://github.com/immediately-run/baton). The coordinator allocates ids, holds claims
+and runs the work, and the tickets stay Dibber: moving from one setup to the other changes no
+ticket file.
+
 ## 1. The store
 
 - **R-DIB-1 (a folder of files, one per ticket).** A Dibber store is one folder in a git
-  repository: `tickets/` by convention, another where the repository's tools are configured so.
+  repository: `tickets/` by convention, or the folder the repository's settings name
+  ([R-DIB-14](#1-the-store)).
   Every `*.md` or `*.mdx` file under it, at any depth, whose frontmatter carries an `id` and no
   `kind` other than `ticket`, is a ticket. Every other file is not: the folder may also hold
   pages for people, and a page that carries an `id` of its own says what it is with `kind`
   (`project`, `goal`, `doc`, `view`, …), so no reader has to know which folders hold pages. A
-  ticket is one file, named after its id: `<id>.mdx` (`.md` is read alike).
+  ticket is one file, named after its id: `<id>.md`, or `<id>.mdx` (read alike) in a store
+  rendered as MDX ([R-DIB-13](#7-a-store-that-is-also-a-wiki)). Plain `.md` is the default,
+  since a stray `<` or `{` in prose does not compile as MDX.
 - **R-DIB-2 (the archive).** A closed ticket ([R-DIB-6](#3-frontmatter)) moves to the store's
   `archive/` folder, keeping its name and id, in the commit that closes it. A ticket is never
   deleted: the archive is the record of what was done and what was dropped.
@@ -34,6 +46,14 @@ reused. The page states the current version only. Tools that read the format are
   this format's schema. A store may also carry its own `item.schema.json`, a stricter shape of
   its own (more required keys, its id pattern, keys of its own), which every ticket in it must
   satisfy as well.
+- **R-DIB-14 (the repository's settings).** A repository may keep Dibber's settings in
+  `.dibber/config.json` at its root, satisfying [`config.schema.json`](config.schema.json):
+  `store`, the store's folder relative to the root (default `tickets`), and `prefix`, the id
+  prefix ([R-DIB-4](#2-ids)). A reader takes both from there when the file exists. Without it,
+  the store is `tickets/` and the prefix is the one the store's ids share. A coordinator's own
+  settings may name them too, but never disagree with `.dibber/config.json`. `.dibber/` holds
+  Dibber's per-repository files, and a reader ignores any file there and any key in
+  `config.json` that it does not know.
 
 ## 2. Ids
 
@@ -43,10 +63,12 @@ reused. The page states the current version only. Tools that read the format are
   closed or withdrawn. A repository may accept older ids under patterns of its own (a split
   suffix such as `R3-51a`, `R3-274e1`); it never allocates new ones under them.
   - **Allocation.** Concurrent branches must not take the same number. Where a coordinator is in
-    use, the number is the coordinator's to give: git is never the counter. Without one, the next
-    free number across the store, its archive and the repository's open branches is taken, and
-    whatever took it says so, since two branches can still collide; the second to merge
-    renumbers.
+    use, the number is the coordinator's to give: git is never the counter. Without one (one
+    writer at a time), the next number is one more than the highest taken across the store, its
+    archive and the repository's local branches. If an occasional collision gets through
+    anyway (the same person on two branches), the second to merge renumbers, rewriting every
+    `depends_on` and `parent` that names the old id and the body's header lines. Several writers
+    at once is what a coordinator is for.
   - **Across repositories.** `<repository>:<id>` (`baton:B-111`) names a ticket in another
     repository's store; an unqualified id is always the store's own. What a repository name
     resolves to is the reader's configuration.
@@ -70,6 +92,7 @@ reused. The page states the current version only. Tools that read the format are
   | `project` | a project page's name | the project the ticket belongs with ([R-DIB-10](#5-tags-and-projects)) |
   | `repos` | a list of repositories | the other repositories its work changes, `owner/name` or a name the reader maps |
   | `prs` | a list of URLs | the pull requests that carry its work |
+  | `assignee` | a name or handle | who says they are working on it: advisory, never a lock ([Coordination state](#coordination-state)) |
   | `updated` | a date | when the ticket last changed in substance |
   | `not_before` | a date or time | the earliest it should be started |
   | `kind` | `ticket` | optional: any other value makes the file a page ([R-DIB-1](#1-the-store)) |
@@ -147,7 +170,15 @@ stands in a workflow, how many times each step ran, approvals and attestations. 
 that tracks them keeps them itself, may show them to people, and never reads them back from a
 ticket file as its record. A ticket file a coordinator writes such state into still reads as
 Dibber — readers ignore keys they do not know — but the state there is that coordinator's own
-concern.
+concern. A store whose claims must be exclusive has outgrown
+[Dibber alone](#dibber-alone-or-with-a-coordinator).
+
+**`assignee` is not a hold.** A person working without a coordinator, usually alone, still wants
+to see who said they would do a ticket, so `assignee` records it ([R-DIB-5](#3-frontmatter)). It
+is advisory: it stops no one else taking the ticket, two branches can each write a different
+name, and a coordinator never reads it as its record of who holds a ticket. A coordinator may
+write it, as a courtesy to people reading the file, but what it holds is the coordinator's own
+record.
 
 ## Versions
 
@@ -155,6 +186,10 @@ This page is **Dibber 1**. A change that leaves every valid store valid and ever
 — a new optional key, a new convention — amends this version in place. A change that would make
 a valid store invalid, or change what a key means, is a new version, and this page says how a
 store moves to it.
+
+Amended in place since Dibber 1 was first published: `.dibber/config.json`
+([R-DIB-14](#1-the-store)), the optional `assignee` key, `.md` as the default file name, and the
+one-writer allocation rule ([R-DIB-4](#2-ids)).
 
 ## Readers
 

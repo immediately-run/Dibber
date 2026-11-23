@@ -1,0 +1,7 @@
+- id: dibber-check
+  name: dibber check
+  description: Check the repository's Dibber tickets against the Dibber spec.
+  entry: dibber check
+  language: node
+  pass_filenames: false
+  files: ^(\.dibber/|tickets/)

@@ -1,0 +1,38 @@
+{
+  "name": "@immediately-run/dibber",
+  "version": "0.1.0",
+  "description": "Tickets as files in git: the Dibber format's validator and command-line tool, plus agent skills.",
+  "type": "module",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/immediately-run/dibber.git"
+  },
+  "bin": {
+    "dibber": "bin/dibber.mjs"
+  },
+  "exports": {
+    "./check": "./src/check.mjs",
+    "./store": "./src/store.mjs"
+  },
+  "files": [
+    "bin/",
+    "src/",
+    "skills/",
+    "templates/",
+    "ticket.schema.json",
+    "config.schema.json",
+    "SPEC.md"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "test": "node --test",
+    "check": "node bin/dibber.mjs check"
+  },
+  "dependencies": {
+    "ajv": "^8.17.1",
+    "yaml": "^2.8.1"
+  }
+}

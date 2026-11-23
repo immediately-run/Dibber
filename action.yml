@@ -1,0 +1,30 @@
+name: Dibber check
+description: Check a repository's Dibber tickets against the Dibber spec.
+branding:
+  icon: check-square
+  color: purple
+inputs:
+  root:
+    description: The repository root to check (the folder that holds .dibber/ or tickets/).
+    default: .
+  strict:
+    description: Fail on warnings (conventions such as the Depends on line) as well as errors.
+    default: "false"
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-node@v4
+      with:
+        node-version: 20
+    - name: Install dibber
+      shell: bash
+      run: npm ci --omit=dev --prefix "$GITHUB_ACTION_PATH" --no-audit --no-fund
+    - name: dibber check
+      shell: bash
+      env:
+        DIBBER_ROOT: ${{ inputs.root }}
+        DIBBER_STRICT: ${{ inputs.strict }}
+      run: |
+        args=(check --root "$DIBBER_ROOT")
+        if [ "$DIBBER_STRICT" = "true" ]; then args+=(--strict); fi
+        node "$GITHUB_ACTION_PATH/bin/dibber.mjs" "${args[@]}"

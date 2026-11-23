@@ -1,0 +1,15 @@
+{
+  "type": "object",
+  "required": [
+    "priority"
+  ],
+  "properties": {
+    "priority": {
+      "enum": [
+        "low",
+        "medium",
+        "high"
+      ]
+    }
+  }
+}
