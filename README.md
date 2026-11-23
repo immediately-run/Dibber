@@ -12,6 +12,13 @@ call dibs on a piece of work — though making the dibs stick, one holder at a t
 coordinator such as [Baton](https://github.com/immediately-run/baton): a file in git can say who
 is on it, but cannot stop two people writing their names at once.
 
+## Status
+
+Dibber is in active development, and its work is tracked in Dibber itself. The
+[board](https://immediately.run/present/github/immediately-run/dibber/main/bundle/tickets/)
+shows every ticket by status — what is ready, in progress and in review, and what is done —
+read straight from [`tickets/`](tickets/).
+
 ## A ticket
 
 `tickets/B-7.md`:
