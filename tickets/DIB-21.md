@@ -6,6 +6,7 @@ depends_on: [DIB-6, DIB-7, DIB-8]
 order: 88
 tags: [release]
 project: wide-audience
+prs: [https://github.com/immediately-run/dibber/pull/2]
 ---
 
 **Brief:** split from DIB-6 on 2026-11-22: the npm name `dibber` is taken, so the package is `@immediately-run/dibber`; publishing is the owner's step.
@@ -39,3 +40,5 @@ The skills, `AGENTS.md` and the docs say `npx -y @immediately-run/dibber`, which
 _filed 2026-11-22._
 
 _2026-11-23: 0.1.0 was published to npm by the owner by hand. A publish workflow (.github/workflows/ci.yml, requested by the owner) now publishes each GitHub Release through npm trusted publishing; docs/releasing.md has the owner's one-time npm and GitHub setup. Left: that setup, then the first release from the workflow and its tag._
+
+_2026-11-23: workflow in review, https://github.com/immediately-run/dibber/pull/2._
