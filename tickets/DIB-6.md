@@ -41,7 +41,7 @@ board shows nothing. A check that runs on every push catches it.
 ### Exit criteria
 
 - [x] `npm test` passes, covering every conformance fixture
-- [ ] `npx @immediately-run/dibber check` passes on this repository's own `tickets/`
+- [x] `npx @immediately-run/dibber check` passes on this repository's own `tickets/`
 
 ## Status
 
@@ -54,3 +54,5 @@ _2026-11-22: in review, https://github.com/immediately-run/Dibber/pull/1._
 _2026-11-23: done: PR #1 merged, https://github.com/immediately-run/dibber/pull/1._
 
 _2026-11-23: the npx criterion stays open. The published 0.1.1-rc.0 predates closing in place (DIB-24) and rejects this repository's closed tickets (`done` outside archive/); it passes once a release after DIB-24 is published._
+
+_2026-11-23: `npx @immediately-run/dibber@latest check` (0.2.0, published by the workflow with provenance) passes on this repository's 25 tickets._
