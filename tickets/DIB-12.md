@@ -38,3 +38,5 @@ A newcomer who follows a Readers link should find the claim true.
 ## Status
 
 _filed 2026-11-22._
+
+_2026-11-23: Unrelated errors in readers' stores, found by `dibber check` on 2026-11-23: baton's tickets/archive/B-94.mdx and tickets/archive/B-97.mdx carry non-string `prs` entries (R-DIB-5, three errors). Fieldhouse (64 tickets) and hq (6) pass._
