@@ -22,8 +22,9 @@ it is closed.
 ## Working on Dibber itself
 
 - `SPEC.md` is the format; `ticket.schema.json` and `config.schema.json` follow it. A change to
-  the format is a pull request against `SPEC.md`, and the Versions section says whether it
-  amends Dibber 1 or starts a new version.
+  the format is a pull request against `SPEC.md`. Dibber is in active development, so the spec
+  changes in place, with no new version. A change that breaks existing stores ships with a
+  `dibber migrate` step that moves them (DIB-27 makes SPEC.md's Versions section say the same).
 - In this repository, run the tool from source: `node bin/dibber.mjs <command>`.
 - `skills/` is the source of the agent skills. `.agents/skills` and `.claude/skills` are
   symlinks to it, so there is one copy to edit. In a user's repository, `dibber init` writes real

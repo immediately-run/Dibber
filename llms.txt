@@ -1,0 +1,19 @@
+# Dibber
+
+> Tickets as plain Markdown files in a git repository, for a person and their coding agent. One file per ticket, YAML frontmatter for its fields, the body for the work; closed tickets keep their file. A short spec, a JSON Schema, an optional CLI (`npx -y @immediately-run/dibber`) and agent skills for Claude Code, Codex, opencode and Antigravity.
+
+## Set up
+
+- [Install guide for coding agents](https://raw.githubusercontent.com/immediately-run/dibber/main/docs/install.md): set Dibber up in the current repository, step by step
+
+## Reference
+
+- [Spec](https://raw.githubusercontent.com/immediately-run/dibber/main/SPEC.md): the format, rule by rule (R-DIB-n)
+- [Ticket schema](https://raw.githubusercontent.com/immediately-run/dibber/main/ticket.schema.json): JSON Schema for a ticket's frontmatter
+- [Config schema](https://raw.githubusercontent.com/immediately-run/dibber/main/config.schema.json): JSON Schema for `.dibber/config.json`
+- [Checking tickets in CI](https://raw.githubusercontent.com/immediately-run/dibber/main/docs/checking.md): `dibber check`, the GitHub Action and the pre-commit hook
+
+## Optional
+
+- [Website](https://immediately-run.github.io/dibber/): the same install steps, for people
+- [README](https://raw.githubusercontent.com/immediately-run/dibber/main/README.md)

@@ -27,7 +27,7 @@ jobs:
   cache:
     uses: immediately-run/new-project-template/.github/workflows/zip-cache.yml@main
     with:
-      landing-html: ''
+      landing-html: 'site/index.html'
     secrets:
       DEPLOY_APP_ID: ${{ secrets.DEPLOY_APP_ID }}
       DEPLOY_APP_PRIVATE_KEY: ${{ secrets.DEPLOY_APP_PRIVATE_KEY }}

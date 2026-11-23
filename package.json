@@ -32,7 +32,8 @@
     "test": "node --test",
     "check": "node bin/dibber.mjs check",
     "check:release": "node scripts/check-release.mjs",
-    "version": "node scripts/check-release.mjs --sync && git add .claude-plugin"
+    "version": "node scripts/check-release.mjs --sync && git add .claude-plugin",
+    "site": "node scripts/build-site.mjs"
   },
   "dependencies": {
     "ajv": "^8.17.1",
