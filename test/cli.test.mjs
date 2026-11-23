@@ -225,6 +225,8 @@ test('init --immediately-run adds the board files to the store, and check still 
   assert.deepEqual(marker.opensWith, { app: 'github:immediately-run/dibber-board', version: '1.0' });
   assert.match(readFileSync(join(dir, 'tickets', 'home.mdx'), 'utf8'), /<RoadmapBoard \/>/);
   assert.match(readFileSync(join(dir, 'tickets', '_layout.mdx'), 'utf8'), /<RoadmapMeta \/>/);
+  // DIB-29: a project page lists its tickets; ProjectMembers renders nothing elsewhere.
+  assert.match(readFileSync(join(dir, 'tickets', '_layout.mdx'), 'utf8'), /<ProjectMembers \/>/);
   assert.match(r.stdout, /immediately\.run\/present\/github\/<owner>\/<repo>\/main\/bundle\/tickets\/home\.mdx/);
   const c = await dibber(dir, 'check');
   assert.equal(c.code, 0, c.stdout + c.stderr);
