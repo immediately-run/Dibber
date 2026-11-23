@@ -138,7 +138,7 @@ test('new refuses a dependency on a ticket that does not exist', async () => {
   assert.equal(readdirSync(join(dir, 'tickets')).filter((n) => n.startsWith('APP-2')).length, 0);
 });
 
-test('claim, set and done: done moves the file to archive/ and check still passes', async () => {
+test("claim, set and done: done closes the ticket in place and leaves git's index alone", async () => {
   const { dir, git } = repo();
   await dibber(dir, 'init', '--yes', '--prefix', 'APP');
   git('add', '-A'); git('commit', '-qm', 'init');
@@ -150,14 +150,27 @@ test('claim, set and done: done moves the file to archive/ and check still passe
   assert.equal((await dibber(dir, 'set', 'APP-1', 'in-review', '--pr', 'https://github.com/example/app/pull/1')).code, 0);
   const r = await dibber(dir, 'done', 'APP-1', '--json');
   assert.equal(r.code, 0, r.stderr);
-  assert.deepEqual(JSON.parse(r.stdout), { id: 'APP-1', file: 'tickets/archive/APP-1.md', status: 'done' });
-  assert.ok(!existsSync(join(dir, 'tickets/APP-1.md')));
-  t = readFileSync(join(dir, 'tickets/archive/APP-1.md'), 'utf8');
+  assert.deepEqual(JSON.parse(r.stdout), { id: 'APP-1', file: 'tickets/APP-1.md', status: 'done' });
+  t = readFileSync(join(dir, 'tickets/APP-1.md'), 'utf8');
   assert.match(t, /status: done/);
   assert.match(t, /prs: \["?https:\/\/github.com\/example\/app\/pull\/1"?\]/);
+  assert.ok(!existsSync(join(dir, 'tickets/archive')), 'nothing is moved to an archive');
+  // The bug this replaces: a move was staged and the rewrite was not, so a plain commit
+  // recorded a half-closed ticket. Now nothing is staged; the change is an ordinary edit.
+  assert.equal(git('diff', '--cached', '--name-only'), '');
+  assert.equal(git('status', '--porcelain'), ' M tickets/APP-1.md\n');
   assert.deepEqual(checkStore(dir).errors, []);
   assert.equal((await dibber(dir, 'list', '--json')).stdout.trim(), '[]');
+  assert.deepEqual(JSON.parse((await dibber(dir, 'list', '--all', '--json')).stdout).map((x) => [x.id, x.status, x.closed]), [['APP-1', 'done', true]]);
   assert.equal((await dibber(dir, 'set', 'APP-1', 'available')).code, 2, 'a closed ticket is not reopened');
+});
+
+test('a dependency closed in place counts as done', async () => {
+  const { dir } = repo();
+  await dibber(dir, 'init', '--yes', '--prefix', 'APP');
+  await dibber(dir, 'new', '--title', 'Later', '--depends-on', 'APP-1');
+  await dibber(dir, 'done', 'APP-1');
+  assert.deepEqual(JSON.parse((await dibber(dir, 'list', '--ready', '--json')).stdout).map((x) => x.id), ['APP-2']);
 });
 
 test('claim refuses a ticket that waits on another, unless forced', async () => {
@@ -170,12 +183,12 @@ test('claim refuses a ticket that waits on another, unless forced', async () => 
   assert.equal((await dibber(dir, 'claim', 'APP-2', '--force')).code, 0);
 });
 
-test('set withdrawn closes into the archive (R-DIB-2)', async () => {
+test('set withdrawn closes in place (R-DIB-2)', async () => {
   const { dir } = repo();
   await dibber(dir, 'init', '--yes', '--prefix', 'APP');
   const r = await dibber(dir, 'set', 'APP-1', 'withdrawn', '--note', 'not needed', '--json');
-  assert.equal(JSON.parse(r.stdout).file, 'tickets/archive/APP-1.md');
-  assert.match(readFileSync(join(dir, 'tickets/archive/APP-1.md'), 'utf8'), /not needed\._\n$/);
+  assert.equal(JSON.parse(r.stdout).file, 'tickets/APP-1.md');
+  assert.match(readFileSync(join(dir, 'tickets/APP-1.md'), 'utf8'), /status: withdrawn[\s\S]*not needed\._\n$/);
 });
 
 test('check --json reports problems with rule and file, and exits 1', async () => {

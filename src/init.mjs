@@ -1,5 +1,5 @@
-// init.mjs — set a repository up for Dibber in one command (DIB-8): the settings, the store,
-// its archive, a first ticket, and the agent instructions and skills every supported harness
+// init.mjs — set a repository up for Dibber in one command ([DIB-8](../tickets/DIB-8.md), [DIB-9](../tickets/DIB-9.md)): the settings, the store,
+// a first ticket, and the agent instructions and skills every supported harness
 // discovers. It never overwrites a file; it says what it skipped.
 
 import { existsSync, lstatSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync, appendFileSync, statSync, symlinkSync } from 'node:fs';
@@ -122,7 +122,7 @@ export function init(root, opts = {}) {
   writeOnce(configPath, JSON.stringify({ store: storeRel, prefix }, null, 2) + '\n', report);
 
   const store = join(root, config.store);
-  writeOnce(join(store, 'archive', '.gitkeep'), '', report);
+  mkdirSync(store, { recursive: true });
   if (readStore(root).tickets.length === 0) {
     const id = `${config.prefix}-1`;
     const sample = readFileSync(join(TEMPLATES, 'first-ticket.md'), 'utf8')

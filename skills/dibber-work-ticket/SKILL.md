@@ -1,6 +1,6 @@
 ---
 name: dibber-work-ticket
-description: Pick up a Dibber ticket from the repository's tickets/ folder and do the work. Claim it, build it, check its exit criteria, record progress, and close it into tickets/archive/. Use when the user says "work on the next ticket", "do APP-4", "what should I do next? go", "pick something up from the board", or "close/finish this ticket".
+description: Pick up a Dibber ticket from the repository's tickets/ folder and do the work. Claim it, build it, link the code to the ticket, check its exit criteria, record progress, and close it. Use when the user says "work on the next ticket", "do APP-4", "what should I do next? go", "pick something up from the board", or "close/finish this ticket".
 ---
 
 # Work a Dibber ticket
@@ -21,18 +21,43 @@ Every command takes `--json`.
 4. **Do the work** on a branch, as you would for any request. Keep to the ticket's scope. If
    you find more work, file it as a new ticket (the `dibber-new-ticket` skill) rather than
    growing this one.
-5. **Check the exit criteria.** Run each check the ticket lists. A criterion you cannot run is
+5. **Link the code to the ticket.** On each larger unit of code the ticket adds or reshapes, such
+   as a class, a large function or a file's header comment, add a comment holding a Markdown link
+   to the ticket file. Use a path relative to the source file, so someone browsing the code on
+   GitHub or in an editor can click straight through to why it exists:
+
+   ```js
+   // Imports a GitHub issues export as tickets ([APP-12](../tickets/APP-12.md)).
+   export class GitHubImporter {
+   ```
+
+   ```python
+   # Retries a failed sync with backoff ([APP-9](../../tickets/APP-9.md)).
+   def sync_with_retry(...):
+   ```
+
+   Use the language's own comment syntax, and keep it to one line. Add to an existing link
+   rather than replacing it when another ticket reshapes the same unit
+   (`([APP-9](…), [APP-14](…))`). Small edits, one-line fixes and tests don't need a link. A
+   ticket in another repository gets its full URL. Ticket files never move, so these links
+   keep working.
+6. **Check the exit criteria.** Run each check the ticket lists. A criterion you cannot run is
    not met: say so, and don't tick it.
-6. **Record and close.**
+7. **Record and close.**
    - Tick the criteria you met in the file (`- [x]`).
-   - Opened a pull request? `dibber set <id> in-review --pr <url>`. When it merges, or if the
-     user works without pull requests, `dibber done <id> [--pr <url>]`. That moves the file to
-     `archive/`, so commit it with the work.
+   - Close it with the work, not after: once every criterion passes, run
+     `dibber done <id> [--pr <url>]` on the work's branch and commit it with the work. If you
+     open a pull request, close the ticket in it (add `--pr` once you know the URL). When the
+     PR merges the ticket lands closed, and if it is turned down the ticket stays open on the
+     main branch. Nothing has to come back afterwards to close it. The file stays where it is
+     with `status: done`.
+   - Waiting on a review that may change the work? `dibber set <id> in-review --pr <url>`
+     instead, and close it on the same branch when the review is done.
    - Stopped partway? Leave it `in-progress` and say what's left, with a dated line under
      `## Status` (`dibber set <id> in-progress --note "…"`).
    - Not worth doing after all? `dibber set <id> withdrawn --note "why"`, or `superseded` if
      another ticket replaces it.
-7. **Report** in a few lines: what changed, which criteria pass, and what's left.
+8. **Report** in a few lines: what changed, which criteria pass, and what's left.
 
 ## Rules
 
@@ -50,6 +75,6 @@ Every command takes `--json`.
 
 ## Without the command-line tool
 
-Edit the frontmatter yourself: `status: in-progress` and `assignee: <name>` to claim. To close,
-set `status: done` and move the file to `tickets/archive/` in the same commit. Always add a
-dated line under `## Status`.
+Edit the frontmatter yourself: `status: in-progress` and `assignee: <name>` to claim, and
+`status: done` to close. Never move or rename the file. Always add a dated line under
+`## Status`.

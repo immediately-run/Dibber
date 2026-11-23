@@ -1,3 +1,4 @@
+# The reusable `dibber check` action ([DIB-6](tickets/DIB-6.md)).
 name: Dibber check
 description: Check a repository's Dibber tickets against the Dibber spec.
 branding:

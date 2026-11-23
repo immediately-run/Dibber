@@ -12,6 +12,10 @@ folder its `.dibber/config.json` names) and an `expect.json`.
   validator rejects the store, naming that rule against that file (relative to the fixture's
   root). Each invalid fixture breaks exactly one rule.
 
+Closed tickets stay where they are (R-DIB-2): `valid/closed-in-place/` closes tickets with
+every closed status without moving them, and `valid/archive/` shows that an `archive/` folder
+from an older store is still read like any other folder.
+
 `valid/every-key/` uses every status in `ticket.schema.json` and every key in R-DIB-5 at least
 once, with a project page, a parent and a qualified dependency. It is the test data for boards
 and other renderers.

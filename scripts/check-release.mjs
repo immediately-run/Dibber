@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 // check-release.mjs — the package, the Claude Code plugin and its marketplace entry carry one
 // version, and (given a release tag) the tag is that version: `v0.2.0` for 0.2.0.
+// Ticket: [DIB-21](../tickets/DIB-21.md).
 //
 //   node scripts/check-release.mjs            versions agree
 //   node scripts/check-release.mjs v0.2.0     ... and match the tag

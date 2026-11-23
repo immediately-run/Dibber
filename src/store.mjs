@@ -1,4 +1,4 @@
-// store.mjs — read a Dibber store from disk: the repository's settings (R-DIB-14), every
+// store.mjs — read a Dibber store from disk ([DIB-1](../tickets/DIB-1.md), [DIB-24](../tickets/DIB-24.md)): the repository's settings (R-DIB-14), every
 // ticket file under the store (R-DIB-1) and the pages beside them. No rule is judged here
 // beyond what reading needs; check.mjs judges.
 
@@ -78,8 +78,6 @@ export function readStore(root) {
     const text = readFileSync(path, 'utf8');
     const parts = splitFrontmatter(text);
     const file = rel(root, path);
-    const inStore = rel(storeDir, path);
-    const archived = inStore.split('/').includes('archive');
     if (!parts) continue; // a page for people, with no frontmatter
     if (parts.error) {
       result.broken.push({ path, file, error: parts.error });
@@ -87,7 +85,8 @@ export function readStore(root) {
     }
     const { meta } = parts;
     const isTicket = meta.id !== undefined && (meta.kind === undefined || meta.kind === 'ticket');
-    const entry = { path, file, archived, meta, body: parts.body, text, ext: extname(path), name: basename(path, extname(path)) };
+    const closed = CLOSED.includes(meta.status); // closure is the status alone (R-DIB-2)
+    const entry = { path, file, closed, meta, body: parts.body, text, ext: extname(path), name: basename(path, extname(path)) };
     (isTicket ? result.tickets : result.pages).push(entry);
   }
   return result;

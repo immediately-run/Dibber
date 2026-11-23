@@ -1,10 +1,12 @@
-// tickets.mjs — write tickets: file a new one, change its status, close it into the archive.
-// Every write changes one ticket's own file (R-DIB-7) and leaves committing to the person or
-// agent doing the work, so the closing move lands in the same commit as the work (R-DIB-2).
+// tickets.mjs — write tickets: file a new one, change its status, close it.
+// Tickets: [DIB-7](../tickets/DIB-7.md), [DIB-2](../tickets/DIB-2.md), [DIB-24](../tickets/DIB-24.md).
+// Every write changes one ticket's own file in place (R-DIB-2, R-DIB-7). Nothing here touches
+// git's index: the person or agent doing the work stages and commits the ticket with the work,
+// like any other file they changed.
 
 import { execFileSync } from 'node:child_process';
-import { existsSync, mkdirSync, readFileSync, renameSync, rmSync, writeFileSync } from 'node:fs';
-import { dirname, join, relative } from 'node:path';
+import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
 import { Document, visit } from 'yaml';
 import { readStore, splitFrontmatter, rel, LIVE, CLOSED, STATUSES, ID_RE, QUALIFIED_RE, idNumber, asList, byOrderThenId } from './store.mjs';
 import { checkStore } from './check.mjs';
@@ -50,7 +52,7 @@ export function storePrefix(store) {
   return best[0];
 }
 
-/** The next free number: one more than the highest taken in the store, the archive and every branch. */
+/** The next free number: one more than the highest taken in the store and on every branch. */
 export function nextId(root, store) {
   const prefix = storePrefix(store);
   const taken = [...store.tickets.map((t) => String(t.meta.id)), ...idsOnBranches(root, store.storeRel)]
@@ -110,11 +112,11 @@ export function newTicket(root, opts) {
   const text = `---\n${frontmatterYaml(meta)}---\n\n${body.trimEnd()}\n\n## Status\n\n_filed ${date}._\n`;
   const ext = opts.mdx ? '.mdx' : '.md';
   const path = join(store.storeDir, `${id}${ext}`);
-  writeChecked(root, path, text, null);
+  writeChecked(root, path, text);
   return { id, file: rel(root, path) };
 }
 
-/** Find a ticket by id, live or archived. */
+/** Find a ticket by id, open or closed. */
 export function findTicket(store, id) {
   const t = store.tickets.find((x) => x.meta.id === id);
   if (!t) throw new Refusal(`there is no ticket \`${id}\` in \`${store.storeRel}/\``);
@@ -133,7 +135,7 @@ export function readiness(store, t) {
     if (!dep) waits.push({ id: d, why: 'not found' });
     else if (dep.meta.status !== 'done') waits.push({ id: d, why: dep.meta.status });
   }
-  return { ready: t.meta.status === 'available' && !t.archived && waits.length === 0, waits };
+  return { ready: t.meta.status === 'available' && waits.length === 0, waits };
 }
 
 function appendStatus(body, line) {
@@ -142,40 +144,33 @@ function appendStatus(body, line) {
   return `${trimmed}\n\n## Status\n\n${line}\n`;
 }
 
-/** Write `text` to `path` (moving `from` there if given), then refuse and restore if the ticket no longer checks. */
-function writeChecked(root, path, text, from) {
-  const before = from ? readFileSync(from, 'utf8') : null;
+/**
+ * Write `text` to `path`, then put the file back as it was (or remove a new one) and refuse if
+ * the ticket no longer checks. The file is written in place: never moved, never staged.
+ */
+function writeChecked(root, path, text) {
+  const before = existsSync(path) ? readFileSync(path, 'utf8') : null;
   mkdirSync(dirname(path), { recursive: true });
-  if (from && from !== path) {
-    const moved = git(root, 'mv', relative(root, from), relative(root, path)) !== null && existsSync(path);
-    if (!moved) renameSync(from, path);
-  }
   writeFileSync(path, text);
   const file = rel(root, path);
-  const { errors } = checkStore(root);
-  const mine = errors.filter((e) => e.file === file);
+  const mine = checkStore(root).errors.filter((e) => e.file === file);
   if (mine.length) {
-    if (from) {
-      if (from !== path) {
-        if (git(root, 'mv', relative(root, path), relative(root, from)) === null || !existsSync(from)) renameSync(path, from);
-      }
-      writeFileSync(from, before);
-    } else {
-      rmSync(path, { force: true }); // a new file: leave nothing behind
-    }
+    if (before === null) rmSync(path, { force: true });
+    else writeFileSync(path, before);
     throw new Refusal(`the change would break the ticket:\n${mine.map((e) => `  ${e.rule}: ${e.message}`).join('\n')}`);
   }
 }
 
 /**
- * Change a ticket's status. A closed status (R-DIB-6) moves the file into the archive in the
- * same change (R-DIB-2). Returns `{ id, file, status }`.
+ * Change a ticket's status, in place (R-DIB-2): closing it changes the status, never the path
+ * ([DIB-24](../tickets/DIB-24.md)).
+ * A closed ticket is not reopened. Returns `{ id, file, status }`.
  */
 export function setStatus(root, id, status, opts = {}) {
   if (!STATUSES.includes(status)) throw new Refusal(`\`${status}\` is not a Dibber status: ${STATUSES.join(', ')}`);
   const store = readStore(root);
   const t = findTicket(store, id);
-  if (t.archived) throw new Refusal(`\`${id}\` is closed (it is in archive/); file a new ticket instead of reopening it`);
+  if (t.closed) throw new Refusal(`\`${id}\` is closed (\`${t.meta.status}\`); file a new ticket instead of reopening it`);
   const parts = splitFrontmatter(t.text);
   const doc = parts.doc;
   doc.set('status', status);
@@ -192,10 +187,8 @@ export function setStatus(root, id, status, opts = {}) {
   const line = `_${today()}: ${what.replace(/\.$/, '')}${opts.pr ? `, ${opts.pr}` : ''}._`;
   const yaml = doc.toString({ lineWidth: 0, flowCollectionPadding: false });
   const text = `---\n${yaml}---\n${appendStatus(parts.body, line)}`;
-  let path = t.path;
-  if (CLOSED.includes(status)) path = join(store.storeDir, 'archive', `${id}${t.ext}`);
-  writeChecked(root, path, text, t.path);
-  return { id, file: rel(root, path), status };
+  writeChecked(root, t.path, text);
+  return { id, file: t.file, status };
 }
 
 /** Claim: available → in-progress, with an advisory assignee. Refuses a ticket that is not ready. */
@@ -215,7 +208,7 @@ export function claim(root, id, opts = {}) {
 export function listTickets(root, filter = {}) {
   const store = readStore(root);
   const rows = store.tickets
-    .filter((t) => (filter.archived ? true : !t.archived))
+    .filter((t) => (filter.closed ? true : !t.closed))
     .sort(byOrderThenId)
     .map((t) => {
       const { ready, waits } = readiness(store, t);
@@ -231,7 +224,7 @@ export function listTickets(root, filter = {}) {
         tags: asList(t.meta.tags),
         order: t.meta.order ?? null,
         file: t.file,
-        archived: t.archived,
+        closed: t.closed,
       };
     });
   return rows.filter((r) => (!filter.ready || r.ready) && (!filter.status || r.status === filter.status));
