@@ -1,12 +1,13 @@
 ---
 id: DIB-21
 title: DIB-21 — Publish @immediately-run/dibber to npm, by hand once and then from GitHub Releases
-status: in-progress
+status: done
 depends_on: [DIB-6, DIB-7, DIB-8]
 order: 88
 tags: [release]
 project: wide-audience
-prs: [https://github.com/immediately-run/dibber/pull/2]
+prs: [https://github.com/immediately-run/dibber/pull/2, https://github.com/immediately-run/dibber/pull/3]
+updated: 2026-11-23
 ---
 
 **Brief:** split from DIB-6 on 2026-11-22: the npm name `dibber` is taken, so the package is `@immediately-run/dibber`; publishing is the owner's step.
@@ -46,3 +47,5 @@ _2026-11-23: workflow in review, https://github.com/immediately-run/dibber/pull/
 _2026-11-23: tested by the owner with the pre-release v0.1.1-rc.0 (run 45127532061): published under next with public access by the GitHub Actions trusted publisher, with an SLSA provenance attestation signed for ci.yml@refs/tags/v0.1.1-rc.0. Left: the npx check once the tarball is served, and disallowing tokens on npm._
 
 _2026-11-23: npx -y @immediately-run/dibber@next ran help, init, list and check in an empty repository once npm served the tarball (5 minutes after the publish). Left: disallowing tokens on npm (owner)._
+
+_2026-11-23: done: the owner set Require two-factor authentication and disallow tokens on npm, so only the workflow publishes; PR #3 merged, https://github.com/immediately-run/dibber/pull/3._
