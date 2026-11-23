@@ -1,10 +1,10 @@
 ---
 id: DIB-27
-title: "DIB-27 — Dibber 2: stop using kind to mark pages, and settle status and type words"
+title: "DIB-27 — Stop using kind to mark pages, and settle the status and type words"
 status: available
 depends_on: [DIB-4]
 order: 27
-tags: [spec, dibber-2]
+tags: [spec, migration]
 project: wide-audience
 ---
 
@@ -13,18 +13,20 @@ project: wide-audience
 
 ### Why
 
-R-DIB-1 says a file whose `kind` is anything but `ticket` is a page. Other tools use `kind` (tbd) or `type` (ticket, Bodega, Backlog.md, Beans) for the type of work: task, bug, feature, epic. So a tbd store with 2,661 issues reads as 0 tickets and 2,661 pages. Status words also split: `open`/`in_progress`/`closed` is the common family (ticket, Bodega, minibeads, tbd, Beads), and Dibber's `available` matches none of them. Changing what `kind` means, or which statuses are legal, changes what a key means, so by the Versions section it is a new version.
+R-DIB-1 says a file whose `kind` is anything but `ticket` is a page. Other tools use `kind` (tbd) or `type` (ticket, Bodega, Backlog.md, Beans) for the type of work: task, bug, feature, epic. So a tbd store with 2,661 issues reads as 0 tickets and 2,661 pages. Status words also split: `open`/`in_progress`/`closed` is the common family (ticket, Bodega, minibeads, tbd, Beads), and Dibber's `available` matches none of them. Existing stores (this repository's, Baton's, Fieldhouse's) use `kind` for pages today, so the change needs a migration step.
 
 ### What to build
 
-Write Dibber 2 in SPEC.md, with the migration from Dibber 1 stated: (1) **pages**: a file is a ticket when its frontmatter has `id` and `status`. A page is marked by a key nobody else uses (proposal: `page: project|doc|view|…`), and `kind` is no longer special. (2) **type of work**: settle DIB-4 and name the key (`type`), with `task`, `bug`, `feature`, `epic` and `chore` as the suggested values. (3) **statuses**: decide whether readers accept the common family as aliases (`open` = `available`, `in_progress` = `in-progress`, `closed` = `done`), or whether Dibber 2 adopts those words. Record the decision and the rejected option in the ticket. (4) `dibber migrate` rewrites a Dibber 1 store into Dibber 2 in place, and `dibber check` reads both versions, saying which it found. Decisions in (2) and (3) are the owner's. The ticket proposes, then implements once they are made.
+Change SPEC.md in place, since Dibber is still in active development, and say in it how an existing store moves: (1) **pages**: a file is a ticket when its frontmatter has `id` and `status`. A page is marked by a key nobody else uses (proposal: `page: project|doc|view|…`), and `kind` is no longer special. (2) **type of work**: settle DIB-4 and name the key (`type`), with `task`, `bug`, `feature`, `epic` and `chore` as the suggested values. (3) **statuses**: decide whether readers accept the common family as aliases (`open` = `available`, `in_progress` = `in-progress`, `closed` = `done`), or whether Dibber adopts those words. Record the decision and the rejected option in the ticket. (4) `dibber migrate` rewrites an existing store to the new rules in place, and `dibber check` names the migration when it finds the old `kind` pages. (5) Replace SPEC.md's Versions section: while Dibber is in active development the spec changes in place, and a change that breaks existing stores ships with a `dibber migrate` step. Decisions in (2) and (3) are the owner's. The ticket proposes, then implements once they are made.
 
 ### Exit criteria
 
-- [ ] SPEC.md states Dibber 2 and the migration, and its Versions section says what changed
-- [ ] conformance: a Dibber 2 store whose tickets carry `kind: bug` passes, with every file counted as a ticket
-- [ ] a test: `dibber migrate` turns this repository's own store into Dibber 2, and `dibber check` passes before and after
+- [ ] SPEC.md states the new rules, the migration and the active-development note
+- [ ] conformance: a store whose tickets carry `kind: bug` passes, with every file counted as a ticket
+- [ ] a test: `dibber migrate` moves this repository's own store to the new rules, and `dibber check` passes before and after
 
 ## Status
 
 _filed 2026-11-23._
+
+_2026-11-23: no new version: the owner ruled that while Dibber is in active development the spec changes in place, with a migration step for existing stores._

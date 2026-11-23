@@ -17,13 +17,13 @@ Almost every other Markdown ticket tool gives tickets lowercase random ids: tick
 
 ### What to build
 
-Widen R-DIB-4: an id is a prefix (letters and digits, starting with a letter, either case), a dash, and either a decimal number or a lowercase base-36 suffix of at least 4 characters. Both forms are never reused and never renamed. Every id valid today stays valid, so this amends Dibber 1 in place. Update `ticket.schema.json` (`id` and `ref`), the conformance fixtures (valid random-id store; invalid: empty suffix, uppercase in the random suffix), `dibber check`, and the qualified form `<repo>:<id>`. Add `"ids": "numeric" | "random"` to `.dibber/config.json` (default `numeric`). `dibber new` then allocates a random suffix that is free in the store and on every branch, and `dibber init --ids random` sets it. State in R-DIB-4 that random ids need no renumbering.
+Widen R-DIB-4: an id is a prefix (letters and digits, starting with a letter, either case), a dash, and either a decimal number or a lowercase base-36 suffix of at least 4 characters. Both forms are never reused and never renamed. Every id valid today stays valid. Update `ticket.schema.json` (`id` and `ref`), the conformance fixtures (valid random-id store; invalid: empty suffix, uppercase in the random suffix), `dibber check`, and the qualified form `<repo>:<id>`. Add `"ids": "numeric" | "random"` to `.dibber/config.json` (default `numeric`). `dibber new` then allocates a random suffix that is free in the store and on every branch, and `dibber init --ids random` sets it. State in R-DIB-4 that random ids need no renumbering.
 
 ### Exit criteria
 
 - [ ] conformance: a valid store with ids like `tek-m5tt` and `is-01kf5zyg8h` passes, and the new invalid fixtures fail on R-DIB-4
 - [ ] a test: with `ids: random`, `dibber new` allocates an id matching the random form that no file in the store already uses
-- [ ] `npm test` passes and SPEC.md's Versions note lists the amendment
+- [ ] `npm test` passes
 
 ## Status
 
