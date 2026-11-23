@@ -15,10 +15,10 @@ test('site/index.html is built from site/src (run `npm run site` after editing)'
   assert.equal(html, buildSite());
 });
 
-test('the page is self-contained: no external scripts, styles or images without analytics', () => {
+test('the page is self-contained: the only external load is the Plausible script, when configured', () => {
   const config = JSON.parse(readFileSync(join(ROOT, 'site', 'site.json'), 'utf8'));
   const external = [...html.matchAll(/<(script|img|link)\b[^>]*\b(src|href)="(https?:)?\/\/[^"]+"/g)].map((m) => m[0]);
-  if (config.analytics.plausibleDomain) assert.ok(external.every((t) => t.includes('plausible.io')), external.join('\n'));
+  if (config.analytics.plausibleScript) assert.deepEqual(external, [`<script async src="https://plausible.io/js/${config.analytics.plausibleScript}.js"`]);
   else assert.deepEqual(external, []);
   assert.ok(!html.includes('{{'), 'no unfilled placeholder');
 });

@@ -6,8 +6,8 @@
 //
 // The Pages cache job (.github/workflows/cache.yml, `landing-html`) publishes exactly one file
 // as the site's root page, so everything is inlined: the CSS, the script and the icons.
-// Analytics: set `analytics.plausibleDomain` in site/site.json to load Plausible; null loads
-// nothing.
+// Analytics: `analytics.plausibleScript` in site/site.json is the site's Plausible script id
+// (`pa-…`, from Plausible's install snippet); null loads nothing.
 
 import { readFileSync, writeFileSync } from 'node:fs';
 import { join, dirname } from 'node:path';
@@ -21,12 +21,13 @@ export function buildSite() {
   const read = (f) => readFileSync(join(SRC, f), 'utf8');
   const dataUri = (f, type) => `data:${type};base64,${readFileSync(join(SRC, f)).toString('base64')}`;
   const config = JSON.parse(readFileSync(join(ROOT, 'site', 'site.json'), 'utf8'));
-  const domain = config.analytics?.plausibleDomain;
-  if (domain != null && !/^[a-z0-9.-]+(\/[a-z0-9._-]+)*$/i.test(domain)) throw new Error(`site.json: plausibleDomain ${JSON.stringify(domain)} is not a domain`);
-  const analytics = domain
-    ? `<script defer data-domain="${domain}" src="https://plausible.io/js/script.outbound-links.js"></script>\n<script>window.plausible = window.plausible || function () { (window.plausible.q = window.plausible.q || []).push(arguments); };</script>`
+  const script = config.analytics?.plausibleScript;
+  if (script != null && !/^pa-[A-Za-z0-9_-]+$/.test(script)) throw new Error(`site.json: plausibleScript ${JSON.stringify(script)} is not a Plausible script id (pa-…)`);
+  // Plausible's install snippet, as its dashboard gives it, with the script id filled in.
+  const analytics = script
+    ? `<script async src="https://plausible.io/js/${script}.js"></script>\n<script>window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},plausible.init=plausible.init||function(i){plausible.o=i||{}};plausible.init()</script>`
     : '';
-  const note = domain ? 'Visits are counted with <a href="https://plausible.io/data-policy">Plausible</a>: no cookies, no personal data.' : '';
+  const note = script ? 'Visits are counted with <a href="https://plausible.io/data-policy">Plausible</a>: no cookies, no personal data.' : '';
   const values = {
     STYLE: read('style.css'),
     SCRIPT: read('site.js'),

@@ -1,5 +1,5 @@
 // Copy buttons, and counting the clicks that matter ([DIB-22](../../tickets/DIB-22.md)).
-// Events go to Plausible only when the page was built with an analytics domain; otherwise
+// Events go to Plausible only when the page was built with a Plausible script id; otherwise
 // `window.plausible` is undefined and nothing is sent anywhere.
 (function () {
   function track(name) {

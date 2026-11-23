@@ -53,3 +53,5 @@ _2026-11-23: the owner asked for the site and that it be simple and sticky. One 
 _2026-11-23: cache.yml now passes landing-html: 'site/index.html' (the owner asked for the change), so the page is published on the next push to main._
 
 _2026-11-23: in PR #10, https://github.com/immediately-run/dibber/pull/10._
+
+_2026-11-23: analytics on: Plausible's per-site script (pa-uRV8km5SD8BQgQgb49h5T), from the owner. Checked in Chromium: the script is requested, and the copy and outbound clicks queue as events._
