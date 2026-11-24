@@ -1,6 +1,6 @@
 {
   "name": "dibber",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Git as your issue tracker, in an open format built on Markdown. Skills to file a ticket, work the next one, and summarize the board, for a repository that keeps its tickets as Dibber files.",
   "author": {
     "name": "immediately.run"

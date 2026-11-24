@@ -1,6 +1,6 @@
 {
   "name": "@immediately-run/dibber",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Git as your issue tracker, in an open format built on Markdown: the Dibber format's validator and command-line tool, plus agent skills.",
   "type": "module",
   "license": "Apache-2.0",
