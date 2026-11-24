@@ -14,7 +14,10 @@ repository, which you and the person both read. The same steps are on
    - `.dibber/config.json`, with the store folder and the prefix;
    - a section in `AGENTS.md`, and a `CLAUDE.md` that points to it;
    - three skills, `dibber-new-ticket`, `dibber-work-ticket` and `dibber-overview`, in
-     `.agents/skills/` (Codex, opencode, Antigravity) and `.claude/skills/` (Claude Code).
+     `.agents/skills/` (Codex, opencode, Antigravity) and `.claude/skills/` (Claude Code);
+   - three files in `tickets/` (`immediately.run.json`, `home.mdx`, `_layout.mdx`) that open the
+     tickets as a board on immediately.run once the repository is public on GitHub. Add
+     `--no-immediately-run` if the person doesn't want them.
 
    It never overwrites a file, and it says which ones it kept.
 4. Run `npx -y @immediately-run/dibber check`. It must report no problems.

@@ -217,9 +217,9 @@ test('check --json reports problems with rule and file, and exits 1', async () =
   assert.deepEqual(out.errors.map((e) => [e.rule, e.file]), [['R-DIB-6', 'tickets/APP-7.md']]);
 });
 
-test('init --immediately-run adds the board files to the store, and check still passes (DIB-13)', async () => {
+test('init adds the board files to the store by default, and check still passes (DIB-13, DIB-32)', async () => {
   const { dir } = repo();
-  const r = await dibber(dir, 'init', '--yes', '--prefix', 'APP', '--immediately-run');
+  const r = await dibber(dir, 'init', '--yes', '--prefix', 'APP');
   assert.equal(r.code, 0, r.stderr);
   const marker = JSON.parse(readFileSync(join(dir, 'tickets', 'immediately.run.json'), 'utf8'));
   assert.deepEqual(marker.opensWith, { app: 'github:immediately-run/dibber-board', version: '1.0' });
@@ -231,19 +231,21 @@ test('init --immediately-run adds the board files to the store, and check still 
   const c = await dibber(dir, 'check');
   assert.equal(c.code, 0, c.stdout + c.stderr);
   assert.match(c.stdout, /tickets\/: 1 ticket, no problems/);
-  // Without the flag, none of them is written.
+  // --no-immediately-run writes none of them (DIB-32).
   const { dir: plain } = repo();
-  await dibber(plain, 'init', '--yes', '--prefix', 'APP');
-  assert.ok(!existsSync(join(plain, 'tickets', 'immediately.run.json')));
+  const p = await dibber(plain, 'init', '--yes', '--prefix', 'APP', '--no-immediately-run');
+  assert.equal(p.code, 0, p.stderr);
+  for (const name of ['immediately.run.json', 'home.mdx', '_layout.mdx']) assert.ok(!existsSync(join(plain, 'tickets', name)), name);
+  assert.doesNotMatch(p.stdout, /immediately\.run\/present/);
   // With no GitHub remote, the home page names no repository it cannot know.
   assert.match(readFileSync(join(dir, 'tickets', 'home.mdx'), 'utf8'), /^Welcome\. This is a \[Dibber\]\(https:\/\/github\.com\/immediately-run\/dibber\) board for this repository\./m);
 });
 
-test('init --immediately-run names the GitHub repository on the board home page', async () => {
+test('init names the GitHub repository on the board home page', async () => {
   for (const url of ['https://github.com/acme/recipes.git', 'git@github.com:acme/recipes.git', 'ssh://git@github.com/acme/recipes']) {
     const { dir, git } = repo();
     git('remote', 'add', 'origin', url);
-    const r = await dibber(dir, 'init', '--yes', '--prefix', 'APP', '--immediately-run', '--store', 'work');
+    const r = await dibber(dir, 'init', '--yes', '--prefix', 'APP', '--store', 'work');
     assert.equal(r.code, 0, r.stderr);
     const home = readFileSync(join(dir, 'work', 'home.mdx'), 'utf8');
     assert.match(home, /board for the \[acme\/recipes\]\(https:\/\/github\.com\/acme\/recipes\) repository\./, url);
@@ -255,6 +257,6 @@ test('init --immediately-run names the GitHub repository on the board home page'
   // A remote that is not on GitHub is not a repository the board can link to.
   const { dir, git } = repo();
   git('remote', 'add', 'origin', 'https://gitlab.com/acme/recipes.git');
-  await dibber(dir, 'init', '--yes', '--prefix', 'APP', '--immediately-run');
+  await dibber(dir, 'init', '--yes', '--prefix', 'APP');
   assert.match(readFileSync(join(dir, 'tickets', 'home.mdx'), 'utf8'), /board for this repository\./);
 });
