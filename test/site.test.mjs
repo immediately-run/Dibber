@@ -15,20 +15,30 @@ test('site/index.html is built from site/src (run `npm run site` after editing)'
   assert.equal(html, buildSite());
 });
 
-test('the page is self-contained: the only external load is the Plausible script, when configured', () => {
+test('the page is self-contained: the only external loads are the favicons and the Plausible script, when configured', () => {
   const config = JSON.parse(readFileSync(join(ROOT, 'site', 'site.json'), 'utf8'));
   // `rel="canonical"` names the page's own address; it is metadata, not something the page loads.
+  // The favicons are this repository's own files (the next test), so search engines can crawl them.
   const external = [...html.matchAll(/<(script|img|link)\b[^>]*\b(src|href)="(https?:)?\/\/[^"]+"/g)].map((m) => m[0])
-    .filter((tag) => !/\brel="canonical"/.test(tag));
+    .filter((tag) => !/\brel="canonical"/.test(tag))
+    .filter((tag) => !(/\brel="icon"/.test(tag) && tag.includes(`href="${RAW}site/favicon-`)));
   if (config.analytics.plausibleScript) assert.deepEqual(external, [`<script async src="https://plausible.io/js/${config.analytics.plausibleScript}.js"`]);
   else assert.deepEqual(external, []);
   assert.ok(!html.includes('{{'), 'no unfilled placeholder');
 });
 
-test('the head carries a favicon for each size a browser asks for, inlined', () => {
-  for (const n of [16, 32, 48]) {
-    assert.match(html, new RegExp(`<link rel="icon" type="image/png" sizes="${n}x${n}" href="data:image/png;base64,`), `${n}px favicon`);
+test('the head links a favicon file for each size a browser asks for, and one search can crawl', () => {
+  const icons = [...html.matchAll(/<link rel="icon" type="image\/png" sizes="(\d+)x\1" href="([^"]+)">/g)];
+  assert.deepEqual(icons.map((m) => Number(m[1])), [16, 32, 48, 192]);
+  for (const [, size, url] of icons) {
+    assert.ok(url.startsWith(RAW), url);
+    const file = join(ROOT, url.slice(RAW.length));
+    assert.ok(existsSync(file), `${url} exists in the repository`);
+    const png = readFileSync(file);
+    assert.deepEqual([png.readUInt32BE(16), png.readUInt32BE(20)], [Number(size), Number(size)], `${url} is ${size}px square`);
   }
+  // Google Search wants a square favicon whose side is a multiple of 48px.
+  assert.ok(icons.some(([, size]) => Number(size) % 48 === 0 && Number(size) > 48));
 });
 
 test('the head carries what search engines and link previews read', () => {

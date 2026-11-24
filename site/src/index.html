@@ -45,9 +45,12 @@
   "sameAs": ["https://github.com/immediately-run/dibber"]
 }
 </script>
-<link rel="icon" type="image/png" sizes="16x16" href="{{FAVICON_16}}">
-<link rel="icon" type="image/png" sizes="32x32" href="{{FAVICON_32}}">
-<link rel="icon" type="image/png" sizes="48x48" href="{{FAVICON_48}}">
+<!-- Favicons are files, not data: URIs, so Google Search can show one beside the result.
+     One per size the browser asks for, so none is resampled; 192px is the one search uses. -->
+<link rel="icon" type="image/png" sizes="16x16" href="https://raw.githubusercontent.com/immediately-run/dibber/main/site/favicon-16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="https://raw.githubusercontent.com/immediately-run/dibber/main/site/favicon-32.png">
+<link rel="icon" type="image/png" sizes="48x48" href="https://raw.githubusercontent.com/immediately-run/dibber/main/site/favicon-48.png">
+<link rel="icon" type="image/png" sizes="192x192" href="https://raw.githubusercontent.com/immediately-run/dibber/main/site/favicon-192.png">
 <style>:root { --icon: url("{{ICON}}"); }
 {{STYLE}}</style>
 {{ANALYTICS}}
