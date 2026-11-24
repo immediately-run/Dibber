@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Dibber: tickets as files in your repo</title>
+<title>Dibber: Git as your issue tracker</title>
 <meta name="description" content="Dibber keeps tickets as plain Markdown files next to your code. Your coding agent reads them, works them and closes them. No server, no account, no lock-in.">
 <link rel="canonical" href="https://immediately-run.github.io/dibber/">
 <meta name="robots" content="index, follow, max-image-preview:large">
@@ -15,17 +15,17 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Dibber">
 <meta property="og:url" content="https://immediately-run.github.io/dibber/">
-<meta property="og:title" content="Dibber: tickets as files in your repo">
+<meta property="og:title" content="Dibber: Git as your issue tracker">
 <meta property="og:description" content="Plain Markdown tickets next to your code, for you and your coding agent. No server, no account, no lock-in.">
 <meta property="og:image" content="https://immediately-run.github.io/dibber/og-image.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="Dibber, a squirrel in an orienteering hard hat, beside the words: Your to-do list belongs in your repo.">
+<meta property="og:image:alt" content="Dibber, a squirrel in an orienteering hard hat, beside the words: Git as your issue tracker. An open format built on Markdown.">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Dibber: tickets as files in your repo">
+<meta name="twitter:title" content="Dibber: Git as your issue tracker">
 <meta name="twitter:description" content="Plain Markdown tickets next to your code, for you and your coding agent. No server, no account, no lock-in.">
 <meta name="twitter:image" content="https://immediately-run.github.io/dibber/og-image.png">
-<meta name="twitter:image:alt" content="Dibber, a squirrel in an orienteering hard hat, beside the words: Your to-do list belongs in your repo.">
+<meta name="twitter:image:alt" content="Dibber, a squirrel in an orienteering hard hat, beside the words: Git as your issue tracker. An open format built on Markdown.">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -117,6 +117,8 @@ h3 { font-size: 1.15rem; font-weight: 750; }
 
 /* Hero */
 .hero { display: grid; grid-template-columns: 1.35fr 1fr; gap: 40px; align-items: center; padding-top: 32px; }
+.hero h1 { margin-bottom: 8px; }
+.tagline { font-size: clamp(1.25rem, 2.6vw, 1.6rem); font-weight: 700; color: var(--ink); margin: 0 0 18px; }
 .lead { font-size: 1.2rem; color: var(--muted); max-width: 36em; margin: 0 0 26px; }
 .mascot { width: 100%; max-width: 340px; aspect-ratio: 1; justify-self: center; filter: drop-shadow(0 18px 30px rgba(28, 38, 84, 0.18)); animation: bob 5s ease-in-out infinite; }
 @keyframes bob { 50% { transform: translateY(-8px) rotate(-1.5deg); } }
@@ -237,8 +239,9 @@ footer .made a { color: inherit; font-weight: 700; }
 <main>
 <section class="hero">
   <div class="hero-text">
-    <h1>Your to-do list belongs in your repo.</h1>
-    <p class="lead">Dibber keeps tickets as plain Markdown files next to your code. Your coding agent reads them, works them and closes them, and you review every change in the same pull request.</p>
+    <h1>Git as your issue tracker.</h1>
+    <p class="tagline">An open format built on Markdown.</p>
+    <p class="lead">Dibber keeps tickets as plain files next to your code. Your coding agent reads them, works them and closes them, and you review every change in the same pull request.</p>
 
     <div class="prompt">
       <p class="prompt-label">Paste this into Claude Code, Codex, opencode or Antigravity:</p>
