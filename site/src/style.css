@@ -145,6 +145,8 @@ h3 { font-size: 1.15rem; font-weight: 750; }
 footer { border-top: 1px solid var(--line); padding-top: 24px; padding-bottom: 40px; color: var(--muted); font-size: 0.9rem; }
 footer nav { display: flex; gap: 20px; flex-wrap: wrap; }
 footer a { color: var(--muted); }
+footer .made { margin: 18px 0 0; color: var(--ink); }
+footer .made a { color: inherit; font-weight: 700; }
 
 /* Narrow screens */
 @media (max-width: 860px) {
