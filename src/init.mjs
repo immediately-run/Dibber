@@ -14,7 +14,8 @@ export const PACKAGE_ROOT = join(HERE, '..');
 export const SKILLS_DIR = join(PACKAGE_ROOT, 'skills');
 const TEMPLATES = join(PACKAGE_ROOT, 'templates');
 /** The files that open the store as a board on immediately.run, written into the store by
- *  `--immediately-run` ([DIB-13](../tickets/DIB-13.md)): the descriptor naming the board
+ *  default, unless `--no-immediately-run` ([DIB-13](../tickets/DIB-13.md),
+ *  [DIB-32](../tickets/DIB-32.md)): the descriptor naming the board
  *  viewer, a home page holding the board, and the page shell that heads each ticket. */
 const IMMEDIATELY_RUN = join(TEMPLATES, 'immediately-run');
 export const IMMEDIATELY_RUN_FILES = ['immediately.run.json', 'home.mdx', '_layout.mdx'];
@@ -127,7 +128,7 @@ function writeOnce(path, content, report, overwrite = false) {
  * Set up `root`. Options: `prefix`, `store` (default `tickets`), `agents` (default true),
  * `updateSkills` (overwrite the installed skills with this version's), `linkSkills` (link
  * `.claude/skills/<name>` to `.agents/skills/<name>` instead of copying), `immediatelyRun`
- * (add the files that open the store as a board on immediately.run).
+ * (default true: add the files that open the store as a board on immediately.run).
  * A broken skill install (see `skillInstallProblem`) is always repaired.
  * Returns `{ created, updated, skipped, repaired }` as paths relative to `root`, with `prefix`,
  * `store`, and `repo` (the GitHub `owner/repo` of the `origin` remote, or `null`).
@@ -157,7 +158,7 @@ export function init(root, opts = {}) {
   }
 
   const repo = githubRepo(root);
-  if (opts.immediatelyRun) {
+  if (opts.immediatelyRun !== false) {
     // The home page's welcome line names the repository and links the board's edit mode on
     // immediately.run; with no GitHub remote there is no repository to name or link.
     const repoText = repo ? `the [${repo}](https://github.com/${repo}) repository` : 'this repository';
