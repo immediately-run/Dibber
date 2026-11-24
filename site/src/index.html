@@ -8,10 +8,50 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Dibber: Git as your issue tracker</title>
 <meta name="description" content="Dibber keeps tickets as plain Markdown files next to your code. Your coding agent reads them, works them and closes them. No server, no account, no lock-in.">
+<link rel="canonical" href="https://immediately-run.github.io/dibber/">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<meta name="theme-color" content="#fffdf9" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#10152e" media="(prefers-color-scheme: dark)">
+<!-- Search results and link previews. The image is published beside this page by the
+     Pages job's `site-files` (.github/workflows/cache.yml); a preview needs its absolute URL. -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Dibber">
+<meta property="og:url" content="https://immediately-run.github.io/dibber/">
 <meta property="og:title" content="Dibber: Git as your issue tracker">
 <meta property="og:description" content="Plain Markdown tickets next to your code, for you and your coding agent. No server, no account, no lock-in.">
-<meta property="og:type" content="website">
-<link rel="icon" type="image/png" href="{{FAVICON}}">
+<meta property="og:image" content="https://immediately-run.github.io/dibber/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Dibber, a squirrel in an orienteering hard hat, beside the words: Git as your issue tracker. An open format built on Markdown.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Dibber: Git as your issue tracker">
+<meta name="twitter:description" content="Plain Markdown tickets next to your code, for you and your coding agent. No server, no account, no lock-in.">
+<meta name="twitter:image" content="https://immediately-run.github.io/dibber/og-image.png">
+<meta name="twitter:image:alt" content="Dibber, a squirrel in an orienteering hard hat, beside the words: Git as your issue tracker. An open format built on Markdown.">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Dibber",
+  "description": "Tickets as plain Markdown files in your git repository, for you and your coding agent. A command-line tool, agent skills and an open format.",
+  "url": "https://immediately-run.github.io/dibber/",
+  "image": "https://immediately-run.github.io/dibber/og-image.png",
+  "applicationCategory": "DeveloperApplication",
+  "operatingSystem": "Any (Node.js)",
+  "license": "https://www.apache.org/licenses/LICENSE-2.0",
+  "isAccessibleForFree": true,
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+  "downloadUrl": "https://www.npmjs.com/package/@immediately-run/dibber",
+  "sameAs": ["https://github.com/immediately-run/dibber"]
+}
+</script>
+<!-- Favicons are files beside this page (`site-files` in .github/workflows/cache.yml), not
+     data: URIs, so Google Search can show one beside the result. One per size the browser
+     asks for, so none is resampled; 192px is the one search uses. -->
+<link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="icon" type="image/png" sizes="48x48" href="favicon-48.png">
+<link rel="icon" type="image/png" sizes="192x192" href="favicon-192.png">
 <style>:root { --icon: url("{{ICON}}"); }
 {{STYLE}}</style>
 {{ANALYTICS}}
@@ -141,7 +181,7 @@ Reading at night hurts.
     <li>Tell the person what was added, and commit it when they agree. The skills load in your next session.</li>
     <li>Ask what they'd like to work on first, and file it as their first ticket.</li>
   </ol>
-  <p class="agents-more">The same steps as Markdown: <a href="https://raw.githubusercontent.com/immediately-run/dibber/main/docs/install.md">docs/install.md</a>. The whole project for agents: <a href="https://raw.githubusercontent.com/immediately-run/dibber/main/llms.txt">llms.txt</a>.</p>
+  <p class="agents-more">The same steps as Markdown: <a href="https://raw.githubusercontent.com/immediately-run/dibber/main/docs/install.md">docs/install.md</a>. The whole project for agents: <a href="llms.txt">llms.txt</a>.</p>
 </section>
 
 <section class="again">
@@ -158,8 +198,9 @@ Reading at night hurts.
     <a href="https://github.com/immediately-run/dibber" data-event="GitHub">GitHub</a>
     <a href="https://www.npmjs.com/package/@immediately-run/dibber" data-event="npm">npm</a>
     <a href="https://github.com/immediately-run/dibber/blob/main/SPEC.md" data-event="Spec">Spec</a>
-    <a href="https://raw.githubusercontent.com/immediately-run/dibber/main/llms.txt">llms.txt</a>
+    <a href="llms.txt">llms.txt</a>
   </nav>
+  <p class="made">Made with <span role="img" aria-label="love">❤️</span> by the builders of <a href="https://immediately.run" data-event="immediately.run">immediately.run</a>.</p>
   <p>Apache-2.0. {{ANALYTICS_NOTE}}</p>
 </footer>
 <script>{{SCRIPT}}</script>

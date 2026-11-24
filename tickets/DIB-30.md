@@ -30,3 +30,5 @@ _filed 2026-11-24._
 _2026-11-24: done._
 
 _2026-11-24: the README opens with the tagline; the site's headline is 'Git as your issue tracker.' with 'An open format built on Markdown.' under it, its title and og:title use the first sentence, and the lead says 'plain files' so Markdown isn't said twice. Checked at 1280px and 390px, light and dark. `npm test` and `npm run site -- --check` pass._
+
+_2026-11-24: merged main, which had added link-preview metadata and site/og-image.png showing the old headline. og:title and twitter:title now use the tagline, both image alt texts describe the new card, and og-image.png is re-rendered at 1200×630 from the same card as the repository's social preview. `npm test` passes._
