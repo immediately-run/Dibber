@@ -57,3 +57,5 @@ _2026-11-23: in PR #10, https://github.com/immediately-run/dibber/pull/10._
 _2026-11-23: analytics on: Plausible's per-site script (pa-uRV8km5SD8BQgQgb49h5T), from the owner. Checked in Chromium: the script is requested, and the copy and outbound clicks queue as events._
 
 _2026-11-24: the owner allowed the favicon to load from a separate file, so Google Search can show it: the favicons are now files in site/, linked by their raw.githubusercontent URLs, and the page's only other external load is still the Plausible script, https://github.com/immediately-run/dibber/pull/14._
+
+_2026-11-24: the owner asked for llms.txt on the site itself: the Pages job gained a site-files input (new-project-template), and cache.yml now publishes llms.txt, the favicons and the preview image beside the page, so the page links them on its own origin instead of raw.githubusercontent.com._

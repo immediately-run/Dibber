@@ -28,6 +28,7 @@ jobs:
     uses: immediately-run/new-project-template/.github/workflows/zip-cache.yml@main
     with:
       landing-html: 'site/index.html'
+      site-files: 'llms.txt site/favicon-16.png site/favicon-32.png site/favicon-48.png site/favicon-192.png site/og-image.png'
     secrets:
       DEPLOY_APP_ID: ${{ secrets.DEPLOY_APP_ID }}
       DEPLOY_APP_PRIVATE_KEY: ${{ secrets.DEPLOY_APP_PRIVATE_KEY }}

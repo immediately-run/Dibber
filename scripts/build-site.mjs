@@ -5,9 +5,10 @@
 //   node scripts/build-site.mjs --check   exits 1 if site/index.html is out of date
 //
 // The Pages cache job (.github/workflows/cache.yml, `landing-html`) publishes exactly one file
-// as the site's root page, so everything is inlined: the CSS, the script and the mascot. The
-// favicons are the exception: they are files in site/, linked by their raw.githubusercontent
-// URLs, because Google Search shows a favicon only from a URL it can crawl, never a data: URI.
+// as the site's root page, and inlines the CSS, the script and the mascot. The favicons, the
+// preview image and llms.txt are files the same job publishes beside the page (its
+// `site-files`), because Google Search shows a favicon only from a URL it can crawl, a link
+// preview needs an absolute image URL, and agents look for llms.txt at the site.
 // Analytics: `analytics.plausibleScript` in site/site.json is the site's Plausible script id
 // (`pa-…`, from Plausible's install snippet); null loads nothing.
 
