@@ -32,12 +32,15 @@ export function buildSite() {
     STYLE: read('style.css'),
     SCRIPT: read('site.js'),
     ICON: dataUri('dibber-640.webp', 'image/webp'),
-    FAVICON: dataUri('favicon-48.png', 'image/png'),
+    // One favicon per size the browser asks for, so none is resampled from another.
+    FAVICON_16: dataUri('favicon-16.png', 'image/png'),
+    FAVICON_32: dataUri('favicon-32.png', 'image/png'),
+    FAVICON_48: dataUri('favicon-48.png', 'image/png'),
     ANALYTICS: analytics,
     ANALYTICS_NOTE: note,
   };
   let html = read('index.html').replace(/<!-- Dibber's website:[\s\S]*?-->/, '<!-- Built by scripts/build-site.mjs from site/src/: edit those files and run `npm run site`, not this one. -->');
-  html = html.replace(/\{\{([A-Z_]+)\}\}/g, (m, k) => {
+  html = html.replace(/\{\{([A-Z0-9_]+)\}\}/g, (m, k) => {
     if (!(k in values)) throw new Error(`unknown placeholder ${m}`);
     return values[k];
   });

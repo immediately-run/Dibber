@@ -17,10 +17,38 @@ test('site/index.html is built from site/src (run `npm run site` after editing)'
 
 test('the page is self-contained: the only external load is the Plausible script, when configured', () => {
   const config = JSON.parse(readFileSync(join(ROOT, 'site', 'site.json'), 'utf8'));
-  const external = [...html.matchAll(/<(script|img|link)\b[^>]*\b(src|href)="(https?:)?\/\/[^"]+"/g)].map((m) => m[0]);
+  // `rel="canonical"` names the page's own address; it is metadata, not something the page loads.
+  const external = [...html.matchAll(/<(script|img|link)\b[^>]*\b(src|href)="(https?:)?\/\/[^"]+"/g)].map((m) => m[0])
+    .filter((tag) => !/\brel="canonical"/.test(tag));
   if (config.analytics.plausibleScript) assert.deepEqual(external, [`<script async src="https://plausible.io/js/${config.analytics.plausibleScript}.js"`]);
   else assert.deepEqual(external, []);
   assert.ok(!html.includes('{{'), 'no unfilled placeholder');
+});
+
+test('the head carries a favicon for each size a browser asks for, inlined', () => {
+  for (const n of [16, 32, 48]) {
+    assert.match(html, new RegExp(`<link rel="icon" type="image/png" sizes="${n}x${n}" href="data:image/png;base64,`), `${n}px favicon`);
+  }
+});
+
+test('the head carries what search engines and link previews read', () => {
+  const meta = (attr, name) => html.match(new RegExp(`<meta ${attr}="${name}" content="([^"]+)"`))?.[1];
+  assert.match(html, new RegExp(`<link rel="canonical" href="${SITE_URL}">`));
+  assert.equal(meta('property', 'og:url'), SITE_URL);
+  for (const [attr, name] of [['name', 'description'], ['property', 'og:title'], ['property', 'og:description'], ['name', 'twitter:card'], ['property', 'og:image:alt']]) {
+    assert.ok(meta(attr, name), `${name} is set`);
+  }
+  // The preview image is a file in this repository, served raw, at the size it declares.
+  for (const url of [meta('property', 'og:image'), meta('name', 'twitter:image')]) {
+    assert.ok(url.startsWith(RAW), url);
+    const file = join(ROOT, url.slice(RAW.length));
+    assert.ok(existsSync(file), `${url} exists in the repository`);
+    const png = readFileSync(file);
+    assert.deepEqual([png.readUInt32BE(16), png.readUInt32BE(20)], [Number(meta('property', 'og:image:width')), Number(meta('property', 'og:image:height'))]);
+  }
+  const ld = JSON.parse(html.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/)[1]);
+  assert.equal(ld['@type'], 'SoftwareApplication');
+  assert.equal(ld.url, SITE_URL);
 });
 
 test('every in-page link has its target', () => {
