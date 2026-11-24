@@ -57,7 +57,8 @@ keeps working.
 
 - [`SPEC.md`](SPEC.md) — the format, rule by rule (`R-DIB-n`).
 - [`config.schema.json`](config.schema.json) — the schema of a repository's optional
-  `.dibber/config.json` (the store's folder and id prefix).
+  `.dibber/config.json` (the store's folder, the id prefix, and `ids`: whether Dibber or an
+  orchestrator such as Baton gives new tickets their ids).
 - [`ticket.schema.json`](ticket.schema.json) — the JSON Schema every ticket's frontmatter
   satisfies. A repository can add a stricter schema of its own.
 - [`skills/`](skills/), [`bin/`](bin/), [`src/`](src/) — optional tooling: the `dibber`

@@ -1,12 +1,14 @@
 ---
 id: DIB-31
 title: "DIB-31 — Orchestrator-assigned ids: a third value of the ids setting, where Dibber takes the id from the orchestrator"
-status: available
+status: done
 description: In a repository Baton coordinates, the id is also the ticket's file name and only Baton may hand it out, but dibber new and the skills count ids from git. Add "orchestrator" as a third value of .dibber/config.json's ids setting, beside numeric and random (DIB-26). With it, Dibber accepts any id and always gets new ones from the orchestrator, today Baton.
 depends_on: []
 order: 31
 tags: [spec, ids, tooling, skills]
 project: wide-audience
+assignee: Claude
+updated: 2026-11-24
 ---
 
 **Brief:** from the owner, 2026-11-24: when Dibber works with Baton it must ask Baton for a ticket's id, because the Baton id is also the file's name. The skills don't know to look for Baton in a repository, or to use the Baton command-line tool for the next id. Then, the same day: the ticket id can be numeric, random, or orchestrator-assigned; when it is orchestrator-assigned, Dibber doesn't care what the value is, but it knows it must get it from the orchestrator. Baton is the only orchestrator that works with Dibber today, so in practice orchestrator means Baton.
@@ -83,18 +85,22 @@ re-checking them would make it a second authority on ids, which could disagree w
 
 ### Exit criteria
 
-- [ ] SPEC.md R-DIB-4 and R-DIB-14 define the three values, the default, and `orchestrator` meaning Baton; the Versions note says it amends Dibber 1 in place (no valid store becomes invalid)
-- [ ] `config.schema.json` accepts `ids` with exactly the three values; `ticket.schema.json` accepts a file-safe id such as `R3-274e1` or `ABC-x.1`
-- [ ] conformance: a valid store with `ids: orchestrator` and ids no numeric or random form accepts passes; an invalid one whose id holds a `/` fails on R-DIB-4
-- [ ] a test: in a fixture with `.baton/baton.json` and no `.dibber/`, `dibber new` exits non-zero without writing a file, and its message names `baton tickets new` and `baton tickets next`
-- [ ] a test: `dibber new --id B-9` in that fixture writes `tickets/B-9.md`
-- [ ] a test: `dibber claim` in that fixture refuses and names `baton tickets claim`
-- [ ] a test: `dibber check` warns when `.baton/baton.json` is present and `.dibber/config.json` says `"ids": "numeric"`
-- [ ] `grep -n "orchestrator" skills/dibber-new-ticket/SKILL.md skills/dibber-work-ticket/SKILL.md` finds the step in both
-- [ ] `npm test` passes, and `dibber check` passes on the baton, docs and fieldhouse stores, apart from the errors DIB-12 already lists
+- [x] SPEC.md R-DIB-4 and R-DIB-14 define the three values, the default, and `orchestrator` meaning Baton; the Versions note says it amends Dibber 1 in place (no valid store becomes invalid)
+- [x] `config.schema.json` accepts `ids` with exactly `numeric` and `orchestrator` (DIB-26 adds `random`); `ticket.schema.json` accepts a file-safe id such as `R3-274e1` or `ABC-x.1`
+- [x] conformance: a valid store with `ids: orchestrator` and ids no numeric or random form accepts passes; an invalid one whose id holds a `/` fails on R-DIB-4
+- [x] a test: in a fixture with `.baton/baton.json` and no `.dibber/`, `dibber new` exits non-zero without writing a file, and its message names `baton tickets new` and `baton tickets next`
+- [x] a test: `dibber new --id B-9` in that fixture writes `tickets/B-9.md`
+- [x] a test: `dibber claim` in that fixture refuses and names `baton tickets claim`
+- [x] a test: `dibber check` warns when `.baton/baton.json` is present and `.dibber/config.json` says `"ids": "numeric"`
+- [x] `grep -n "orchestrator" skills/dibber-new-ticket/SKILL.md skills/dibber-work-ticket/SKILL.md` finds the step in both
+- [x] `npm test` passes, and `dibber check` passes on the baton, docs and fieldhouse stores, apart from the errors DIB-12 already lists
 
 ## Status
 
 _filed 2026-11-24._
 
 _2026-11-24: redesigned from the owner's direction. Instead of Dibber detecting Baton, `.dibber/config.json`'s `ids` takes three values: numeric, random or orchestrator. Under orchestrator Dibber accepts any file-safe id and takes new ones from Baton. `.baton/baton.json` now only sets the default._
+
+_2026-11-24: claimed by Claude._
+
+_2026-11-24: done on branch claude/dreamy-carson-mywl7y: ids in .dibber/config.json (numeric, orchestrator; orchestrator by default where .baton/baton.json is present), file-safe ids under orchestrator, dibber new --id, new/claim/set/done refusing with the baton command, check's R-DIB-14 warnings, init, both skills, SPEC R-DIB-4/R-DIB-14/Coordination state/Versions. The schema takes two values, not three: random stays DIB-26's, since nothing would honour it yet. dibber check: baton has only DIB-12's three prs errors; docs (now read from content/roadmap, its .baton/baton.json items) and fieldhouse pass._

@@ -7,6 +7,7 @@ import { resolve } from 'node:path';
 import { checkStore } from './check.mjs';
 import { Refusal, newTicket, setStatus, claim, listTickets, STATUSES } from './tickets.mjs';
 import { init, defaultPrefix } from './init.mjs';
+import { readOrchestrator } from './store.mjs';
 
 const HELP = `dibber — tickets as files in git (https://github.com/immediately-run/dibber)
 
@@ -23,8 +24,10 @@ Usage: dibber <command> [options]        (every command takes --json and --root 
   list [--ready] [--status S] [--all]
                                    the overview: what is ready, in progress and waiting
   new --title "…" [--why "…"] [--what "…"] [--criterion "…"]… [--depends-on ID,…]
-      [--parent ID] [--tags a,b] [--project P] [--order N] [--brief "…"] [--mdx]
-                                   file a ticket with the next free id
+      [--parent ID] [--tags a,b] [--project P] [--order N] [--brief "…"] [--mdx] [--id ID]
+                                   file a ticket with the next free id, or with --id, one
+                                   you were given; under "ids": "orchestrator" the id is
+                                   Baton's, so new needs --id (or file with Baton)
   claim <id> [--as NAME] [--force] available → in-progress, with you as assignee
   set <id> <status> [--pr URL] [--note "…"]
                                    change a status; the file stays where it is
@@ -34,10 +37,13 @@ Usage: dibber <command> [options]        (every command takes --json and --root 
 Statuses: ${STATUSES.join(', ')}.
 Dibber alone fits one person driving a coding agent on their own machine. Several runners,
 several people or several LLM providers at once: add a coordinator such as Baton
-(https://github.com/immediately-run/baton). Claims here are advisory, not locks.
+(https://github.com/immediately-run/baton). Claims here are advisory, not locks. In a
+repository Baton coordinates (.baton/baton.json, or "ids": "orchestrator" in
+.dibber/config.json), Baton gives the ids and holds the claims: new, claim, set and done
+refuse and name the baton command to run instead.
 `;
 
-const FLAGS_WITH_VALUES = new Set(['prefix', 'store', 'status', 'title', 'why', 'what', 'criterion', 'depends-on', 'parent', 'tags', 'project', 'order', 'brief', 'as', 'pr', 'note', 'root', 'description', 'assignee']);
+const FLAGS_WITH_VALUES = new Set(['prefix', 'store', 'status', 'title', 'why', 'what', 'criterion', 'depends-on', 'parent', 'tags', 'project', 'order', 'brief', 'as', 'pr', 'note', 'root', 'description', 'assignee', 'id']);
 const REPEATABLE = new Set(['criterion']);
 
 export function parseArgs(argv) {
@@ -134,7 +140,7 @@ export async function run(argv, { cwd = process.cwd(), interactive = true } = {}
       const r = newTicket(root, {
         title: flags.title, why: flags.why, what: flags.what, criteria: flags.criterion ?? [],
         dependsOn: csv(flags['depends-on']), parent: flags.parent, tags: csv(flags.tags), project: flags.project,
-        order: flags.order, brief: flags.brief, description: flags.description, assignee: flags.assignee, mdx: flags.mdx,
+        order: flags.order, brief: flags.brief, description: flags.description, assignee: flags.assignee, mdx: flags.mdx, id: flags.id,
       });
       if (flags.json) json(r);
       else stdout.push(`filed ${r.id}: ${r.file}`);
@@ -152,7 +158,7 @@ export async function run(argv, { cwd = process.cwd(), interactive = true } = {}
       else stdout.push(`${r.id} is ${r.status}: ${r.file}`);
     } else if (cmd === 'init') {
       let prefix = flags.prefix;
-      if (!prefix && !flags.yes && interactive) prefix = (await ask('Ticket id prefix (e.g. APP for APP-1)?', defaultPrefix(root))).toUpperCase();
+      if (!prefix && !flags.yes && interactive && !readOrchestrator(root)) prefix = (await ask('Ticket id prefix (e.g. APP for APP-1)?', defaultPrefix(root))).toUpperCase();
       const r = init(root, { prefix, store: flags.store, agents: !flags['no-agents'], updateSkills: flags['update-skills'], linkSkills: flags['link-skills'], immediatelyRun: flags['immediately-run'] });
       if (flags.json) json(r);
       else {
@@ -160,7 +166,9 @@ export async function run(argv, { cwd = process.cwd(), interactive = true } = {}
         for (const f of r.updated) stdout.push(`  updated ${f}`);
         for (const f of r.repaired) stdout.push(`  repaired ${f} (it was broken; written again)`);
         for (const f of r.skipped) stdout.push(`  kept    ${f} (already there)`);
-        stdout.push(`\nDibber is set up: tickets in ${r.store}/, ids ${r.prefix}-1, ${r.prefix}-2, …\nNext: ask your agent "what's on the board?", or run: dibber list`);
+        stdout.push(r.ids === 'orchestrator'
+          ? `\nDibber is set up: tickets in ${r.store}/, ids from Baton (.baton/baton.json): file and claim with \`baton tickets new\` and \`baton tickets claim\`.\nNext: ask your agent "what's on the board?", or run: dibber list`
+          : `\nDibber is set up: tickets in ${r.store}/, ids ${r.prefix}-1, ${r.prefix}-2, …\nNext: ask your agent "what's on the board?", or run: dibber list`);
         if (r.created.includes(`${r.store}/immediately.run.json`)) {
           stdout.push(`Once pushed to a public GitHub repository, the board opens at https://immediately.run/present/github/${r.repo ?? '<owner>/<repo>'}/main/bundle/${r.store}/home.mdx`);
         }

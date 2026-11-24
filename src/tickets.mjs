@@ -1,5 +1,5 @@
 // tickets.mjs — write tickets: file a new one, change its status, close it.
-// Tickets: [DIB-7](../tickets/DIB-7.md), [DIB-2](../tickets/DIB-2.md), [DIB-24](../tickets/DIB-24.md).
+// Tickets: [DIB-7](../tickets/DIB-7.md), [DIB-2](../tickets/DIB-2.md), [DIB-24](../tickets/DIB-24.md), [DIB-31](../tickets/DIB-31.md).
 // Every write changes one ticket's own file in place (R-DIB-2, R-DIB-7). Nothing here touches
 // git's index: the person or agent doing the work stages and commits the ticket with the work,
 // like any other file they changed.
@@ -8,7 +8,7 @@ import { execFileSync } from 'node:child_process';
 import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { Document, visit } from 'yaml';
-import { readStore, splitFrontmatter, rel, LIVE, CLOSED, STATUSES, ID_RE, QUALIFIED_RE, idNumber, asList, byOrderThenId } from './store.mjs';
+import { readStore, splitFrontmatter, rel, LIVE, CLOSED, STATUSES, ID_RE, QUALIFIED_RE, ORCHESTRATOR, idPattern, idNumber, asList, byOrderThenId } from './store.mjs';
 import { checkStore } from './check.mjs';
 
 export class Refusal extends Error {}
@@ -23,7 +23,8 @@ function git(root, ...args) {
   }
 }
 
-/** Ids already taken on other branches (local and remote-tracking), for R-DIB-4's allocation. */
+/** Ids already taken on other branches (local and remote-tracking), for R-DIB-4's allocation:
+ *  the name of every ticket-shaped file under the store, whatever its id form. */
 function idsOnBranches(root, storeRel) {
   const refs = git(root, 'for-each-ref', '--format=%(refname)', 'refs/heads', 'refs/remotes');
   if (!refs) return [];
@@ -32,7 +33,7 @@ function idsOnBranches(root, storeRel) {
     const files = git(root, 'ls-tree', '-r', '--name-only', ref, '--', storeRel);
     if (!files) continue;
     for (const f of files.split('\n')) {
-      const m = /([A-Z][A-Z0-9]*-[0-9]+[a-z0-9]*)\.mdx?$/.exec(f);
+      const m = /([^/]+)\.mdx?$/.exec(f);
       if (m) ids.push(m[1]);
     }
   }
@@ -56,7 +57,7 @@ export function storePrefix(store) {
 export function nextId(root, store) {
   const prefix = storePrefix(store);
   const taken = [...store.tickets.map((t) => String(t.meta.id)), ...idsOnBranches(root, store.storeRel)]
-    .filter((id) => id.split('-')[0] === prefix)
+    .filter((id) => ID_RE.test(id) && id.split('-')[0] === prefix)
     .map(idNumber)
     .filter(Number.isFinite);
   return `${prefix}-${(taken.length ? Math.max(...taken) : 0) + 1}`;
@@ -68,16 +69,54 @@ function frontmatterYaml(obj) {
   return doc.toString({ lineWidth: 0, flowCollectionPadding: false });
 }
 
+/**
+ * Under `ids: orchestrator` (R-DIB-4, R-DIB-14) the orchestrator holds the ids and the claims,
+ * so Dibber writes neither: refuse, and name the orchestrator's command that does it.
+ */
+function refuseOrchestrated(store, what, args) {
+  if (store.settings.ids !== 'orchestrator') return;
+  throw new Refusal(
+    `${ORCHESTRATOR.name} coordinates this repository (\`ids: orchestrator\`), so ${what} is ${ORCHESTRATOR.name}'s: run ${args.map((a) => `\`${ORCHESTRATOR.command} tickets ${a}\``).join(' or ')}` +
+      ` (in ${ORCHESTRATOR.name}'s own repository, \`node cli/baton.mjs tickets …\`)`,
+  );
+}
+
+/**
+ * The id a new ticket takes (R-DIB-4): `--id` when given, which must be free and of the
+ * store's form; else, under `ids: numeric`, the next free number. Under `ids: orchestrator`
+ * Dibber never makes one up: the filer brings the orchestrator's, or files through it.
+ */
+function newId(root, store, requested) {
+  if (requested === undefined) {
+    refuseOrchestrated(store, "a new ticket's id", ['new --title "…"', `next ticket-${store.settings.prefix ?? '<prefix>'} --for "…"`]);
+    return nextId(root, store);
+  }
+  const id = String(requested);
+  if (!idPattern(store.settings).test(id)) {
+    throw new Refusal(store.settings.ids === 'orchestrator'
+      ? `\`${id}\` cannot name a ticket file: an id is letters, digits, \`.\`, \`_\` and \`-\`, starting with a letter or digit`
+      : `\`${id}\` is not an id of the form <PREFIX>-<n>`);
+  }
+  if (store.settings.ids !== 'orchestrator' && id.split('-')[0] !== storePrefix(store)) {
+    throw new Refusal(`\`${id}\` does not use this store's prefix \`${storePrefix(store)}\``);
+  }
+  const holder = store.tickets.find((t) => t.meta.id === id);
+  if (holder) throw new Refusal(`\`${id}\` is already taken by ${holder.file}; an id is never reused`);
+  if (idsOnBranches(root, store.storeRel).includes(id)) throw new Refusal(`\`${id}\` is already taken on another branch; an id is never reused`);
+  return id;
+}
+
 /** File a new ticket. Returns `{ id, file }`. */
 export function newTicket(root, opts) {
   const store = readStore(root);
   if (!store.exists) throw new Refusal(`there is no store at \`${store.storeRel}/\`; run \`dibber init\` first`);
   if (!opts.title) throw new Refusal('a ticket needs a title: --title "what to do"');
-  const id = nextId(root, store);
+  const id = newId(root, store, opts.id);
+  const local = idPattern(store.settings);
   const dependsOn = asList(opts.dependsOn);
   for (const d of dependsOn) {
-    if (!ID_RE.test(d) && !QUALIFIED_RE.test(d)) throw new Refusal(`\`${d}\` is not a ticket id`);
-    if (ID_RE.test(d) && !store.tickets.some((t) => t.meta.id === d)) throw new Refusal(`\`depends_on\` names \`${d}\`, which is not a ticket in this store`);
+    if (!local.test(d) && !QUALIFIED_RE.test(d)) throw new Refusal(`\`${d}\` is not a ticket id`);
+    if (local.test(d) && !store.tickets.some((t) => t.meta.id === d)) throw new Refusal(`\`depends_on\` names \`${d}\`, which is not a ticket in this store`);
   }
   if (opts.parent && !store.tickets.some((t) => t.meta.id === opts.parent)) throw new Refusal(`\`parent\` names \`${opts.parent}\`, which is not a ticket in this store`);
   const meta = { id, title: `${id} — ${opts.title}`, status: 'available' };
@@ -173,6 +212,7 @@ function writeChecked(root, path, text) {
 export function setStatus(root, id, status, opts = {}) {
   if (!STATUSES.includes(status)) throw new Refusal(`\`${status}\` is not a Dibber status: ${STATUSES.join(', ')}`);
   const store = readStore(root);
+  if (!opts.claiming) refuseOrchestrated(store, "a ticket's status", [status === 'done' ? `done ${id}` : `set ${id} ${status}`]);
   const t = findTicket(store, id);
   if (t.closed) throw new Refusal(`\`${id}\` is closed (\`${t.meta.status}\`); file a new ticket instead of reopening it`);
   const parts = splitFrontmatter(t.text);
@@ -198,6 +238,7 @@ export function setStatus(root, id, status, opts = {}) {
 /** Claim: available → in-progress, with an advisory assignee. Refuses a ticket that is not ready. */
 export function claim(root, id, opts = {}) {
   const store = readStore(root);
+  refuseOrchestrated(store, 'a claim', [`claim ${id}`]);
   const t = findTicket(store, id);
   const { ready, waits } = readiness(store, t);
   if (!ready && !opts.force) {
@@ -205,7 +246,7 @@ export function claim(root, id, opts = {}) {
     throw new Refusal(`\`${id}\` waits on ${waits.map((w) => `${w.id} (${w.why})`).join(', ')}; pass --force to claim it anyway`);
   }
   const who = opts.as || git(root, 'config', 'user.name') || process.env.USER || 'me';
-  return setStatus(root, id, 'in-progress', { assignee: who, note: `claimed by ${who}` });
+  return setStatus(root, id, 'in-progress', { assignee: who, note: `claimed by ${who}`, claiming: true });
 }
 
 /** The overview: every ticket with its readiness, in reading order. */

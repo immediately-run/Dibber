@@ -25,7 +25,8 @@ at a time, with the person as the only scheduler. Several runners, several peopl
 providers, budgets, retries) need a coordinator as well, such as
 [Baton](https://github.com/immediately-run/baton). The coordinator allocates ids, holds claims
 and runs the work, and the tickets stay Dibber: moving from one setup to the other changes no
-ticket file.
+ticket file. A repository says which setup it is in with `ids` ([R-DIB-14](#1-the-store)):
+`orchestrator` where the coordinator gives the ids.
 
 ## 1. The store
 
@@ -58,23 +59,45 @@ ticket file.
   settings may name them too, but never disagree with `.dibber/config.json`. `.dibber/` holds
   Dibber's per-repository files, and a reader ignores any file there and any key in
   `config.json` that it does not know.
+  - **`ids`, who makes a ticket's id** ([R-DIB-4](#2-ids)): `numeric`, Dibber's own
+    `<PREFIX>-<n>`, or `orchestrator`, the orchestrator's, never Dibber's. The orchestrator is
+    [Baton](https://github.com/immediately-run/baton), the only one that works with Dibber
+    today, and a repository it coordinates holds `.baton/baton.json` at its root. Without an
+    `ids` key, `ids` is `orchestrator` where that file is present and `numeric` elsewhere.
+  - **The orchestrator's settings.** Where `.baton/baton.json` is present, a reader takes the
+    store from its `items` and the prefix from its `ticket_prefix` for whatever
+    `.dibber/config.json` leaves out, or for all of it when there is no `.dibber/config.json`.
+    Under `ids: orchestrator` the two files name the same store and prefix, and a repository
+    with `.baton/baton.json` whose `ids` is not `orchestrator` sends filers two ways: a
+    validator warns of both.
 
 ## 2. Ids
 
-- **R-DIB-4 (an id: a prefix and a number, never reused).** A ticket's id is `<PREFIX>-<n>`:
-  the repository's prefix, upper-case letters and digits starting with a letter (`B`, `FLDH`),
-  and a decimal number. An id is never reused and never renamed, whether the ticket is open,
-  closed or withdrawn. A repository may accept older ids under patterns of its own (a split
-  suffix such as `R3-51a`, `R3-274e1`); it never allocates new ones under them.
-  - **Allocation.** Concurrent branches must not take the same number. Where a coordinator is in
-    use, the number is the coordinator's to give: git is never the counter. Without one (one
-    writer at a time), the next number is one more than the highest taken across the store and
-    the repository's local branches. If an occasional collision gets through
-    anyway (the same person on two branches), the second to merge renumbers, rewriting every
-    `depends_on` and `parent` that names the old id and the body's header lines. Several writers
-    at once is what a coordinator is for.
+- **R-DIB-4 (an id, never reused).** An id is never reused and never renamed, whether the
+  ticket is open, closed or withdrawn. Its form follows the repository's `ids` setting
+  ([R-DIB-14](#1-the-store)):
+  - **`numeric`** (the default without an orchestrator). The id is `<PREFIX>-<n>`: the
+    repository's prefix, upper-case letters and digits starting with a letter (`B`, `FLDH`), and
+    a decimal number. A repository may accept older ids under patterns of its own (a split
+    suffix such as `R3-51a`, `R3-274e1`); it never allocates new ones under them.
+  - **`orchestrator`.** The id is whatever the orchestrator assigns. Dibber asks of it only what
+    it needs to name the ticket's file and to stand in a qualified id: letters, digits, `.`, `_`
+    and `-`, starting with a letter or a digit. The orchestrator, and the store's own
+    `item.schema.json` ([R-DIB-3](#1-the-store)), may narrow it further; Dibber does not
+    re-check their forms, which would make it a second authority on ids.
+  - **Allocation.** Concurrent branches must not take the same id. Under `ids: orchestrator` the
+    id is the orchestrator's to give, and git is never the counter: with Baton, `baton tickets
+    new` files a ticket under the next id of the repository's sequence, and `baton tickets next
+    ticket-<prefix>` prints one for a filer who writes the file. A tool or an agent never makes
+    one up, and when the orchestrator cannot be reached it says so instead of counting. Under
+    `ids: numeric` (one writer at a time), the next number is one more than the highest taken
+    across the store and the repository's local branches. If an occasional collision gets
+    through anyway (the same person on two branches), the second to merge renumbers, rewriting
+    every `depends_on` and `parent` that names the old id and the body's header lines. Several
+    writers at once is what a coordinator is for.
   - **Across repositories.** `<repository>:<id>` (`baton:B-111`) names a ticket in another
-    repository's store; an unqualified id is always the store's own. What a repository name
+    repository's store; its `<id>` is read in the file-safe form, since that repository's ids
+    may be its orchestrator's. An unqualified id is always the store's own. What a repository name
     resolves to is the reader's configuration.
 
 ## 3. Frontmatter
@@ -181,6 +204,11 @@ Dibber — readers ignore keys they do not know — but the state there is that 
 concern. A store whose claims must be exclusive has outgrown
 [Dibber alone](#dibber-alone-or-with-a-coordinator).
 
+**Under `ids: orchestrator`, the claims are the orchestrator's too.** A store whose ids an
+orchestrator gives is one it coordinates ([R-DIB-14](#1-the-store)): a tool claims, releases and
+closes its tickets through the orchestrator (with Baton, `baton tickets claim`, `set` and
+`done`), never by writing `status` or `assignee` past it.
+
 **`assignee` is not a hold.** A person working without a coordinator, usually alone, still wants
 to see who said they would do a ticket, so `assignee` records it ([R-DIB-5](#3-frontmatter)). It
 is advisory: it stops no one else taking the ticket, two branches can each write a different
@@ -199,8 +227,10 @@ Amended in place since Dibber 1 was first published: `.dibber/config.json`
 ([R-DIB-14](#1-the-store)), the optional `assignee` key, `.md` as the default file name, and the
 one-writer allocation rule ([R-DIB-4](#2-ids)), and closing in place
 ([R-DIB-2](#1-the-store)), which replaced moving a closed ticket to `archive/`, and a
-`superseded` dependency counting as done for readiness ([R-DIB-8](#4-relations)). Every store
-valid before stays valid; a reader that took closure from the `archive/` path reads `status`
+`superseded` dependency counting as done for readiness ([R-DIB-8](#4-relations)), and the `ids`
+setting with orchestrator-assigned ids ([R-DIB-4](#2-ids), [R-DIB-14](#1-the-store)), whose
+default changes nothing for a store without `.baton/baton.json` and accepts every id a Baton
+store held before. Every store valid before stays valid; a reader that took closure from the `archive/` path reads `status`
 instead, as R-DIB-6 always said it should, and a reader that counts only `done` holds a ticket
 on a superseded dependency longer than it need, never starting work too early.
 

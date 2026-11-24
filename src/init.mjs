@@ -7,7 +7,7 @@ import { existsSync, lstatSync, mkdirSync, readFileSync, readdirSync, rmSync, wr
 import { basename, dirname, join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { today } from './tickets.mjs';
-import { readStore } from './store.mjs';
+import { readStore, readOrchestrator } from './store.mjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 export const PACKAGE_ROOT = join(HERE, '..');
@@ -129,25 +129,31 @@ function writeOnce(path, content, report, overwrite = false) {
  * `.claude/skills/<name>` to `.agents/skills/<name>` instead of copying), `immediatelyRun`
  * (add the files that open the store as a board on immediately.run).
  * A broken skill install (see `skillInstallProblem`) is always repaired.
+ * In a repository Baton coordinates (`.baton/baton.json`), the settings say
+ * `"ids": "orchestrator"` and take the store and prefix from Baton's, and no first ticket is
+ * written, since its id would be Dibber's ([DIB-31](../tickets/DIB-31.md)).
  * Returns `{ created, updated, skipped, repaired }` as paths relative to `root`, with `prefix`,
- * `store`, and `repo` (the GitHub `owner/repo` of the `origin` remote, or `null`).
+ * `store`, `ids`, and `repo` (the GitHub `owner/repo` of the `origin` remote, or `null`).
  */
 export function init(root, opts = {}) {
   const report = { created: [], updated: [], skipped: [], repaired: [] };
-  const prefix = opts.prefix ?? defaultPrefix(root);
-  if (!/^[A-Z][A-Z0-9]*$/.test(prefix)) throw new Error(`the prefix \`${prefix}\` must be upper-case letters and digits, starting with a letter (no dash)`);
-  const storeRel = opts.store ?? 'tickets';
+  const orchestrator = readOrchestrator(root);
+  const prefix = opts.prefix ?? orchestrator?.prefix ?? (orchestrator ? null : defaultPrefix(root));
+  if (prefix != null && !/^[A-Z][A-Z0-9]*$/.test(prefix)) throw new Error(`the prefix \`${prefix}\` must be upper-case letters and digits, starting with a letter (no dash)`);
+  const storeRel = opts.store ?? orchestrator?.store ?? 'tickets';
+  const written = { store: storeRel, ...(prefix != null ? { prefix } : {}), ...(orchestrator ? { ids: 'orchestrator' } : {}) };
 
   const configPath = join(root, '.dibber', 'config.json');
-  let config = { store: storeRel, prefix };
+  let config = written;
   if (existsSync(configPath)) {
     try { config = { ...config, ...JSON.parse(readFileSync(configPath, 'utf8')) }; } catch {}
   }
-  writeOnce(configPath, JSON.stringify({ store: storeRel, prefix }, null, 2) + '\n', report);
+  writeOnce(configPath, JSON.stringify(written, null, 2) + '\n', report);
+  const ids = config.ids ?? (orchestrator ? 'orchestrator' : 'numeric');
 
   const store = join(root, config.store);
   mkdirSync(store, { recursive: true });
-  if (readStore(root).tickets.length === 0) {
+  if (ids !== 'orchestrator' && readStore(root).tickets.length === 0) {
     const id = `${config.prefix}-1`;
     const sample = readFileSync(join(TEMPLATES, 'first-ticket.md'), 'utf8')
       .replaceAll('{{ID}}', id)
@@ -203,5 +209,5 @@ export function init(root, opts = {}) {
   }
 
   const relp = (p) => p.slice(root.length + 1).split('\\').join('/');
-  return { created: report.created.map(relp), updated: report.updated.map(relp), skipped: report.skipped.map(relp), repaired: report.repaired.map(relp), prefix: config.prefix, store: config.store, repo };
+  return { created: report.created.map(relp), updated: report.updated.map(relp), skipped: report.skipped.map(relp), repaired: report.repaired.map(relp), prefix: config.prefix ?? null, store: config.store, ids, repo };
 }

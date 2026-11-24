@@ -15,7 +15,11 @@
     "prefix": {
       "type": "string",
       "pattern": "^[A-Z][A-Z0-9]*$",
-      "description": "The id prefix (R-DIB-4): upper-case letters and digits, starting with a letter, without the dash."
+      "description": "The id prefix (R-DIB-4): upper-case letters and digits, starting with a letter, without the dash. Optional under ids: orchestrator, where the orchestrator holds it."
+    },
+    "ids": {
+      "enum": ["numeric", "orchestrator"],
+      "description": "Who makes a new ticket's id (R-DIB-4): numeric, the next free <PREFIX>-<n>; orchestrator, the orchestrator (today Baton), never Dibber. Default: orchestrator where .baton/baton.json is present, else numeric."
     }
   },
   "additionalProperties": true

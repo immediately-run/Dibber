@@ -258,3 +258,90 @@ test('init --immediately-run names the GitHub repository on the board home page'
   await dibber(dir, 'init', '--yes', '--prefix', 'APP', '--immediately-run');
   assert.match(readFileSync(join(dir, 'tickets', 'home.mdx'), 'utf8'), /board for this repository\./);
 });
+
+// Orchestrator-assigned ids (DIB-31): where Baton coordinates the repository, Dibber never makes
+// up an id or writes a claim; it names the baton command instead.
+function batonRepo({ dibberConfig } = {}) {
+  const r = repo('coordinated');
+  execFileSync('mkdir', ['-p', join(r.dir, '.baton'), join(r.dir, 'tickets')]);
+  writeFileSync(join(r.dir, '.baton', 'baton.json'), JSON.stringify({ items: 'tickets', ticket_prefix: 'B' }));
+  writeFileSync(join(r.dir, 'tickets', 'B-4.md'), '---\nid: B-4\ntitle: "B-4 — Something to do"\nstatus: available\n---\n\n**Depends on:** none.\n');
+  if (dibberConfig) {
+    execFileSync('mkdir', ['-p', join(r.dir, '.dibber')]);
+    writeFileSync(join(r.dir, '.dibber', 'config.json'), JSON.stringify(dibberConfig));
+  }
+  return r;
+}
+const files = (dir) => readdirSync(join(dir, 'tickets')).sort();
+
+test('with .baton/baton.json and no .dibber/, new refuses without writing and names the baton commands', async () => {
+  const { dir } = batonRepo();
+  const r = await dibber(dir, 'new', '--title', 'Add a thing');
+  assert.equal(r.code, 2);
+  assert.match(r.stderr, /baton tickets new/);
+  assert.match(r.stderr, /baton tickets next ticket-B/);
+  assert.deepEqual(files(dir), ['B-4.md']);
+});
+
+test('under ids: orchestrator, new --id writes the id Baton gave, once', async () => {
+  const { dir } = batonRepo();
+  const r = await dibber(dir, 'new', '--id', 'B-9', '--title', 'Add a thing', '--json');
+  assert.equal(r.code, 0, r.stderr);
+  assert.deepEqual(JSON.parse(r.stdout), { id: 'B-9', file: 'tickets/B-9.md' });
+  assert.match(readFileSync(join(dir, 'tickets', 'B-9.md'), 'utf8'), /^id: B-9$/m);
+  assert.equal((await dibber(dir, 'check')).code, 0);
+  const again = await dibber(dir, 'new', '--id', 'B-9', '--title', 'Another');
+  assert.equal(again.code, 2);
+  assert.match(again.stderr, /already taken/);
+  const odd = await dibber(dir, 'new', '--id', 'R3-12e1', '--title', 'An older form Baton accepts');
+  assert.equal(odd.code, 0, odd.stderr);
+  assert.equal((await dibber(dir, 'new', '--id', 'a/b', '--title', 'No')).code, 2);
+});
+
+test('under ids: orchestrator, claim, set and done refuse and name the baton command', async () => {
+  const { dir } = batonRepo();
+  const before = readFileSync(join(dir, 'tickets', 'B-4.md'), 'utf8');
+  const c = await dibber(dir, 'claim', 'B-4');
+  assert.equal(c.code, 2);
+  assert.match(c.stderr, /baton tickets claim B-4/);
+  assert.match((await dibber(dir, 'set', 'B-4', 'in-review')).stderr, /baton tickets set B-4 in-review/);
+  assert.match((await dibber(dir, 'done', 'B-4')).stderr, /baton tickets done B-4/);
+  assert.equal(readFileSync(join(dir, 'tickets', 'B-4.md'), 'utf8'), before);
+});
+
+test('ids: numeric set explicitly beside .baton/baton.json: Dibber counts, and check warns', async () => {
+  const { dir } = batonRepo({ dibberConfig: { store: 'tickets', prefix: 'B', ids: 'numeric' } });
+  const c = JSON.parse((await dibber(dir, 'check', '--json')).stdout);
+  assert.equal(c.ok, true);
+  assert.ok(c.warnings.some((w) => w.rule === 'R-DIB-14' && /"ids": "orchestrator"/.test(w.message)), JSON.stringify(c.warnings));
+  const r = await dibber(dir, 'new', '--title', 'Counted', '--json');
+  assert.equal(JSON.parse(r.stdout).id, 'B-5');
+});
+
+test('ids: orchestrator with a prefix that disagrees with .baton/baton.json: check warns', async () => {
+  const { dir } = batonRepo({ dibberConfig: { store: 'tickets', prefix: 'X', ids: 'orchestrator' } });
+  const c = JSON.parse((await dibber(dir, 'check', '--json')).stdout);
+  assert.equal(c.ok, true);
+  assert.ok(c.warnings.some((w) => w.rule === 'R-DIB-14' && /ticket_prefix/.test(w.message)), JSON.stringify(c.warnings));
+});
+
+test('without an orchestrator, new --id takes a free id of the store prefix, and refuses a taken one', async () => {
+  const { dir } = repo();
+  await dibber(dir, 'init', '--yes', '--prefix', 'APP', '--no-agents');
+  assert.equal((await dibber(dir, 'new', '--id', 'APP-7', '--title', 'Chosen')).code, 0);
+  assert.match((await dibber(dir, 'new', '--id', 'APP-1', '--title', 'Taken')).stderr, /already taken/);
+  assert.match((await dibber(dir, 'new', '--id', 'OTHER-2', '--title', 'Wrong prefix')).stderr, /prefix/);
+  assert.match((await dibber(dir, 'new', '--id', 'app-x', '--title', 'Wrong form')).stderr, /<PREFIX>-<n>/);
+  assert.equal(JSON.parse((await dibber(dir, 'new', '--title', 'Next', '--json')).stdout).id, 'APP-8');
+});
+
+test('init where .baton/baton.json is present: ids orchestrator, Baton\'s store and prefix, no first ticket', async () => {
+  const { dir } = repo('coordinated');
+  execFileSync('mkdir', ['-p', join(dir, '.baton')]);
+  writeFileSync(join(dir, '.baton', 'baton.json'), JSON.stringify({ items: 'work', ticket_prefix: 'W' }));
+  const r = await dibber(dir, 'init', '--yes', '--no-agents');
+  assert.equal(r.code, 0, r.stderr);
+  assert.deepEqual(JSON.parse(readFileSync(join(dir, '.dibber', 'config.json'), 'utf8')), { store: 'work', prefix: 'W', ids: 'orchestrator' });
+  assert.deepEqual(readdirSync(join(dir, 'work')), []);
+  assert.match(r.stdout, /ids from Baton/);
+});

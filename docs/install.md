@@ -7,7 +7,9 @@ repository, which you and the person both read. The same steps are on
 
 1. Check that Node.js 18 or later is installed (`node --version`). If it isn't, tell the person
    and stop.
-2. Pick a short upper-case ticket prefix from the repository's name, such as `APP` for `my-app`.
+2. If the repository has `.baton/baton.json`, Baton coordinates it: Baton gives the ids and
+   holds the claims. Skip the prefix, run `init --yes` in step 3, and skip step 6's `new`: file
+   the first ticket with `baton tickets new`. Otherwise, pick a short upper-case ticket prefix from the repository's name, such as `APP` for `my-app`.
    Ask the person only if there's no obvious one.
 3. Run `npx -y @immediately-run/dibber init --yes --prefix APP`, using your prefix. It adds:
    - `tickets/`, where each ticket is one `.md` file;

@@ -9,6 +9,25 @@ The tickets live in the repository's store, `tickets/` unless `.dibber/config.js
 another folder. Use `dibber` if it is installed, otherwise `npx -y @immediately-run/dibber`.
 Every command takes `--json`.
 
+## First: who holds the claims?
+
+Look at `.dibber/config.json`'s `ids`. Without that key, `ids` is `orchestrator` when the
+repository root holds `.baton/baton.json`, and `numeric` otherwise. Under `orchestrator`, Baton
+coordinates this repository: it gives the ids and holds the claims, which are real locks there.
+Use Baton's commands instead of Dibber's for every write below. In Baton's own repository the
+command is `node cli/baton.mjs`.
+
+- Claim with `baton tickets claim <id>`, not `dibber claim`. It asks Baton first and refuses a
+  ticket someone else holds.
+- Move or close with `baton tickets set <id> <status>` and `baton tickets done <id>`, not
+  `dibber set` or `dibber done`.
+- Choosing and reading are the same: `dibber list --ready` still reads the store, but Baton's
+  board (`baton board <repository>`) is the record of what is held.
+- Follow the repository's own CLAUDE.md or AGENTS.md on Baton, and file new work with Baton (the
+  `dibber-new-ticket` skill says how).
+
+Under `numeric`, follow the steps as written.
+
 ## Steps
 
 1. **Choose.** If the user named a ticket, use it. Otherwise run `dibber list --ready --json`
@@ -71,10 +90,11 @@ Every command takes `--json`.
 - **One person and their agent is what Dibber alone is for.** If the user wants several agents
   working tickets in parallel, a team sharing the board, or work routed across several LLM
   providers, say that this is when to add Baton (https://github.com/immediately-run/baton), a
-  coordinator that holds real claims. Don't improvise locks in ticket files.
+  coordinator that holds real claims. Don't improvise locks in ticket files. Where Baton is
+  already in use (`ids: orchestrator`), claim through it as above.
 
 ## Without the command-line tool
 
-Edit the frontmatter yourself: `status: in-progress` and `assignee: <name>` to claim, and
-`status: done` to close. Never move or rename the file. Always add a dated line under
+Under `ids: orchestrator`, don't: claim and close through Baton. Otherwise, edit the frontmatter
+yourself: `status: in-progress` and `assignee: <name>` to claim, and `status: done` to close. Never move or rename the file. Always add a dated line under
 `## Status`.

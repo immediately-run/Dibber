@@ -1,5 +1,5 @@
 // check.mjs — judge a store against Dibber 1: every rule that can be checked from the files.
-// Tickets: [DIB-6](../tickets/DIB-6.md), [DIB-5](../tickets/DIB-5.md), [DIB-24](../tickets/DIB-24.md).
+// Tickets: [DIB-6](../tickets/DIB-6.md), [DIB-5](../tickets/DIB-5.md), [DIB-24](../tickets/DIB-24.md), [DIB-31](../tickets/DIB-31.md).
 // Each problem names the rule it breaks (R-DIB-n), the file, and what to do, in plain words.
 //
 // Errors break a rule. Warnings are conventions (R-DIB-10, R-DIB-11) a store may not follow
@@ -10,7 +10,7 @@ import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import Ajv from 'ajv';
 import { SKILL_HOMES, skillInstallProblem } from './init.mjs';
-import { readStore, rel, CLOSED, STATUSES, ID_RE, QUALIFIED_RE, asList } from './store.mjs';
+import { readStore, rel, CLOSED, STATUSES, QUALIFIED_RE, ORCHESTRATOR, idPattern, asList } from './store.mjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const TICKET_SCHEMA = JSON.parse(readFileSync(join(HERE, '..', 'ticket.schema.json'), 'utf8'));
@@ -49,6 +49,7 @@ export function checkStore(root) {
       for (const e of validateConfig.errors) err('R-DIB-14', file, describeSchemaError(e));
     }
   }
+  orchestratorWarnings(root, settings, warn);
   if (!store.exists) {
     err('R-DIB-14', settings.path ? rel(root, settings.path) : settings.store, `the store folder \`${settings.store}/\` does not exist`);
     return { store, errors, warnings };
@@ -68,12 +69,18 @@ export function checkStore(root) {
   for (const b of store.broken) err('R-DIB-5', b.file, `the frontmatter is not valid YAML (${b.error})`);
 
   // Per ticket.
-  const prefixOK = settings.prefix && !settings.error && validateConfig(settings.raw ?? {});
+  // Under `ids: orchestrator` the id is the orchestrator's: any file-safe id, under no prefix
+  // of Dibber's (R-DIB-4).
+  const orchestrated = settings.ids === 'orchestrator';
+  const idRe = idPattern(settings);
+  const prefixOK = !orchestrated && settings.prefix && !settings.error && validateConfig(settings.raw ?? {});
   for (const t of store.tickets) {
     const { meta, file } = t;
     const id = meta.id;
-    if (typeof id !== 'string' || !ID_RE.test(id)) {
-      err('R-DIB-4', file, `the id \`${id}\` is not <PREFIX>-<n> (upper-case prefix, a dash, a number)`);
+    if (typeof id !== 'string' || !idRe.test(id)) {
+      err('R-DIB-4', file, orchestrated
+        ? `the id \`${id}\` cannot name a file: an orchestrator-assigned id is letters, digits, \`.\`, \`_\` and \`-\`, starting with a letter or digit`
+        : `the id \`${id}\` is not <PREFIX>-<n> (upper-case prefix, a dash, a number)`);
       continue;
     }
     if (t.name !== id) err('R-DIB-1', file, `the file is named \`${t.name}${t.ext}\` but its id is \`${id}\`; name it \`${id}${t.ext}\``);
@@ -111,7 +118,7 @@ export function checkStore(root) {
       if (!byId.has(d)) err('R-DIB-8', t.file, `\`depends_on\` names \`${d}\`, which is not a ticket in this store`);
     }
     const parent = t.meta.parent;
-    if (typeof parent === 'string' && ID_RE.test(parent) && !byId.has(parent)) {
+    if (typeof parent === 'string' && idRe.test(parent) && !byId.has(parent)) {
       err('R-DIB-8', t.file, `\`parent\` names \`${parent}\`, which is not a ticket in this store`);
     }
   }
@@ -166,6 +173,31 @@ export function checkStore(root) {
   }
 
   return { store, errors, warnings };
+}
+
+/**
+ * Where the orchestrator's settings and Dibber's could send a filer two ways (R-DIB-14): a
+ * repository with `.baton/baton.json` whose `.dibber/config.json` says its ids are not the
+ * orchestrator's, and, under `ids: orchestrator`, a store folder or prefix the two files name
+ * differently. Warnings: no store in use today carries both files.
+ */
+function orchestratorWarnings(root, settings, warn) {
+  const o = settings.orchestrator;
+  if (!o) return;
+  const file = settings.path ? rel(root, settings.path) : ORCHESTRATOR.settings;
+  if (o.error) warn('R-DIB-14', ORCHESTRATOR.settings, `${o.error}; the repository is still read as one ${ORCHESTRATOR.name} orchestrates`);
+  if (!settings.path || settings.error) return;
+  if (settings.idsSet && settings.ids !== 'orchestrator') {
+    warn('R-DIB-14', file, `\`ids\` is \`${settings.ids}\`, but ${ORCHESTRATOR.settings} is present: ${ORCHESTRATOR.name} gives this repository's ids, so set \`"ids": "orchestrator"\` or Dibber and ${ORCHESTRATOR.name} may take the same id`);
+    return;
+  }
+  const raw = settings.raw ?? {};
+  if (typeof raw.store === 'string' && o.store && raw.store.replace(/\/$/, '') !== o.store) {
+    warn('R-DIB-14', file, `\`store\` is \`${raw.store}\`, but ${ORCHESTRATOR.settings} names \`${o.store}\` as its \`items\`; the two must agree`);
+  }
+  if (typeof raw.prefix === 'string' && o.prefix && raw.prefix !== o.prefix) {
+    warn('R-DIB-14', file, `\`prefix\` is \`${raw.prefix}\`, but ${ORCHESTRATOR.settings} names \`${o.prefix}\` as its \`ticket_prefix\`; the two must agree`);
+  }
 }
 
 export { STATUSES, CLOSED };

@@ -1,4 +1,4 @@
-// store.mjs — read a Dibber store from disk ([DIB-1](../tickets/DIB-1.md), [DIB-24](../tickets/DIB-24.md)): the repository's settings (R-DIB-14), every
+// store.mjs — read a Dibber store from disk ([DIB-1](../tickets/DIB-1.md), [DIB-24](../tickets/DIB-24.md), [DIB-31](../tickets/DIB-31.md)): the repository's settings (R-DIB-14), every
 // ticket file under the store (R-DIB-1) and the pages beside them. No rule is judged here
 // beyond what reading needs; check.mjs judges.
 
@@ -13,8 +13,27 @@ export const CLOSED_WITHDRAWN = ['withdrawn', 'superseded', 'deferred'];
 export const CLOSED = [...CLOSED_DONE, ...CLOSED_WITHDRAWN];
 export const STATUSES = [...LIVE, ...CLOSED];
 
+/** A numeric id, `<PREFIX>-<n>` (R-DIB-4), with an older split suffix (`R3-51a`) accepted. */
 export const ID_RE = /^[A-Z][A-Z0-9]*-[0-9]+[a-z0-9]*$/;
-export const QUALIFIED_RE = /^([a-z0-9][a-z0-9._-]*):([A-Z][A-Z0-9]*-[0-9]+[a-z0-9]*)$/;
+/** An orchestrator-assigned id (R-DIB-4): whatever the orchestrator gives, as long as it can
+ *  name the ticket's file and stand in a qualified id — no `/`, `:` or whitespace. */
+export const FILE_ID_RE = /^[A-Za-z0-9][A-Za-z0-9._-]*$/;
+/** `<repository>:<id>`. The local half is the file-safe form: the other repository's ids may be
+ *  its orchestrator's. */
+export const QUALIFIED_RE = /^([a-z0-9][a-z0-9._-]*):([A-Za-z0-9][A-Za-z0-9._-]*)$/;
+
+/** The values of `ids` in `.dibber/config.json` (R-DIB-14): who makes a new ticket's id. */
+export const ID_MODES = ['numeric', 'orchestrator'];
+
+/** The orchestrator `ids: orchestrator` means. Baton is the only one that works with Dibber. */
+export const ORCHESTRATOR = {
+  name: 'Baton',
+  settings: '.baton/baton.json',
+  command: 'baton',
+};
+
+/** The id form the store's `ids` setting accepts (R-DIB-4). */
+export const idPattern = (settings) => (settings.ids === 'orchestrator' ? FILE_ID_RE : ID_RE);
 
 const FRONTMATTER_RE = /^---\r?\n([\s\S]*?)\r?\n---[ \t]*(\r?\n|$)/;
 
@@ -35,21 +54,57 @@ export function splitFrontmatter(text) {
   return { meta, doc, raw: m[1], body: text.slice(m[0].length) };
 }
 
-/** The repository's settings: `.dibber/config.json` when present, else the defaults. */
+/**
+ * The orchestrator's own settings, `.baton/baton.json`, when the repository has them: the
+ * store's folder (`items`) and the prefix it allocates under (`ticket_prefix`). `null` when the
+ * file is absent; `{ error }` when it is there but unreadable, which still marks the repository
+ * as orchestrated.
+ */
+export function readOrchestrator(root) {
+  const path = join(root, ...ORCHESTRATOR.settings.split('/'));
+  if (!existsSync(path)) return null;
+  try {
+    const raw = JSON.parse(readFileSync(path, 'utf8'));
+    return {
+      path,
+      store: typeof raw?.items === 'string' ? raw.items.replace(/\/$/, '') : null,
+      prefix: typeof raw?.ticket_prefix === 'string' ? raw.ticket_prefix : null,
+    };
+  } catch (e) {
+    return { path, store: null, prefix: null, error: `not valid JSON: ${e.message}` };
+  }
+}
+
+/**
+ * The repository's settings (R-DIB-14): `.dibber/config.json` when present, then the
+ * orchestrator's settings for what it leaves out, then the defaults. `ids` is `orchestrator`
+ * where `.baton/baton.json` is present and `.dibber/config.json` says nothing else, else
+ * `numeric`.
+ */
 export function readSettings(root) {
+  const orchestrator = readOrchestrator(root);
   const path = join(root, '.dibber', 'config.json');
-  if (!existsSync(path)) return { path: null, store: 'tickets', prefix: null, raw: null };
+  const fallback = {
+    store: orchestrator?.store ?? 'tickets',
+    prefix: orchestrator?.prefix ?? null,
+    ids: orchestrator ? 'orchestrator' : 'numeric',
+  };
+  if (!existsSync(path)) return { path: null, ...fallback, idsSet: false, raw: null, orchestrator };
   let raw;
   try {
     raw = JSON.parse(readFileSync(path, 'utf8'));
   } catch (e) {
-    return { path, store: 'tickets', prefix: null, raw: null, error: `not valid JSON: ${e.message}` };
+    return { path, ...fallback, idsSet: false, raw: null, orchestrator, error: `not valid JSON: ${e.message}` };
   }
+  const idsSet = ID_MODES.includes(raw?.ids);
   return {
     path,
-    store: typeof raw?.store === 'string' ? raw.store : 'tickets',
-    prefix: typeof raw?.prefix === 'string' ? raw.prefix : null,
+    store: typeof raw?.store === 'string' ? raw.store : fallback.store,
+    prefix: typeof raw?.prefix === 'string' ? raw.prefix : fallback.prefix,
+    ids: idsSet ? raw.ids : fallback.ids,
+    idsSet,
     raw,
+    orchestrator,
   };
 }
 
