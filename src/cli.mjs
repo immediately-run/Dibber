@@ -8,7 +8,7 @@ import { checkStore } from './check.mjs';
 import { Refusal, newTicket, setStatus, claim, listTickets, STATUSES } from './tickets.mjs';
 import { init, defaultPrefix } from './init.mjs';
 
-const HELP = `dibber — tickets as files in git (https://github.com/immediately-run/dibber)
+const HELP = `dibber — Git as your issue tracker: an open format built on Markdown (https://github.com/immediately-run/dibber)
 
 Usage: dibber <command> [options]        (every command takes --json and --root <dir>)
 
