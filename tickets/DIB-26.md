@@ -17,7 +17,7 @@ Almost every other Markdown ticket tool gives tickets lowercase random ids: tick
 
 ### What to build
 
-Widen R-DIB-4: an id is a prefix (letters and digits, starting with a letter, either case), a dash, and either a decimal number or a lowercase base-36 suffix of at least 4 characters. Both forms are never reused and never renamed. Every id valid today stays valid. Update `ticket.schema.json` (`id` and `ref`), the conformance fixtures (valid random-id store; invalid: empty suffix, uppercase in the random suffix), `dibber check`, and the qualified form `<repo>:<id>`. Add `"ids": "numeric" | "random"` to `.dibber/config.json` (default `numeric`). `dibber new` then allocates a random suffix that is free in the store and on every branch, and `dibber init --ids random` sets it. State in R-DIB-4 that random ids need no renumbering.
+Widen R-DIB-4: an id is a prefix (letters and digits, starting with a letter, either case), a dash, and either a decimal number or a lowercase base-36 suffix of at least 4 characters. Both forms are never reused and never renamed. Every id valid today stays valid. Update `ticket.schema.json` (`id` and `ref`), the conformance fixtures (valid random-id store; invalid: empty suffix, uppercase in the random suffix), `dibber check`, and the qualified form `<repo>:<id>`. Add `"ids": "numeric" | "random" | "orchestrator"` to `.dibber/config.json` (default `numeric`, or `orchestrator` where `.baton/baton.json` is present); `orchestrator` is DIB-31's, and whichever ticket lands first adds the key. `dibber new` then allocates a random suffix that is free in the store and on every branch, and `dibber init --ids random` sets it. State in R-DIB-4 that random ids need no renumbering.
 
 ### Exit criteria
 
@@ -28,3 +28,5 @@ Widen R-DIB-4: an id is a prefix (letters and digits, starting with a letter, ei
 ## Status
 
 _filed 2026-11-23._
+
+_2026-11-24: the `ids` setting has three values, per the owner: numeric, random or orchestrator-assigned. The third is DIB-31._
