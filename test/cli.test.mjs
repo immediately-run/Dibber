@@ -247,7 +247,8 @@ test('init --immediately-run names the GitHub repository on the board home page'
     assert.equal(r.code, 0, r.stderr);
     const home = readFileSync(join(dir, 'work', 'home.mdx'), 'utf8');
     assert.match(home, /board for the \[acme\/recipes\]\(https:\/\/github\.com\/acme\/recipes\) repository\./, url);
-    assert.match(home, /Markdown file in its `work\/` folder/);
+    assert.match(home, /edit them \[here on immediately\.run\]\(https:\/\/immediately\.run\/edit\/github\/acme\/recipes\/main\/bundle\/work\/\)/);
+    assert.match(home, /one Markdown file per ticket in\n`work\/`/);
     assert.ok(!home.includes('{{'), 'no placeholder is left');
     assert.match(r.stdout, /immediately\.run\/present\/github\/acme\/recipes\/main\/bundle\/work\/home\.mdx/);
   }

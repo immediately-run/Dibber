@@ -158,10 +158,14 @@ export function init(root, opts = {}) {
 
   const repo = githubRepo(root);
   if (opts.immediatelyRun) {
+    // The home page's welcome line names the repository and links the board's edit mode on
+    // immediately.run; with no GitHub remote there is no repository to name or link.
     const repoText = repo ? `the [${repo}](https://github.com/${repo}) repository` : 'this repository';
+    const editText = repo ? `[here on immediately.run](https://immediately.run/edit/github/${repo}/main/bundle/${config.store}/)` : 'on immediately.run';
     for (const name of IMMEDIATELY_RUN_FILES) {
       const text = readFileSync(join(IMMEDIATELY_RUN, name), 'utf8')
         .replaceAll('{{REPO}}', repoText)
+        .replaceAll('{{EDIT}}', editText)
         .replaceAll('{{STORE}}', config.store);
       writeOnce(join(store, name), text, report);
     }
