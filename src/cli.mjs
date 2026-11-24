@@ -162,7 +162,7 @@ export async function run(argv, { cwd = process.cwd(), interactive = true } = {}
         for (const f of r.skipped) stdout.push(`  kept    ${f} (already there)`);
         stdout.push(`\nDibber is set up: tickets in ${r.store}/, ids ${r.prefix}-1, ${r.prefix}-2, …\nNext: ask your agent "what's on the board?", or run: dibber list`);
         if (r.created.includes(`${r.store}/immediately.run.json`)) {
-          stdout.push(`Once pushed to a public GitHub repository, the board opens at https://immediately.run/present/github/<owner>/<repo>/main/bundle/${r.store}/home.mdx`);
+          stdout.push(`Once pushed to a public GitHub repository, the board opens at https://immediately.run/present/github/${r.repo ?? '<owner>/<repo>'}/main/bundle/${r.store}/home.mdx`);
         }
       }
     } else {

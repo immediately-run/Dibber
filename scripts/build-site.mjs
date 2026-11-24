@@ -31,7 +31,7 @@ export function buildSite() {
   const values = {
     STYLE: read('style.css'),
     SCRIPT: read('site.js'),
-    ICON: dataUri('dibber-320.webp', 'image/webp'),
+    ICON: dataUri('dibber-640.webp', 'image/webp'),
     FAVICON: dataUri('favicon-48.png', 'image/png'),
     ANALYTICS: analytics,
     ANALYTICS_NOTE: note,

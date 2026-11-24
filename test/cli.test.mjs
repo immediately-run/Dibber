@@ -235,4 +235,26 @@ test('init --immediately-run adds the board files to the store, and check still 
   const { dir: plain } = repo();
   await dibber(plain, 'init', '--yes', '--prefix', 'APP');
   assert.ok(!existsSync(join(plain, 'tickets', 'immediately.run.json')));
+  // With no GitHub remote, the home page names no repository it cannot know.
+  assert.match(readFileSync(join(dir, 'tickets', 'home.mdx'), 'utf8'), /^Welcome\. This is a \[Dibber\]\(https:\/\/github\.com\/immediately-run\/dibber\) board for this repository\./m);
+});
+
+test('init --immediately-run names the GitHub repository on the board home page', async () => {
+  for (const url of ['https://github.com/acme/recipes.git', 'git@github.com:acme/recipes.git', 'ssh://git@github.com/acme/recipes']) {
+    const { dir, git } = repo();
+    git('remote', 'add', 'origin', url);
+    const r = await dibber(dir, 'init', '--yes', '--prefix', 'APP', '--immediately-run', '--store', 'work');
+    assert.equal(r.code, 0, r.stderr);
+    const home = readFileSync(join(dir, 'work', 'home.mdx'), 'utf8');
+    assert.match(home, /board for the \[acme\/recipes\]\(https:\/\/github\.com\/acme\/recipes\) repository\./, url);
+    assert.match(home, /edit them \[here on immediately\.run\]\(https:\/\/immediately\.run\/edit\/github\/acme\/recipes\/main\/bundle\/work\/\)/);
+    assert.match(home, /one Markdown file per ticket in\n`work\/`/);
+    assert.ok(!home.includes('{{'), 'no placeholder is left');
+    assert.match(r.stdout, /immediately\.run\/present\/github\/acme\/recipes\/main\/bundle\/work\/home\.mdx/);
+  }
+  // A remote that is not on GitHub is not a repository the board can link to.
+  const { dir, git } = repo();
+  git('remote', 'add', 'origin', 'https://gitlab.com/acme/recipes.git');
+  await dibber(dir, 'init', '--yes', '--prefix', 'APP', '--immediately-run');
+  assert.match(readFileSync(join(dir, 'tickets', 'home.mdx'), 'utf8'), /board for this repository\./);
 });
