@@ -1,6 +1,8 @@
 # Dibber
 
-**Tickets as files in git.** Dibber is a format for keeping a project's tickets in its own
+**Git as your issue tracker. An open format built on Markdown.**
+
+Dibber is a format for keeping a project's tickets in its own
 repository: one Markdown file per ticket, YAML frontmatter for its fields, the body for the
 record of the work, and a status that says when it's closed. No server, no database, no tool
 required — a ticket is a file you can read, diff, review and merge like any other.
