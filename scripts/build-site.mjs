@@ -5,7 +5,9 @@
 //   node scripts/build-site.mjs --check   exits 1 if site/index.html is out of date
 //
 // The Pages cache job (.github/workflows/cache.yml, `landing-html`) publishes exactly one file
-// as the site's root page, so everything is inlined: the CSS, the script and the icons.
+// as the site's root page, so everything is inlined: the CSS, the script and the mascot. The
+// favicons are the exception: they are files in site/, linked by their raw.githubusercontent
+// URLs, because Google Search shows a favicon only from a URL it can crawl, never a data: URI.
 // Analytics: `analytics.plausibleScript` in site/site.json is the site's Plausible script id
 // (`pa-…`, from Plausible's install snippet); null loads nothing.
 
@@ -32,12 +34,11 @@ export function buildSite() {
     STYLE: read('style.css'),
     SCRIPT: read('site.js'),
     ICON: dataUri('dibber-640.webp', 'image/webp'),
-    FAVICON: dataUri('favicon-48.png', 'image/png'),
     ANALYTICS: analytics,
     ANALYTICS_NOTE: note,
   };
   let html = read('index.html').replace(/<!-- Dibber's website:[\s\S]*?-->/, '<!-- Built by scripts/build-site.mjs from site/src/: edit those files and run `npm run site`, not this one. -->');
-  html = html.replace(/\{\{([A-Z_]+)\}\}/g, (m, k) => {
+  html = html.replace(/\{\{([A-Z0-9_]+)\}\}/g, (m, k) => {
     if (!(k in values)) throw new Error(`unknown placeholder ${m}`);
     return values[k];
   });

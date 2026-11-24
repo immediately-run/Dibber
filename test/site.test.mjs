@@ -15,12 +15,50 @@ test('site/index.html is built from site/src (run `npm run site` after editing)'
   assert.equal(html, buildSite());
 });
 
-test('the page is self-contained: the only external load is the Plausible script, when configured', () => {
+test('the page is self-contained: the only external loads are the favicons and the Plausible script, when configured', () => {
   const config = JSON.parse(readFileSync(join(ROOT, 'site', 'site.json'), 'utf8'));
-  const external = [...html.matchAll(/<(script|img|link)\b[^>]*\b(src|href)="(https?:)?\/\/[^"]+"/g)].map((m) => m[0]);
+  // `rel="canonical"` names the page's own address; it is metadata, not something the page loads.
+  // The favicons are this repository's own files (the next test), so search engines can crawl them.
+  const external = [...html.matchAll(/<(script|img|link)\b[^>]*\b(src|href)="(https?:)?\/\/[^"]+"/g)].map((m) => m[0])
+    .filter((tag) => !/\brel="canonical"/.test(tag))
+    .filter((tag) => !(/\brel="icon"/.test(tag) && tag.includes(`href="${RAW}site/favicon-`)));
   if (config.analytics.plausibleScript) assert.deepEqual(external, [`<script async src="https://plausible.io/js/${config.analytics.plausibleScript}.js"`]);
   else assert.deepEqual(external, []);
   assert.ok(!html.includes('{{'), 'no unfilled placeholder');
+});
+
+test('the head links a favicon file for each size a browser asks for, and one search can crawl', () => {
+  const icons = [...html.matchAll(/<link rel="icon" type="image\/png" sizes="(\d+)x\1" href="([^"]+)">/g)];
+  assert.deepEqual(icons.map((m) => Number(m[1])), [16, 32, 48, 192]);
+  for (const [, size, url] of icons) {
+    assert.ok(url.startsWith(RAW), url);
+    const file = join(ROOT, url.slice(RAW.length));
+    assert.ok(existsSync(file), `${url} exists in the repository`);
+    const png = readFileSync(file);
+    assert.deepEqual([png.readUInt32BE(16), png.readUInt32BE(20)], [Number(size), Number(size)], `${url} is ${size}px square`);
+  }
+  // Google Search wants a square favicon whose side is a multiple of 48px.
+  assert.ok(icons.some(([, size]) => Number(size) % 48 === 0 && Number(size) > 48));
+});
+
+test('the head carries what search engines and link previews read', () => {
+  const meta = (attr, name) => html.match(new RegExp(`<meta ${attr}="${name}" content="([^"]+)"`))?.[1];
+  assert.match(html, new RegExp(`<link rel="canonical" href="${SITE_URL}">`));
+  assert.equal(meta('property', 'og:url'), SITE_URL);
+  for (const [attr, name] of [['name', 'description'], ['property', 'og:title'], ['property', 'og:description'], ['name', 'twitter:card'], ['property', 'og:image:alt']]) {
+    assert.ok(meta(attr, name), `${name} is set`);
+  }
+  // The preview image is a file in this repository, served raw, at the size it declares.
+  for (const url of [meta('property', 'og:image'), meta('name', 'twitter:image')]) {
+    assert.ok(url.startsWith(RAW), url);
+    const file = join(ROOT, url.slice(RAW.length));
+    assert.ok(existsSync(file), `${url} exists in the repository`);
+    const png = readFileSync(file);
+    assert.deepEqual([png.readUInt32BE(16), png.readUInt32BE(20)], [Number(meta('property', 'og:image:width')), Number(meta('property', 'og:image:height'))]);
+  }
+  const ld = JSON.parse(html.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/)[1]);
+  assert.equal(ld['@type'], 'SoftwareApplication');
+  assert.equal(ld.url, SITE_URL);
 });
 
 test('every in-page link has its target', () => {
