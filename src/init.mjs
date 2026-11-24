@@ -2,6 +2,7 @@
 // a first ticket, and the agent instructions and skills every supported harness
 // discovers. It never overwrites a file; it says what it skipped.
 
+import { execFileSync } from 'node:child_process';
 import { existsSync, lstatSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync, appendFileSync, statSync, symlinkSync } from 'node:fs';
 import { basename, dirname, join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -51,6 +52,22 @@ function clearBroken(path, report) {
 }
 
 export const AGENTS_MARKER = '<!-- dibber:agents -->';
+
+/**
+ * The GitHub `owner/repo` that `root`'s `origin` remote points at, or `null` when there is no
+ * such remote or it is not on github.com. It names the repository on the board's home page and
+ * in the board's link, so a reader landing on the board knows whose tickets these are.
+ */
+export function githubRepo(root) {
+  let url;
+  try {
+    url = execFileSync('git', ['remote', 'get-url', 'origin'], { cwd: root, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).trim();
+  } catch {
+    return null;
+  }
+  const m = /^(?:https?:\/\/(?:[^@/]+@)?github\.com\/|(?:ssh:\/\/)?git@github\.com[:/])([A-Za-z0-9-]+)\/([A-Za-z0-9._-]+?)(?:\.git)?\/?$/.exec(url);
+  return m ? `${m[1]}/${m[2]}` : null;
+}
 
 /** A prefix from the repository's folder name: initials of its words, else its first letters. */
 export function defaultPrefix(root) {
@@ -112,7 +129,8 @@ function writeOnce(path, content, report, overwrite = false) {
  * `.claude/skills/<name>` to `.agents/skills/<name>` instead of copying), `immediatelyRun`
  * (add the files that open the store as a board on immediately.run).
  * A broken skill install (see `skillInstallProblem`) is always repaired.
- * Returns `{ created, updated, skipped, repaired }` as paths relative to `root`.
+ * Returns `{ created, updated, skipped, repaired }` as paths relative to `root`, with `prefix`,
+ * `store`, and `repo` (the GitHub `owner/repo` of the `origin` remote, or `null`).
  */
 export function init(root, opts = {}) {
   const report = { created: [], updated: [], skipped: [], repaired: [] };
@@ -138,9 +156,14 @@ export function init(root, opts = {}) {
     writeOnce(join(store, `${id}.md`), sample, report);
   }
 
+  const repo = githubRepo(root);
   if (opts.immediatelyRun) {
+    const repoText = repo ? `the [${repo}](https://github.com/${repo}) repository` : 'this repository';
     for (const name of IMMEDIATELY_RUN_FILES) {
-      writeOnce(join(store, name), readFileSync(join(IMMEDIATELY_RUN, name), 'utf8'), report);
+      const text = readFileSync(join(IMMEDIATELY_RUN, name), 'utf8')
+        .replaceAll('{{REPO}}', repoText)
+        .replaceAll('{{STORE}}', config.store);
+      writeOnce(join(store, name), text, report);
     }
   }
 
@@ -176,5 +199,5 @@ export function init(root, opts = {}) {
   }
 
   const relp = (p) => p.slice(root.length + 1).split('\\').join('/');
-  return { created: report.created.map(relp), updated: report.updated.map(relp), skipped: report.skipped.map(relp), repaired: report.repaired.map(relp), prefix: config.prefix, store: config.store };
+  return { created: report.created.map(relp), updated: report.updated.map(relp), skipped: report.skipped.map(relp), repaired: report.repaired.map(relp), prefix: config.prefix, store: config.store, repo };
 }
