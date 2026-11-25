@@ -61,18 +61,16 @@ ticket file.
 
 ## 2. Ids
 
-- **R-DIB-4 (an id: a prefix and a number, never reused).** A ticket's id is `<PREFIX>-<n>`:
-  the repository's prefix, upper-case letters and digits starting with a letter (`B`, `FLDH`),
-  and a decimal number. An id is never reused and never renamed, whether the ticket is open,
-  closed or withdrawn. A repository may accept older ids under patterns of its own (a split
-  suffix such as `R3-51a`, `R3-274e1`); it never allocates new ones under them.
-  - **Allocation.** Concurrent branches must not take the same number. Where a coordinator is in
-    use, the number is the coordinator's to give: git is never the counter. Without one (one
-    writer at a time), the next number is one more than the highest taken across the store and
-    the repository's local branches. If an occasional collision gets through
-    anyway (the same person on two branches), the second to merge renumbers, rewriting every
-    `depends_on` and `parent` that names the old id and the body's header lines. Several writers
-    at once is what a coordinator is for.
+- **R-DIB-4 (ids are never reused).** An id has a prefix of letters and digits starting
+  with a letter, a dash, and either a decimal number or at least four lowercase base-36
+  characters. An id is never reused or renamed, regardless of status. Readers also accept
+  legacy split ids such as `R3-51a` and `R3-274e1`. Writers do not allocate split ids.
+  - **Allocation.** Set `ids` in `.dibber/config.json` to `random` for random suffixes.
+    They are checked against the store and known branches and need no renumbering.
+    The default, `numeric`, uses the next number above the highest taken across the store
+    and known branches when writing without a coordinator. When a coordinator is in use,
+    it allocates the number. If a numeric collision gets through, the second to merge
+    renumbers and updates every reference and header that names the old id.
   - **Across repositories.** `<repository>:<id>` (`baton:B-111`) names a ticket in another
     repository's store; an unqualified id is always the store's own. What a repository name
     resolves to is the reader's configuration.

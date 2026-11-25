@@ -4,9 +4,10 @@
 // git's index: the person or agent doing the work stages and commits the ticket with the work,
 // like any other file they changed.
 
+import { randomInt } from 'node:crypto';
 import { execFileSync } from 'node:child_process';
 import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
-import { dirname, join } from 'node:path';
+import { basename, dirname, join } from 'node:path';
 import { Document, visit } from 'yaml';
 import { readStore, splitFrontmatter, rel, LIVE, CLOSED, STATUSES, ID_RE, QUALIFIED_RE, idNumber, asList, byOrderThenId } from './store.mjs';
 import { checkStore } from './check.mjs';
@@ -32,8 +33,8 @@ function idsOnBranches(root, storeRel) {
     const files = git(root, 'ls-tree', '-r', '--name-only', ref, '--', storeRel);
     if (!files) continue;
     for (const f of files.split('\n')) {
-      const m = /([A-Z][A-Z0-9]*-[0-9]+[a-z0-9]*)\.mdx?$/.exec(f);
-      if (m) ids.push(m[1]);
+      const id = basename(f).replace(/\.mdx?$/, '');
+      if (id !== basename(f) && ID_RE.test(id)) ids.push(id);
     }
   }
   return ids;
@@ -52,14 +53,24 @@ export function storePrefix(store) {
   return best[0];
 }
 
-/** The next free number: one more than the highest taken in the store and on every branch. */
+/** Allocate a free numeric or random id across the store and known branches ([DIB-26](../tickets/DIB-26.md)). */
 export function nextId(root, store) {
   const prefix = storePrefix(store);
-  const taken = [...store.tickets.map((t) => String(t.meta.id)), ...idsOnBranches(root, store.storeRel)]
+  const taken = new Set([...store.tickets.map((t) => String(t.meta.id)), ...idsOnBranches(root, store.storeRel)]);
+  if (store.settings.raw?.ids === 'random') {
+    const alphabet = 'abcdefghijklmnopqrstuvwxyz0123456789';
+    let id;
+    do {
+      const suffix = alphabet[randomInt(26)] + Array.from({ length: 11 }, () => alphabet[randomInt(36)]).join('');
+      id = `${prefix}-${suffix}`;
+    } while (taken.has(id) || existsSync(join(root, store.storeRel, `${id}.md`)) || existsSync(join(root, store.storeRel, `${id}.mdx`)));
+    return id;
+  }
+  const numbers = [...taken]
     .filter((id) => id.split('-')[0] === prefix)
     .map(idNumber)
     .filter(Number.isFinite);
-  return `${prefix}-${(taken.length ? Math.max(...taken) : 0) + 1}`;
+  return `${prefix}-${(numbers.length ? Math.max(...numbers) : 0) + 1}`;
 }
 
 function frontmatterYaml(obj) {

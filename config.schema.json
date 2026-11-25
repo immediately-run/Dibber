@@ -14,8 +14,13 @@
     },
     "prefix": {
       "type": "string",
-      "pattern": "^[A-Z][A-Z0-9]*$",
-      "description": "The id prefix (R-DIB-4): upper-case letters and digits, starting with a letter, without the dash."
+      "pattern": "^[A-Za-z][A-Za-z0-9]*$",
+      "description": "The id prefix (R-DIB-4): letters and digits, starting with a letter, without the dash."
+    },
+    "ids": {
+      "enum": ["numeric", "random"],
+      "default": "numeric",
+      "description": "How Dibber allocates new ticket ids (R-DIB-4)."
     }
   },
   "additionalProperties": true

@@ -13,8 +13,8 @@ export const CLOSED_WITHDRAWN = ['withdrawn', 'superseded', 'deferred'];
 export const CLOSED = [...CLOSED_DONE, ...CLOSED_WITHDRAWN];
 export const STATUSES = [...LIVE, ...CLOSED];
 
-export const ID_RE = /^[A-Z][A-Z0-9]*-[0-9]+[a-z0-9]*$/;
-export const QUALIFIED_RE = /^([a-z0-9][a-z0-9._-]*):([A-Z][A-Z0-9]*-[0-9]+[a-z0-9]*)$/;
+export const ID_RE = /^(?:[A-Za-z][A-Za-z0-9]*-(?:[0-9]+|[a-z0-9]{4,})|[A-Z][A-Z0-9]*-[0-9]+[a-z0-9]*)$/;
+export const QUALIFIED_RE = /^([a-z0-9][a-z0-9._-]*):((?:[A-Za-z][A-Za-z0-9]*-(?:[0-9]+|[a-z0-9]{4,})|[A-Z][A-Z0-9]*-[0-9]+[a-z0-9]*))$/;
 
 const FRONTMATTER_RE = /^---\r?\n([\s\S]*?)\r?\n---[ \t]*(\r?\n|$)/;
 
@@ -95,7 +95,7 @@ export function readStore(root) {
 /** Numeric part of an id, for ordering (`X-10` after `X-9`). */
 export function idNumber(id) {
   const m = /-(\d+)/.exec(String(id));
-  return m ? Number(m[1]) : Number.MAX_SAFE_INTEGER;
+  return m ? Number(m[1]) : Infinity;
 }
 
 export function byOrderThenId(a, b) {
