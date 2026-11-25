@@ -13,7 +13,7 @@ import { SKILL_HOMES, skillInstallProblem } from './init.mjs';
 import { readStore, rel, CLOSED, STATUSES, ID_RE, QUALIFIED_RE, asList } from './store.mjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
-const TICKET_SCHEMA = JSON.parse(readFileSync(join(HERE, '..', 'ticket.schema.json'), 'utf8'));
+export const TICKET_SCHEMA = JSON.parse(readFileSync(join(HERE, '..', 'ticket.schema.json'), 'utf8'));
 const CONFIG_SCHEMA = JSON.parse(readFileSync(join(HERE, '..', 'config.schema.json'), 'utf8'));
 
 const ajv = new Ajv({ allErrors: true, strict: false });

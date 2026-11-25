@@ -66,6 +66,29 @@ keeps working.
 - [`tickets/`](tickets/) — Dibber's own work, kept as a Dibber store: an example of what a
   Dibber-tracked project looks like.
 
+## CLI
+
+Use `dibber new --title "…"` to file a ticket. Point `--body-file PATH` at a complete
+Markdown body. Dibber adds a filing entry if the body has no `## Status` section.
+Repeat `--field KEY=VALUE` to supply declared fields, with YAML values for lists
+and maps. `dibber set ID --field KEY=VALUE` updates fields declared by the store's
+`item.schema.json`. You can also give `set` a status.
+
+If another tool reserved the ID, pass `dibber new --id ID`. A trusted repository can
+configure its allocator in `.dibber/config.json`:
+
+```json
+{
+  "coordinator": {
+    "next": ["npx", "@immediately-run/baton", "tickets", "next", "ticket-<prefix>"]
+  }
+}
+```
+
+`new` runs that command directly and takes the decimal number from its last line.
+Use `--offline` for local allocation when the coordinator is unavailable. Commit
+ticket changes through your usual Git workflow.
+
 ## Readers
 
 Baton, Fieldhouse and Grove read Dibber stores; see [`SPEC.md`](SPEC.md#readers). A tool that

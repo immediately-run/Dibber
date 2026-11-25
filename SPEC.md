@@ -67,7 +67,11 @@ ticket file.
   closed or withdrawn. A repository may accept older ids under patterns of its own (a split
   suffix such as `R3-51a`, `R3-274e1`); it never allocates new ones under them.
   - **Allocation.** Concurrent branches must not take the same number. Where a coordinator is in
-    use, the number is the coordinator's to give: git is never the counter. Without one (one
+    use, the number is the coordinator's to give: git is never the counter. A repository may
+    configure `coordinator.next` in `.dibber/config.json` as an executable followed by its
+    arguments. A writer invokes it from the repository root, expands `<prefix>` in each
+    argument, and reads the decimal number on the final line of stdout. An explicit offline
+    mode can use local allocation. Without one (one
     writer at a time), the next number is one more than the highest taken across the store and
     the repository's local branches. If an occasional collision gets through
     anyway (the same person on two branches), the second to merge renumbers, rewriting every
