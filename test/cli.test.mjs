@@ -415,3 +415,53 @@ test("this repository has every setup file written by init (DIB-11)", async () =
     assert.ok(existsSync(join(root, file)), file);
   }
 });
+
+test('migrate updates the legacy version of this store in place (DIB-27)', async () => {
+  const { dir } = repo();
+  const root = new URL('../', import.meta.url);
+  cpSync(new URL('tickets/', root), join(dir, 'tickets'), { recursive: true });
+  cpSync(new URL('.dibber/', root), join(dir, '.dibber'), { recursive: true });
+  const project = join(dir, 'tickets/projects/wide-audience.md');
+  writeFileSync(project, readFileSync(project, 'utf8').replace('page: project', 'kind: project'));
+  const before = checkStore(dir);
+  assert.deepEqual(before.errors, []);
+  assert.ok(before.warnings.some(({ message }) => message.includes('dibber migrate')));
+  const result = await dibber(dir, 'migrate', '--json');
+  assert.equal(result.code, 0, result.stderr);
+  assert.deepEqual(JSON.parse(result.stdout).updated, ['tickets/projects/wide-audience.md']);
+  const after = checkStore(dir);
+  assert.deepEqual(after.errors, []);
+  assert.ok(!after.warnings.some(({ message }) => message.includes('dibber migrate')));
+  assert.deepEqual(after.store.tickets.map(({ text }) => text), before.store.tickets.map(({ text }) => text));
+  assert.deepEqual(JSON.parse((await dibber(dir, 'migrate', '--json')).stdout).updated, []);
+});
+
+test('migrate preserves custom type values and leaves canonical statuses intact (DIB-27)', async () => {
+  const { dir } = repo();
+  await dibber(dir, 'init', '--yes');
+  const path = join(dir, 'tickets/RA-1.md');
+  const first = readFileSync(path, 'utf8');
+  writeFileSync(path, first.replace('status: available', 'status: available\ntype: incident'));
+  assert.ok(checkStore(dir).errors.length);
+  assert.equal((await dibber(dir, 'migrate')).code, 0);
+  const { errors, store } = checkStore(dir);
+  assert.deepEqual(errors, []);
+  assert.equal(store.tickets[0].meta.legacy_type, 'incident');
+  assert.equal(store.tickets[0].meta.status, 'available');
+  assert.ok(!Object.hasOwn(store.tickets[0].meta, 'type'));
+});
+
+test('import translates source statuses before writing Dibber tickets (DIB-27)', async () => {
+  const { dir } = repo();
+  await dibber(dir, 'init', '--yes');
+  const file = join(dir, 'linear.json');
+  writeFileSync(file, JSON.stringify(['open', 'in_progress', 'closed', 'canceled', 'duplicate'].map((state, i) => ({
+    identifier: `OPS-${i + 1}`, title: `Imported ${i + 1}`, state,
+  }))));
+  const result = await dibber(dir, 'import', 'linear', file, '--source-url', 'https://linear.app/example');
+  assert.equal(result.code, 0, result.stderr);
+  const { errors, store } = checkStore(dir);
+  assert.deepEqual(errors, []);
+  assert.deepEqual(store.tickets.slice(1).map(({ meta }) => meta.status),
+    ['available', 'in-progress', 'done', 'withdrawn', 'superseded']);
+});

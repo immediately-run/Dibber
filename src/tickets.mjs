@@ -128,7 +128,7 @@ function extensionFields(store, entries, readerOnly = false) {
     if (separator < 1) throw new Refusal('--field expects key=value');
     const key = entry.slice(0, separator);
     const builtIn = Object.hasOwn(TICKET_SCHEMA.properties, key);
-    if (key === 'id' || key === 'status' || key === 'kind' || (readerOnly && builtIn)) {
+    if (key === 'id' || key === 'status' || key === 'page' || (readerOnly && builtIn)) {
       throw new Refusal(`--field cannot write Dibber-owned key \`${key}\``);
     }
     if (!builtIn && !Object.hasOwn(schema?.properties ?? {}, key)

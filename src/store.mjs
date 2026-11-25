@@ -66,7 +66,7 @@ function walk(dir, out = []) {
 
 /**
  * Read every Markdown file under the store. A file is a ticket when its frontmatter carries an
- * `id` and no `kind` other than `ticket` (R-DIB-1); a file whose frontmatter does not parse is
+ * `id` and `status` without a `page` marker (R-DIB-1); a file whose frontmatter does not parse is
  * reported as `broken`, since it cannot be told apart.
  */
 export function readStore(root) {
@@ -84,7 +84,7 @@ export function readStore(root) {
       continue;
     }
     const { meta } = parts;
-    const isTicket = meta.id !== undefined && (meta.kind === undefined || meta.kind === 'ticket');
+    const isTicket = meta.id !== undefined && meta.status !== undefined && meta.page === undefined;
     const closed = CLOSED.includes(meta.status); // closure is the status alone (R-DIB-2)
     const entry = { path, file, closed, meta, body: parts.body, text, ext: extname(path), name: basename(path, extname(path)) };
     (isTicket ? result.tickets : result.pages).push(entry);

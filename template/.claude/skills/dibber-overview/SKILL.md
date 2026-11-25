@@ -34,7 +34,7 @@ ticket to the user as suspicious.
 ## Without the command-line tool
 
 Read the frontmatter of every `*.md` and `*.mdx` file under `tickets/`. A file is a ticket if it
-has an `id` and no `kind` other than `ticket`. Whether it is open or closed is its `status`, one
+has an `id` and `status` and omits `page`. Whether it is open or closed is its `status`, one
 of available, in-progress, in-review, deprioritized (live) or done, withdrawn,
 superseded, deferred (closed). A ticket is ready when it is `available` and every id in its
 `depends_on` is done or superseded.

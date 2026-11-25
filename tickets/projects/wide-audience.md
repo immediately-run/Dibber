@@ -1,8 +1,8 @@
 ---
 id: wide-audience
-kind: project
 title: Dibber for a wide audience
 description: Make Dibber the obvious first ticket tracker for people who have never used Jira or Linear, vibe coders working with agents above all.
+page: project
 ---
 
 # Dibber for a wide audience.
