@@ -1,12 +1,14 @@
 ---
 id: DIB-14
 title: "DIB-14 — A newcomer's guide: tickets in ten minutes, and the words Jira and Linear use"
-status: available
+status: done
 description: A guide for people who have never used issue tracking. Start with three statuses, learn the rest when needed, and see a table mapping Jira, Linear and GitHub Issues words to Dibber's.
 depends_on: [DIB-2]
 order: 100
 tags: [docs, onboarding]
 project: wide-audience
+assignee: Peter Neumark
+updated: 2026-11-25
 ---
 
 **Brief:** suggested in the 2026-11-22 planning session on what Dibber lacks for a wide audience.
@@ -37,11 +39,15 @@ enough to start. The eight statuses are a lot to take in at once.
 
 ### Exit criteria
 
-- [ ] every status in `ticket.schema.json` appears in the guide (a test)
-- [ ] every link in `docs/` resolves (a link check)
+- [x] every status in `ticket.schema.json` appears in the guide (a test)
+- [x] every link in `docs/` resolves (a link check)
 
 ## Status
 
 _filed 2026-11-22._
 
 _2026-11-22: gains the "Dibber alone, or with Baton" section (DIB-2)._
+
+_2026-11-25: claimed by Peter Neumark._
+
+_2026-11-25: done._
