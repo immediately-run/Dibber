@@ -1,0 +1,20 @@
+[
+  {
+    "number": 12,
+    "title": "Original parent",
+    "body": "A multiline\ndescription",
+    "url": "https://github.com/example/project/issues/12",
+    "state": "CLOSED",
+    "stateReason": "COMPLETED",
+    "subIssues": [{ "number": 13 }],
+    "comments": [{ "createdAt": "2026-01-09T02:00:00Z", "author": { "login": "sam" }, "body": "Old history" }]
+  },
+  {
+    "number": 13,
+    "title": "Original child",
+    "url": "https://github.com/example/project/issues/13",
+    "state": "OPEN",
+    "blockedBy": [{ "number": 12 }],
+    "labels": [{ "name": "migration" }]
+  }
+]
