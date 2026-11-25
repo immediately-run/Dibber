@@ -37,7 +37,11 @@ https://github.com/immediately-run/dibber/blob/main/SPEC.md
    ```
 
    Use `dibber` if it is installed, otherwise `npx -y @immediately-run/dibber`. It picks the
-   next free id, writes the file and checks it.
+   next free id, writes the file and checks it. If an allocator reserved the id, pass
+   `--id`. In a trusted repository with `coordinator.next` configured, the command
+   asks the coordinator for a number. Use `--offline` to explicitly allocate locally.
+   Use `--body-file PATH` for a complete Markdown body and repeat `--field KEY=VALUE`
+   for fields declared in the store schema.
 4. **Tell the user** the id and title in one line, and stop. Filing a ticket is not starting the
    work: start only if they ask.
 

@@ -71,6 +71,10 @@ ticket file.
     and known branches when writing without a coordinator. When a coordinator is in use,
     it allocates the number. If a numeric collision gets through, the second to merge
     renumbers and updates every reference and header that names the old id.
+  - **Coordinator.** A trusted repository may configure `coordinator.next` in
+    `.dibber/config.json` as an executable followed by its arguments. The writer runs it
+    from the repository root, expands `<prefix>` in each argument, and takes the decimal
+    number from the final line of stdout. An explicit offline mode uses local allocation.
   - **Across repositories.** `<repository>:<id>` (`baton:B-111`) names a ticket in another
     repository's store; an unqualified id is always the store's own. What a repository name
     resolves to is the reader's configuration.

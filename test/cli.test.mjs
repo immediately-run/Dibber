@@ -2,7 +2,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
-import { mkdtempSync, readFileSync, existsSync, writeFileSync, readdirSync, lstatSync, readlinkSync } from 'node:fs';
+import { cpSync, mkdtempSync, readFileSync, existsSync, writeFileSync, readdirSync, lstatSync, readlinkSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { run } from '../src/cli.mjs';
@@ -272,4 +272,50 @@ test('init and new allocate distinct random ids (DIB-26)', async () => {
   assert.equal(before.length, 1);
   assert.ok(store.tickets.every((t) => /^tek-[a-z0-9]{4,}$/.test(t.meta.id)));
   assert.equal(new Set(store.tickets.map((t) => t.meta.id)).size, 2);
+});
+
+test('new uses the coordinator or takes the explicit offline path (DIB-33)', async () => {
+  const { dir } = repo();
+  await dibber(dir, 'init', '--yes');
+  const path = join(dir, '.dibber/config.json');
+  const config = JSON.parse(readFileSync(path, 'utf8'));
+  const configure = (script) => writeFileSync(path, JSON.stringify({
+    ...config, coordinator: { next: [process.execPath, '-e', script, '<prefix>'] },
+  }));
+  configure('if (process.argv[1] !== "RA") process.exit(1); console.log("reserved"); console.log(40)');
+  const remote = await dibber(dir, 'new', '--title', 'Coordinated', '--json');
+  assert.equal(JSON.parse(remote.stdout).id, 'RA-40');
+  configure('process.exit(1)');
+  assert.match((await dibber(dir, 'new', '--title', 'Refused')).stderr, /coordinator failed/);
+  assert.match((await dibber(dir, 'new', '--title', 'Local', '--offline')).stdout, /RA-41.*offline/);
+  assert.match((await dibber(dir, 'new', '--title', 'Preallocated', '--id', 'RA-50')).stdout, /RA-50/);
+  assert.match((await dibber(dir, 'new', '--title', 'Duplicate', '--id', 'RA-50', '--mdx')).stderr, /already taken/);
+  assert.match((await dibber(dir, 'new', '--title', 'Wrong prefix', '--id', 'Z-50')).stderr, /invalid reserved id/);
+});
+
+test('new and set use the conformance store schema for full tickets (DIB-33)', async () => {
+  const { dir, git } = repo();
+  cpSync(new URL('../conformance/valid/item-schema/tickets/', import.meta.url), join(dir, 'tickets'), { recursive: true });
+  const prefix = checkStore(dir).store.tickets[0].meta.id.split('-')[0];
+  const id = `${prefix}-99`;
+  const body = join(dir, 'body.md');
+  const document = '# Context\n\n## Status\n\nExisting entry.\n\n';
+  writeFileSync(body, document);
+  const base = ['new', '--title', 'Complete', '--id', id, '--body-file', body, '--field', 'priority=high'];
+  assert.equal((await dibber(dir, ...base, '--field', 'repos=[org/repo]')).code, 0);
+  const file = join(dir, 'tickets', `${id}.md`);
+  const original = readFileSync(file, 'utf8');
+  assert.ok(original.endsWith(document));
+  assert.ok(original.startsWith('---\npriority: high\n'));
+  assert.equal((await dibber(dir, 'set', id, '--field', 'priority=medium')).code, 0);
+  const updated = readFileSync(file, 'utf8');
+  assert.ok(updated.endsWith(document));
+  assert.match(updated, /priority: medium/);
+  for (const field of ['id=other', 'bogus=true', 'priority=invalid']) {
+    assert.equal((await dibber(dir, 'set', id, '--field', field)).code, 2);
+    assert.equal(readFileSync(file, 'utf8'), updated);
+  }
+  assert.equal((await dibber(dir, 'set', id, 'in-progress', '--field', 'priority=high')).code, 0);
+  assert.deepEqual(checkStore(dir).errors, []);
+  assert.equal(git('diff', '--cached', '--name-only'), '');
 });

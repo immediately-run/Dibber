@@ -21,6 +21,19 @@
       "enum": ["numeric", "random"],
       "default": "numeric",
       "description": "How Dibber allocates new ticket ids (R-DIB-4)."
+    },
+    "coordinator": {
+      "type": "object",
+      "required": ["next"],
+      "properties": {
+        "next": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string" },
+          "description": "Executable and arguments that print the next ticket number."
+        }
+      },
+      "additionalProperties": false
     }
   },
   "additionalProperties": true
