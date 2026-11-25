@@ -1,11 +1,13 @@
 ---
 id: DIB-19
 title: DIB-19 — A template repository for people who start from GitHub, not a terminal
-status: available
+status: done
 depends_on: [DIB-8]
 order: 82
 tags: [onboarding]
 project: wide-audience
+assignee: Peter Neumark
+updated: 2026-11-25
 ---
 
 **Brief:** split from DIB-8 on 2026-11-22: its template-repository half.
@@ -21,8 +23,12 @@ A template repository (or a `template/` folder this repository publishes) holdin
 
 ### Exit criteria
 
-- [ ] a test: the template's files equal what `dibber init --yes` writes into an empty repository, apart from the prefix
+- [x] a test: the template's files equal what `dibber init --yes` writes into an empty repository, apart from the prefix
 
 ## Status
 
 _filed 2026-11-22._
+
+_2026-11-25: claimed by Peter Neumark._
+
+_2026-11-25: done._
