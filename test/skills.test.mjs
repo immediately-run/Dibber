@@ -11,8 +11,8 @@ import { SKILL_HOMES } from '../src/init.mjs';
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const names = readdirSync(join(ROOT, 'skills')).sort();
 
-test('the three skills exist', () => {
-  assert.deepEqual(names, ['dibber-new-ticket', 'dibber-overview', 'dibber-work-ticket']);
+test('the Dibber skills exist', () => {
+  assert.deepEqual(names, ['dibber-new-ticket', 'dibber-overview', 'dibber-triage-issues', 'dibber-work-ticket']);
 });
 
 for (const name of names) {

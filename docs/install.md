@@ -13,7 +13,7 @@ repository, which you and the person both read. The same steps are on
    - `tickets/`, where each ticket is one `.md` file;
    - `.dibber/config.json`, with the store folder and the prefix;
    - a section in `AGENTS.md`, and a `CLAUDE.md` that points to it;
-   - three skills, `dibber-new-ticket`, `dibber-work-ticket` and `dibber-overview`, in
+   - four skills, `dibber-new-ticket`, `dibber-work-ticket`, `dibber-overview` and `dibber-triage-issues`, in
      `.agents/skills/` (Codex, opencode, Antigravity) and `.claude/skills/` (Claude Code);
    - three files in `tickets/` (`immediately.run.json`, `home.mdx`, `_layout.mdx`) that open the
      tickets as a board on immediately.run once the repository is public on GitHub. Add
