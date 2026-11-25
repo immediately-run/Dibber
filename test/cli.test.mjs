@@ -261,6 +261,19 @@ test('init names the GitHub repository on the board home page', async () => {
   assert.match(readFileSync(join(dir, 'tickets', 'home.mdx'), 'utf8'), /board for this repository\./);
 });
 
+test('init and new allocate distinct random ids (DIB-26)', async () => {
+  const { dir } = repo();
+  assert.equal((await dibber(dir, 'init', '--yes', '--prefix', 'tek', '--ids', 'random')).code, 0);
+  const before = checkStore(dir).store.tickets.map((t) => t.meta.id);
+  assert.equal((await dibber(dir, 'new', '--title', 'Random ticket')).code, 0);
+  const { errors, store } = checkStore(dir);
+  assert.deepEqual(errors, []);
+  assert.equal(store.tickets.length, 2);
+  assert.equal(before.length, 1);
+  assert.ok(store.tickets.every((t) => /^tek-[a-z0-9]{4,}$/.test(t.meta.id)));
+  assert.equal(new Set(store.tickets.map((t) => t.meta.id)).size, 2);
+});
+
 test('new uses the coordinator or takes the explicit offline path (DIB-33)', async () => {
   const { dir } = repo();
   await dibber(dir, 'init', '--yes');

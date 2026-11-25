@@ -1,11 +1,13 @@
 ---
 id: DIB-26
 title: DIB-26 — Accept random ids beside numeric ones
-status: available
+status: done
 depends_on: []
 order: 26
 tags: [spec, ids]
 project: wide-audience
+assignee: Peter Neumark
+updated: 2026-11-25
 ---
 
 **Brief:** from the owner, 2026-11-23: Dibber should read the ticket stores other Markdown ticket tools already write, so it can be the shared format for tickets in git.
@@ -21,10 +23,14 @@ Widen R-DIB-4: an id is a prefix (letters and digits, starting with a letter, ei
 
 ### Exit criteria
 
-- [ ] conformance: a valid store with ids like `tek-m5tt` and `is-01kf5zyg8h` passes, and the new invalid fixtures fail on R-DIB-4
-- [ ] a test: with `ids: random`, `dibber new` allocates an id matching the random form that no file in the store already uses
-- [ ] `npm test` passes
+- [x] conformance: a valid store with ids like `tek-m5tt` and `is-01kf5zyg8h` passes, and the new invalid fixtures fail on R-DIB-4
+- [x] a test: with `ids: random`, `dibber new` allocates an id matching the random form that no file in the store already uses
+- [x] `npm test` passes
 
 ## Status
 
 _filed 2026-11-23._
+
+_2026-11-25: claimed by Peter Neumark._
+
+_2026-11-25: done._

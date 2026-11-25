@@ -7,12 +7,12 @@
   "definitions": {
     "id": {
       "type": "string",
-      "pattern": "^[A-Z][A-Z0-9]*-[0-9]+[a-z0-9]*$",
-      "description": "A ticket id, <PREFIX>-<n> (R-DIB-4); a trailing lower-case split suffix (R3-51a) is accepted for older ids."
+      "pattern": "^(?:[A-Za-z][A-Za-z0-9]*-(?:[0-9]+|[a-z0-9]{4,})|[A-Z][A-Z0-9]*-[0-9]+[a-z0-9]*)$",
+      "description": "A ticket id with a decimal or lowercase base-36 suffix (R-DIB-4); legacy split ids are also accepted."
     },
     "ref": {
       "type": "string",
-      "pattern": "^([a-z0-9][a-z0-9._-]*:)?[A-Z][A-Z0-9]*-[0-9]+[a-z0-9]*$",
+      "pattern": "^([a-z0-9][a-z0-9._-]*:)?(?:[A-Za-z][A-Za-z0-9]*-(?:[0-9]+|[a-z0-9]{4,})|[A-Z][A-Z0-9]*-[0-9]+[a-z0-9]*)$",
       "description": "An id, or a qualified id <repository>:<id> naming another repository's ticket (R-DIB-4)."
     }
   },

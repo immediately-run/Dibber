@@ -73,7 +73,7 @@ export function checkStore(root) {
     const { meta, file } = t;
     const id = meta.id;
     if (typeof id !== 'string' || !ID_RE.test(id)) {
-      err('R-DIB-4', file, `the id \`${id}\` is not <PREFIX>-<n> (upper-case prefix, a dash, a number)`);
+      err('R-DIB-4', file, `the id \`${id}\` must have a letter-led alphanumeric prefix, a dash, and a decimal or lowercase base-36 suffix`);
       continue;
     }
     if (t.name !== id) err('R-DIB-1', file, `the file is named \`${t.name}${t.ext}\` but its id is \`${id}\`; name it \`${id}${t.ext}\``);

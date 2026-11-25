@@ -12,7 +12,7 @@ const HELP = `dibber — Git as your issue tracker: an open format built on Mark
 
 Usage: dibber <command> [options]        (every command takes --json and --root <dir>)
 
-  init [--prefix P] [--store DIR] [--yes] [--no-agents] [--update-skills] [--link-skills]
+  init [--prefix P] [--ids numeric|random] [--store DIR] [--yes] [--no-agents] [--update-skills] [--link-skills]
       [--no-immediately-run]       set this repository up: .dibber/config.json, the store,
                                    a first ticket, AGENTS.md, the agent skills, and the files
                                    that open the store as a board on immediately.run;
@@ -39,7 +39,7 @@ several people or several LLM providers at once: add a coordinator such as Baton
 (https://github.com/immediately-run/baton). Claims here are advisory, not locks.
 `;
 
-const FLAGS_WITH_VALUES = new Set(['id', 'body-file', 'field', 'prefix', 'store', 'status', 'title', 'why', 'what', 'criterion', 'depends-on', 'parent', 'tags', 'project', 'order', 'brief', 'as', 'pr', 'note', 'root', 'description', 'assignee']);
+const FLAGS_WITH_VALUES = new Set(['id', 'body-file', 'field', 'prefix', 'ids', 'store', 'status', 'title', 'why', 'what', 'criterion', 'depends-on', 'parent', 'tags', 'project', 'order', 'brief', 'as', 'pr', 'note', 'root', 'description', 'assignee']);
 const REPEATABLE = new Set(['criterion', 'field']);
 
 export function parseArgs(argv) {
@@ -157,14 +157,14 @@ export async function run(argv, { cwd = process.cwd(), interactive = true } = {}
     } else if (cmd === 'init') {
       let prefix = flags.prefix;
       if (!prefix && !flags.yes && interactive) prefix = (await ask('Ticket id prefix (e.g. APP for APP-1)?', defaultPrefix(root))).toUpperCase();
-      const r = init(root, { prefix, store: flags.store, agents: !flags['no-agents'], updateSkills: flags['update-skills'], linkSkills: flags['link-skills'], immediatelyRun: !flags['no-immediately-run'] });
+      const r = init(root, { prefix, ids: flags.ids, store: flags.store, agents: !flags['no-agents'], updateSkills: flags['update-skills'], linkSkills: flags['link-skills'], immediatelyRun: !flags['no-immediately-run'] });
       if (flags.json) json(r);
       else {
         for (const f of r.created) stdout.push(`  created ${f}`);
         for (const f of r.updated) stdout.push(`  updated ${f}`);
         for (const f of r.repaired) stdout.push(`  repaired ${f} (it was broken; written again)`);
         for (const f of r.skipped) stdout.push(`  kept    ${f} (already there)`);
-        stdout.push(`\nDibber is set up: tickets in ${r.store}/, ids ${r.prefix}-1, ${r.prefix}-2, …\nNext: ask your agent "what's on the board?", or run: dibber list`);
+        stdout.push(`\nDibber is set up: tickets in ${r.store}/, ids ${r.ids === 'random' ? `${r.prefix}-<random>` : `${r.prefix}-1, ${r.prefix}-2, …`}\nNext: ask your agent "what's on the board?", or run: dibber list`);
         if (r.created.includes(`${r.store}/immediately.run.json`)) {
           stdout.push(`Once pushed to a public GitHub repository, the board opens at https://immediately.run/present/github/${r.repo ?? '<owner>/<repo>'}/main/bundle/${r.store}/home.mdx`);
         }

@@ -1,6 +1,6 @@
 ---
-id: x-1
-title: "x-1 — an example ticket"
+id: x-m5Tt
+title: "x-m5Tt — an example ticket"
 status: available
 ---
 

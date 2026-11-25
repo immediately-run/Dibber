@@ -6,7 +6,7 @@ import { execFileSync } from 'node:child_process';
 import { existsSync, lstatSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync, appendFileSync, statSync, symlinkSync } from 'node:fs';
 import { basename, dirname, join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { today } from './tickets.mjs';
+import { Refusal, nextId, today } from './tickets.mjs';
 import { readStore } from './store.mjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
@@ -75,7 +75,7 @@ export function defaultPrefix(root) {
   const words = basename(root).toUpperCase().split(/[^A-Z0-9]+/).filter(Boolean);
   let p = words.length > 1 ? words.map((w) => w[0]).join('').slice(0, 4) : (words[0] ?? '').slice(0, 3);
   p = p.replace(/^[0-9]+/, '');
-  return /^[A-Z][A-Z0-9]*$/.test(p) ? p : 'T';
+  return /^[A-Za-z][A-Za-z0-9]*$/.test(p) ? p : 'T';
 }
 
 export function skillNames() {
@@ -136,20 +136,23 @@ function writeOnce(path, content, report, overwrite = false) {
 export function init(root, opts = {}) {
   const report = { created: [], updated: [], skipped: [], repaired: [] };
   const prefix = opts.prefix ?? defaultPrefix(root);
-  if (!/^[A-Z][A-Z0-9]*$/.test(prefix)) throw new Error(`the prefix \`${prefix}\` must be upper-case letters and digits, starting with a letter (no dash)`);
+  if (!/^[A-Za-z][A-Za-z0-9]*$/.test(prefix)) throw new Error(`the prefix \`${prefix}\` must be letters and digits, starting with a letter (no dash)`);
   const storeRel = opts.store ?? 'tickets';
+  if (opts.ids !== undefined && !['numeric', 'random'].includes(opts.ids)) throw new Refusal('--ids must be numeric or random');
 
   const configPath = join(root, '.dibber', 'config.json');
-  let config = { store: storeRel, prefix };
+  const defaults = { store: storeRel, prefix, ...(opts.ids && { ids: opts.ids }) };
+  let config = defaults;
   if (existsSync(configPath)) {
     try { config = { ...config, ...JSON.parse(readFileSync(configPath, 'utf8')) }; } catch {}
   }
-  writeOnce(configPath, JSON.stringify({ store: storeRel, prefix }, null, 2) + '\n', report);
+  writeOnce(configPath, JSON.stringify(defaults, null, 2) + '\n', report);
 
   const store = join(root, config.store);
   mkdirSync(store, { recursive: true });
-  if (readStore(root).tickets.length === 0) {
-    const id = `${config.prefix}-1`;
+  const current = readStore(root);
+  if (current.tickets.length === 0) {
+    const id = nextId(root, current);
     const sample = readFileSync(join(TEMPLATES, 'first-ticket.md'), 'utf8')
       .replaceAll('{{ID}}', id)
       .replaceAll('{{DATE}}', today())
@@ -204,5 +207,5 @@ export function init(root, opts = {}) {
   }
 
   const relp = (p) => p.slice(root.length + 1).split('\\').join('/');
-  return { created: report.created.map(relp), updated: report.updated.map(relp), skipped: report.skipped.map(relp), repaired: report.repaired.map(relp), prefix: config.prefix, store: config.store, repo };
+  return { created: report.created.map(relp), updated: report.updated.map(relp), skipped: report.skipped.map(relp), repaired: report.repaired.map(relp), prefix: config.prefix, ids: config.ids, store: config.store, repo };
 }
