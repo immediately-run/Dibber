@@ -1,13 +1,15 @@
 ---
 id: DIB-16
 title: "DIB-16 — Migrate from Linear, Jira or GitHub Issues: docs and importers"
-status: in-progress
+status: done
 description: A guide and one import command per source that turns an export into a valid Dibber store, keeping ids traceable and relations intact.
 depends_on: [DIB-7, DIB-14]
 order: 120
 tags: [docs, tooling, migration]
 project: wide-audience
 assignee: Peter Neumark
+prs: [https://github.com/immediately-run/dibber/pull/26]
+updated: 2026-11-25
 ---
 
 **Brief:** from the owner's list, 2026-11-22: docs on how to migrate from Linear, Jira or GitHub issues.
@@ -34,10 +36,12 @@ keeps relations and history is the difference between trying Dibber and not.
 
 ### Exit criteria
 
-- [ ] for each source, a fixture export imports to a store that `dibber check` passes, with relations preserved (a test per source)
+- [x] for each source, a fixture export imports to a store that `dibber check` passes, with relations preserved (a test per source)
 
 ## Status
 
 _filed 2026-11-22._
 
 _2026-11-25: claimed by Peter Neumark._
+
+_2026-11-25: done, https://github.com/immediately-run/dibber/pull/26._
