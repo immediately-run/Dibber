@@ -7,9 +7,9 @@
 import { execFileSync } from 'node:child_process';
 import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
-import { Document, visit } from 'yaml';
+import { Document, parseDocument, visit } from 'yaml';
 import { readStore, splitFrontmatter, rel, LIVE, CLOSED, STATUSES, ID_RE, QUALIFIED_RE, idNumber, asList, byOrderThenId } from './store.mjs';
-import { checkStore } from './check.mjs';
+import { checkStore, TICKET_SCHEMA } from './check.mjs';
 
 export class Refusal extends Error {}
 
@@ -52,6 +52,38 @@ export function storePrefix(store) {
   return best[0];
 }
 
+// Accept a coordinator's reservation only if it is a free id in this store ([DIB-33](../tickets/DIB-33.md)).
+function reservedId(root, store, id) {
+  if (!ID_RE.test(id) || id.split('-')[0] !== storePrefix(store)) {
+    throw new Refusal(`invalid reserved id \`${id}\` for prefix \`${storePrefix(store)}\``);
+  }
+  if (store.tickets.some((t) => t.meta.id === id) || idsOnBranches(root, store.storeRel).includes(id)
+      || ['.md', '.mdx'].some((ext) => existsSync(join(store.storeDir, id + ext)))) {
+    throw new Refusal(`ticket id \`${id}\` is already taken`);
+  }
+  return id;
+}
+
+function coordinatorId(root, store, coordinator) {
+  const argv = coordinator?.next;
+  if (!Array.isArray(argv) || !argv[0] || !argv.every((arg) => typeof arg === 'string')) {
+    throw new Refusal('coordinator.next must be an executable and its arguments');
+  }
+  const prefix = storePrefix(store);
+  const [command, ...args] = argv.map((arg) => arg.replaceAll('<prefix>', prefix));
+  let output;
+  try {
+    output = execFileSync(command, args, {
+      cwd: root, encoding: 'utf8', timeout: 30_000, stdio: ['ignore', 'pipe', 'pipe'],
+    });
+  } catch {
+    throw new Refusal('the coordinator failed to allocate a ticket number; pass --offline to use local allocation');
+  }
+  const number = output.trimEnd().split(/\r?\n/).at(-1).trim();
+  if (!/^[0-9]+$/.test(number)) throw new Refusal('the coordinator must print a decimal ticket number on its last line');
+  return reservedId(root, store, `${prefix}-${number}`);
+}
+
 /** The next free number: one more than the highest taken in the store and on every branch. */
 export function nextId(root, store) {
   const prefix = storePrefix(store);
@@ -68,19 +100,75 @@ function frontmatterYaml(obj) {
   return doc.toString({ lineWidth: 0, flowCollectionPadding: false });
 }
 
-/** File a new ticket. Returns `{ id, file }`. */
+// Only declared keys are writable through --field ([DIB-33](../tickets/DIB-33.md)).
+function extensionFields(store, entries, readerOnly = false) {
+  const path = join(store.storeDir, 'item.schema.json');
+  let schema = {};
+  if (existsSync(path)) {
+    try {
+      schema = JSON.parse(readFileSync(path, 'utf8'));
+    } catch {
+      throw new Refusal("the store's item.schema.json does not load");
+    }
+  }
+  const fields = new Map();
+  for (const entry of entries ?? []) {
+    const separator = entry.indexOf('=');
+    if (separator < 1) throw new Refusal('--field expects key=value');
+    const key = entry.slice(0, separator);
+    const builtIn = Object.hasOwn(TICKET_SCHEMA.properties, key);
+    if (key === 'id' || key === 'status' || key === 'kind' || (readerOnly && builtIn)) {
+      throw new Refusal(`--field cannot write Dibber-owned key \`${key}\``);
+    }
+    if (!builtIn && !Object.hasOwn(schema?.properties ?? {}, key)
+        && !Object.keys(schema?.patternProperties ?? {}).some((pattern) => new RegExp(pattern).test(key))) {
+      throw new Refusal(`--field key \`${key}\` is not declared in the ticket schema`);
+    }
+    const source = entry.slice(separator + 1);
+    const doc = parseDocument(source);
+    if (doc.errors.length) throw new Refusal(`--field \`${key}\` is not valid YAML`);
+    let value;
+    try {
+      value = source === '' ? '' : doc.toJS();
+    } catch {
+      throw new Refusal(`--field \`${key}\` is not valid YAML`);
+    }
+    fields.set(key, value);
+  }
+  return { fields, keys: Object.keys(schema?.properties ?? {}) };
+}
+
+function orderFields(meta, keys) {
+  return Object.fromEntries([...new Set([...keys, ...Object.keys(meta)])]
+    .filter((key) => Object.hasOwn(meta, key)).map((key) => [key, meta[key]]));
+}
+
+/** File a new ticket ([DIB-33](../tickets/DIB-33.md)). */
 export function newTicket(root, opts) {
   const store = readStore(root);
   if (!store.exists) throw new Refusal(`there is no store at \`${store.storeRel}/\`; run \`dibber init\` first`);
   if (!opts.title) throw new Refusal('a ticket needs a title: --title "what to do"');
-  const id = nextId(root, store);
+  const { fields, keys } = extensionFields(store, opts.fields);
+  const coordinator = store.settings.raw?.coordinator;
+  const offline = opts.id === undefined && opts.offline && coordinator !== undefined;
+  let suppliedBody = opts.body;
+  if (opts.bodyFile !== undefined) {
+    try {
+      suppliedBody = readFileSync(opts.bodyFile, 'utf8');
+    } catch (error) {
+      throw new Refusal(`cannot read --body-file: ${error.message}`);
+    }
+  }
+  const id = opts.id !== undefined ? reservedId(root, store, opts.id)
+    : coordinator !== undefined && !offline ? coordinatorId(root, store, coordinator)
+    : nextId(root, store);
   const dependsOn = asList(opts.dependsOn);
   for (const d of dependsOn) {
     if (!ID_RE.test(d) && !QUALIFIED_RE.test(d)) throw new Refusal(`\`${d}\` is not a ticket id`);
     if (ID_RE.test(d) && !store.tickets.some((t) => t.meta.id === d)) throw new Refusal(`\`depends_on\` names \`${d}\`, which is not a ticket in this store`);
   }
   if (opts.parent && !store.tickets.some((t) => t.meta.id === opts.parent)) throw new Refusal(`\`parent\` names \`${opts.parent}\`, which is not a ticket in this store`);
-  const meta = { id, title: `${id} — ${opts.title}`, status: 'available' };
+  let meta = { id, title: `${id} — ${opts.title}`, status: 'available' };
   if (opts.description) meta.description = opts.description;
   meta.depends_on = dependsOn;
   if (opts.parent) meta.parent = opts.parent;
@@ -89,11 +177,13 @@ export function newTicket(root, opts) {
   if (opts.project) meta.project = opts.project;
   if (opts.assignee) meta.assignee = opts.assignee;
 
+  meta = orderFields({ ...meta, ...Object.fromEntries(fields) }, keys);
+
   const date = today();
   const brief = opts.brief ? `**Brief:** ${opts.brief}\n` : '';
   const criteria = asList(opts.criteria);
   const body =
-    opts.body ??
+    suppliedBody ??
     [
       `${brief}**Depends on:** ${dependsOn.length ? dependsOn.join(', ') + '.' : 'none.'}`,
       '',
@@ -109,11 +199,13 @@ export function newTicket(root, opts) {
       '',
       ...(criteria.length ? criteria.map((c) => `- [ ] ${c}`) : ['- [ ] _a check that passes when this is done, such as a test or a command_']),
     ].join('\n');
-  const text = `---\n${frontmatterYaml(meta)}---\n\n${body.trimEnd()}\n\n## Status\n\n_filed ${date}._\n`;
+  const status = /^## Status[ \t]*\r?$/m.test(body) ? '' :
+    `${body.endsWith('\n\n') ? '' : body.endsWith('\n') ? '\n' : '\n\n'}## Status\n\n_filed ${date}._\n`;
+  const text = `---\n${frontmatterYaml(meta)}---\n\n${body}${status}`;
   const ext = opts.mdx ? '.mdx' : '.md';
   const path = join(store.storeDir, `${id}${ext}`);
-  writeChecked(root, path, text);
-  return { id, file: rel(root, path) };
+  writeChecked(root, path, text, { create: true });
+  return { id, file: rel(root, path), ...(offline && { offline: true }) };
 }
 
 /** Find a ticket by id, open or closed. */
@@ -152,12 +244,19 @@ function appendStatus(body, line) {
  * Write `text` to `path`, then put the file back as it was (or remove a new one) and refuse if
  * the ticket no longer checks. The file is written in place: never moved, never staged.
  */
-function writeChecked(root, path, text) {
+function writeChecked(root, path, text, { create = false } = {}) {
   const before = existsSync(path) ? readFileSync(path, 'utf8') : null;
   mkdirSync(dirname(path), { recursive: true });
-  writeFileSync(path, text);
+  try {
+    writeFileSync(path, text, { flag: create ? 'wx' : 'w' });
+  } catch (error) {
+    if (create && error.code === 'EEXIST') throw new Refusal(`ticket file \`${rel(root, path)}\` already exists`);
+    throw error;
+  }
   const file = rel(root, path);
-  const mine = checkStore(root).errors.filter((e) => e.file === file);
+  const { errors, store } = checkStore(root);
+  const schema = rel(root, join(store.storeDir, 'item.schema.json'));
+  const mine = errors.filter((e) => e.file === file || e.file === schema);
   if (mine.length) {
     if (before === null) rmSync(path, { force: true });
     else writeFileSync(path, before);
@@ -171,13 +270,15 @@ function writeChecked(root, path, text) {
  * A closed ticket is not reopened. Returns `{ id, file, status }`.
  */
 export function setStatus(root, id, status, opts = {}) {
-  if (!STATUSES.includes(status)) throw new Refusal(`\`${status}\` is not a Dibber status: ${STATUSES.join(', ')}`);
+  if (status !== undefined && !STATUSES.includes(status)) throw new Refusal(`\`${status}\` is not a Dibber status: ${STATUSES.join(', ')}`);
   const store = readStore(root);
   const t = findTicket(store, id);
   if (t.closed) throw new Refusal(`\`${id}\` is closed (\`${t.meta.status}\`); file a new ticket instead of reopening it`);
   const parts = splitFrontmatter(t.text);
   const doc = parts.doc;
-  doc.set('status', status);
+  const { fields } = extensionFields(store, opts.fields, true);
+  for (const [key, value] of fields) doc.set(key, value);
+  if (status !== undefined) doc.set('status', status);
   if (opts.assignee !== undefined) doc.set('assignee', opts.assignee);
   if (opts.pr) {
     const prs = asList(doc.toJS().prs);
@@ -187,12 +288,12 @@ export function setStatus(root, id, status, opts = {}) {
     doc.set('prs', node);
   }
   if (CLOSED.includes(status) || opts.touch) doc.set('updated', today());
-  const what = opts.note ?? (status === 'done' ? 'done' : `${status}${opts.assignee ? ` (${opts.assignee})` : ''}`);
-  const line = `_${today()}: ${what.replace(/\.$/, '')}${opts.pr ? `, ${opts.pr}` : ''}._`;
+  const what = opts.note ?? (status === undefined ? null : status === 'done' ? 'done' : `${status}${opts.assignee ? ` (${opts.assignee})` : ''}`);
+  const line = what === null ? null : `_${today()}: ${what.replace(/\.$/, '')}${opts.pr ? `, ${opts.pr}` : ''}._`;
   const yaml = doc.toString({ lineWidth: 0, flowCollectionPadding: false });
-  const text = `---\n${yaml}---\n${appendStatus(parts.body, line)}`;
+  const text = `---\n${yaml}---\n${line === null ? parts.body : appendStatus(parts.body, line)}`;
   writeChecked(root, t.path, text);
-  return { id, file: t.file, status };
+  return { id, file: t.file, status: status ?? t.meta.status };
 }
 
 /** Claim: available → in-progress, with an advisory assignee. Refuses a ticket that is not ready. */

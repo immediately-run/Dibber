@@ -24,10 +24,11 @@ Usage: dibber <command> [options]        (every command takes --json and --root 
   list [--ready] [--status S] [--all]
                                    the overview: what is ready, in progress and waiting
   new --title "…" [--why "…"] [--what "…"] [--criterion "…"]… [--depends-on ID,…]
+      [--id ID] [--offline] [--body-file PATH] [--field KEY=VALUE]…
       [--parent ID] [--tags a,b] [--project P] [--order N] [--brief "…"] [--mdx]
                                    file a ticket with the next free id
   claim <id> [--as NAME] [--force] available → in-progress, with you as assignee
-  set <id> <status> [--pr URL] [--note "…"]
+  set <id> [<status>] [--field KEY=VALUE]… [--pr URL] [--note "…"]
                                    change a status; the file stays where it is
   done <id> [--pr URL] [--note "…"]
                                    close a ticket as done; the file stays where it is
@@ -38,8 +39,8 @@ several people or several LLM providers at once: add a coordinator such as Baton
 (https://github.com/immediately-run/baton). Claims here are advisory, not locks.
 `;
 
-const FLAGS_WITH_VALUES = new Set(['prefix', 'store', 'status', 'title', 'why', 'what', 'criterion', 'depends-on', 'parent', 'tags', 'project', 'order', 'brief', 'as', 'pr', 'note', 'root', 'description', 'assignee']);
-const REPEATABLE = new Set(['criterion']);
+const FLAGS_WITH_VALUES = new Set(['id', 'body-file', 'field', 'prefix', 'store', 'status', 'title', 'why', 'what', 'criterion', 'depends-on', 'parent', 'tags', 'project', 'order', 'brief', 'as', 'pr', 'note', 'root', 'description', 'assignee']);
+const REPEATABLE = new Set(['criterion', 'field']);
 
 export function parseArgs(argv) {
   const flags = {};
@@ -133,12 +134,14 @@ export async function run(argv, { cwd = process.cwd(), interactive = true } = {}
       else stdout.push(formatList(rows));
     } else if (cmd === 'new') {
       const r = newTicket(root, {
+        id: flags.id, offline: flags.offline, fields: flags.field,
+        bodyFile: flags['body-file'] === undefined ? undefined : resolve(cwd, flags['body-file']),
         title: flags.title, why: flags.why, what: flags.what, criteria: flags.criterion ?? [],
         dependsOn: csv(flags['depends-on']), parent: flags.parent, tags: csv(flags.tags), project: flags.project,
         order: flags.order, brief: flags.brief, description: flags.description, assignee: flags.assignee, mdx: flags.mdx,
       });
       if (flags.json) json(r);
-      else stdout.push(`filed ${r.id}: ${r.file}`);
+      else stdout.push(`filed ${r.id}: ${r.file}${r.offline ? ' (offline allocation)' : ''}`);
     } else if (cmd === 'claim') {
       if (!rest[0]) throw new Refusal('which ticket? dibber claim <id>');
       const r = claim(root, rest[0], { as: flags.as, force: flags.force });
@@ -147,8 +150,8 @@ export async function run(argv, { cwd = process.cwd(), interactive = true } = {}
     } else if (cmd === 'set' || cmd === 'done') {
       const id = rest[0];
       const status = cmd === 'done' ? 'done' : rest[1];
-      if (!id || !status) throw new Refusal(cmd === 'done' ? 'which ticket? dibber done <id>' : 'dibber set <id> <status>');
-      const r = setStatus(root, id, status, { pr: flags.pr, note: flags.note });
+      if (!id || (!status && !flags.field?.length)) throw new Refusal(cmd === 'done' ? 'which ticket? dibber done <id>' : 'dibber set <id> <status>');
+      const r = setStatus(root, id, status, { pr: flags.pr, note: flags.note, fields: flags.field });
       if (flags.json) json(r);
       else stdout.push(`${r.id} is ${r.status}: ${r.file}`);
     } else if (cmd === 'init') {

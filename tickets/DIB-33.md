@@ -1,10 +1,11 @@
 ---
 id: DIB-33
 title: "DIB-33 — Everything a coordinator's ticket writes needs: ids from the coordinator, a full ticket on new, and a reader's own keys on set"
-status: available
+status: in-review
 depends_on: []
 order: 33
 tags: [cli, coordinator]
+assignee: Peter Neumark
 ---
 
 **Brief:** from the owner, 2026-11-24: Baton's CLI should not write ticket files; that is Dibber's job. Baton keeps allocating ids (`baton tickets next`) and checking its reading of a store (`baton tickets check`). Everything that creates or changes a ticket file goes through `dibber`, both the commands people and agents run and the Baton course legs that file tickets or mark them.
@@ -31,10 +32,14 @@ What `baton tickets new|claim|set|done` do today and `dibber` cannot:
 
 ### Exit criteria
 
-- [ ] `dibber new` with a coordinator takes its id from the command, refuses when it fails, and falls back to the scan only with `--offline`. Tested with a fake coordinator.
-- [ ] `--id`, `--body-file` and `--field` on `new`, and `--field` on `set`, write what they say. Unknown or Dibber-owned keys are refused. Tested against the conformance stores.
+- [x] `dibber new` with a coordinator takes its id from the command, refuses when it fails, and falls back to the scan only with `--offline`. Tested with a fake coordinator.
+- [x] `--id`, `--body-file` and `--field` on `new`, and `--field` on `set`, write what they say. Unknown or Dibber-owned keys are refused. Tested against the conformance stores.
 - [ ] `dibber check` green on this store; published in the next release.
 
 ## Status
 
 _filed 2026-11-24._
+
+_2026-11-25: claimed by Peter Neumark._
+
+_2026-11-25: Implementation verified with npm test and dibber check. Publication remains for the next release._
