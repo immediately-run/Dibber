@@ -1,12 +1,14 @@
 ---
 id: DIB-27
 title: "DIB-27 — Stop using kind to mark pages, and settle the status and type words"
-status: in-progress
+status: done
 depends_on: [DIB-4]
 order: 27
 tags: [spec, migration]
 project: wide-audience
 assignee: Peter Neumark
+prs: [https://github.com/immediately-run/dibber/pull/35]
+updated: 2026-11-25
 ---
 
 **Brief:** from the owner, 2026-11-23: Dibber should read the ticket stores other Markdown ticket tools already write, so it can be the shared format for tickets in git.
@@ -22,7 +24,7 @@ Change SPEC.md in place, since Dibber is still in active development, and say in
 
 ### Exit criteria
 
-- [ ] SPEC.md states the new rules, the migration and the active-development note
+- [x] SPEC.md states the new rules, the migration and the active-development note
 - [x] conformance: a store whose tickets carry `kind: bug` passes, with every file counted as a ticket
 - [x] a test: `dibber migrate` moves this repository's own store to the new rules, and `dibber check` passes before and after
 
@@ -35,3 +37,7 @@ _2026-11-23: no new version: the owner ruled that while Dibber is in active deve
 _2026-11-25: claimed by Peter Neumark._
 
 _2026-11-25: The owner rejected aliases. DIB-4 standardized optional type and left priority to stores. Page migration and conformance checks pass. Confirm the canonical status names before closing._
+
+_2026-11-25: Owner confirmed the current canonical statuses. Translate source status values during import. Rejected both read aliases and renaming the canonical statuses. The repository audit found no statuses requiring a rewrite._
+
+_2026-11-25: done, https://github.com/immediately-run/dibber/pull/35._

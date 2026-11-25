@@ -110,7 +110,8 @@ ticket file.
   and a reader that does not know one ignores it.
 
 - **R-DIB-6 (status).** `status` is the store's word on where the ticket stands, for people and
-  for readers that keep no state of their own. Its values, in three classes:
+  for readers that keep no state of their own. Importers translate source tracker statuses to
+  these canonical values. Its values, in three classes:
 
   | Class | Values |
   |---|---|

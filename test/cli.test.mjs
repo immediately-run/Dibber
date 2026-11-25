@@ -450,3 +450,18 @@ test('migrate preserves custom type values and leaves canonical statuses intact 
   assert.equal(store.tickets[0].meta.status, 'available');
   assert.ok(!Object.hasOwn(store.tickets[0].meta, 'type'));
 });
+
+test('import translates source statuses before writing Dibber tickets (DIB-27)', async () => {
+  const { dir } = repo();
+  await dibber(dir, 'init', '--yes');
+  const file = join(dir, 'linear.json');
+  writeFileSync(file, JSON.stringify(['open', 'in_progress', 'closed', 'canceled', 'duplicate'].map((state, i) => ({
+    identifier: `OPS-${i + 1}`, title: `Imported ${i + 1}`, state,
+  }))));
+  const result = await dibber(dir, 'import', 'linear', file, '--source-url', 'https://linear.app/example');
+  assert.equal(result.code, 0, result.stderr);
+  const { errors, store } = checkStore(dir);
+  assert.deepEqual(errors, []);
+  assert.deepEqual(store.tickets.slice(1).map(({ meta }) => meta.status),
+    ['available', 'in-progress', 'done', 'withdrawn', 'superseded']);
+});
