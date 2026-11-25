@@ -331,3 +331,47 @@ test('the GitHub starter folder matches dibber init (DIB-19)', async () => {
   ];
   assert.deepEqual(snapshot(dir).map(normalize), snapshot(fileURLToPath(template)).map(normalize));
 });
+
+for (const [source, ext, sourceUrl] of [
+  ['github', 'json', 'https://github.com/example/project'],
+  ['linear', 'csv', 'https://linear.app/example'],
+  ['jira', 'csv', 'https://example.atlassian.net'],
+]) {
+  test(`import ${source} preserves relations and yields a valid store (DIB-16)`, async () => {
+    const { dir } = repo();
+    await dibber(dir, 'init', '--yes');
+    const input = fileURLToPath(new URL(`./fixtures/import/${source}.${ext}`, import.meta.url));
+    const args = ['import', source, input, '--source-url', sourceUrl, '--json'];
+    const result = await dibber(dir, ...args);
+    assert.equal(result.code, 0, result.stderr);
+    assert.deepEqual(JSON.parse(result.stdout).map((ticket) => ticket.id), ['RA-2', 'RA-3']);
+    const { store, errors } = checkStore(dir);
+    assert.deepEqual(errors, []);
+    const parent = store.tickets.find((ticket) => ticket.meta.id === 'RA-2');
+    const child = store.tickets.find((ticket) => ticket.meta.id === 'RA-3');
+    assert.equal(parent.meta.status, 'done');
+    assert.equal(child.meta.status, 'available');
+    assert.equal(child.meta.parent, parent.meta.id);
+    assert.deepEqual(child.meta.depends_on, [parent.meta.id]);
+    assert.deepEqual(child.meta.tags, ['migration']);
+    assert.match(parent.body, /\*\*Imported from:\*\*/);
+    assert.ok(parent.body.includes(sourceUrl));
+    if (source !== 'linear') assert.match(parent.body, /2026-01-09[\s\S]+Old history/);
+    assert.match((await dibber(dir, ...args)).stderr, /already imported/);
+    assert.equal(checkStore(dir).store.tickets.length, 3);
+  });
+}
+
+test('an invalid import leaves no tickets behind (DIB-16)', async () => {
+  const { dir } = repo();
+  await dibber(dir, 'init', '--yes');
+  const file = join(dir, 'cycle.json');
+  writeFileSync(file, JSON.stringify([
+    { number: 10, title: 'First', blockedBy: [{ number: 11 }] },
+    { number: 11, title: 'Second', blockedBy: [{ number: 10 }] },
+  ]));
+  const result = await dibber(dir, 'import', 'github', file, '--source-url', 'https://github.com/example/project');
+  assert.equal(result.code, 2);
+  assert.match(result.stderr, /cycle/);
+  assert.deepEqual(checkStore(dir).store.tickets.map((ticket) => ticket.meta.id), ['RA-1']);
+});

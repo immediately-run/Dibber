@@ -105,7 +105,7 @@ export function nextId(root, store) {
   return `${prefix}-${(numbers.length ? Math.max(...numbers) : 0) + 1}`;
 }
 
-function frontmatterYaml(obj) {
+export function frontmatterYaml(obj) {
   const doc = new Document(obj);
   visit(doc, { Seq(_, node) { node.flow = true; } });
   return doc.toString({ lineWidth: 0, flowCollectionPadding: false });
@@ -154,6 +154,15 @@ function orderFields(meta, keys) {
     .filter((key) => Object.hasOwn(meta, key)).map((key) => [key, meta[key]]));
 }
 
+// Share the writer's ID allocation policy with the import command ([DIB-16](../tickets/DIB-16.md)).
+export function allocateTicketId(root, store, { id, offline } = {}) {
+  if (id !== undefined) return reservedId(root, store, id);
+  const coordinator = store.settings.raw?.coordinator;
+  return coordinator !== undefined && !offline
+    ? coordinatorId(root, store, coordinator)
+    : nextId(root, store);
+}
+
 /** File a new ticket ([DIB-33](../tickets/DIB-33.md)). */
 export function newTicket(root, opts) {
   const store = readStore(root);
@@ -170,9 +179,7 @@ export function newTicket(root, opts) {
       throw new Refusal(`cannot read --body-file: ${error.message}`);
     }
   }
-  const id = opts.id !== undefined ? reservedId(root, store, opts.id)
-    : coordinator !== undefined && !offline ? coordinatorId(root, store, coordinator)
-    : nextId(root, store);
+  const id = allocateTicketId(root, store, opts);
   const dependsOn = asList(opts.dependsOn);
   for (const d of dependsOn) {
     if (!ID_RE.test(d) && !QUALIFIED_RE.test(d)) throw new Refusal(`\`${d}\` is not a ticket id`);

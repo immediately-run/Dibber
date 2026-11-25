@@ -7,6 +7,7 @@ import { resolve } from 'node:path';
 import { checkStore } from './check.mjs';
 import { Refusal, newTicket, setStatus, claim, listTickets, STATUSES } from './tickets.mjs';
 import { init, defaultPrefix } from './init.mjs';
+import { importTickets } from './import.mjs';
 
 const HELP = `dibber — Git as your issue tracker: an open format built on Markdown (https://github.com/immediately-run/dibber)
 
@@ -27,6 +28,8 @@ Usage: dibber <command> [options]        (every command takes --json and --root 
       [--id ID] [--offline] [--body-file PATH] [--field KEY=VALUE]…
       [--parent ID] [--tags a,b] [--project P] [--order N] [--brief "…"] [--mdx]
                                    file a ticket with the next free id
+  import github|linear|jira <export> [--source-url URL]
+                                   import tickets from a local export
   claim <id> [--as NAME] [--force] available → in-progress, with you as assignee
   set <id> [<status>] [--field KEY=VALUE]… [--pr URL] [--note "…"]
                                    change a status; the file stays where it is
@@ -39,7 +42,7 @@ several people or several LLM providers at once: add a coordinator such as Baton
 (https://github.com/immediately-run/baton). Claims here are advisory, not locks.
 `;
 
-const FLAGS_WITH_VALUES = new Set(['id', 'body-file', 'field', 'prefix', 'ids', 'store', 'status', 'title', 'why', 'what', 'criterion', 'depends-on', 'parent', 'tags', 'project', 'order', 'brief', 'as', 'pr', 'note', 'root', 'description', 'assignee']);
+const FLAGS_WITH_VALUES = new Set(['source-url', 'id', 'body-file', 'field', 'prefix', 'ids', 'store', 'status', 'title', 'why', 'what', 'criterion', 'depends-on', 'parent', 'tags', 'project', 'order', 'brief', 'as', 'pr', 'note', 'root', 'description', 'assignee']);
 const REPEATABLE = new Set(['criterion', 'field']);
 
 export function parseArgs(argv) {
@@ -142,6 +145,12 @@ export async function run(argv, { cwd = process.cwd(), interactive = true } = {}
       });
       if (flags.json) json(r);
       else stdout.push(`filed ${r.id}: ${r.file}${r.offline ? ' (offline allocation)' : ''}`);
+    } else if (cmd === 'import') {
+      const [source, file] = rest;
+      if (!file) throw new Refusal('usage: dibber import github|linear|jira <export> [--source-url URL]');
+      const r = importTickets(root, source, resolve(cwd, file), flags['source-url']);
+      if (flags.json) json(r);
+      else stdout.push(`imported ${r.length} ticket${r.length === 1 ? '' : 's'}`);
     } else if (cmd === 'claim') {
       if (!rest[0]) throw new Refusal('which ticket? dibber claim <id>');
       const r = claim(root, rest[0], { as: flags.as, force: flags.force });
