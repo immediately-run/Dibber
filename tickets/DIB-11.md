@@ -39,7 +39,7 @@ points it out.
 ### Exit criteria
 
 - [ ] `npx @immediately-run/dibber check` passes on this repository in its CI (enabling CI here is the owner's step; see DIB-6)
-- [ ] a test: every file `dibber init --yes` would create, other than the sample ticket, exists in this repository
+- [x] a test: every file `dibber init --yes` would create, other than the sample ticket, exists in this repository
 
 ## Status
 
@@ -50,3 +50,5 @@ _2026-11-22: rewritten from the owner's direction that this repository is the ex
 _2026-11-22: this repository now carries .dibber/config.json, the installed skills, AGENTS.md and CLAUDE.md. Left: the README section (DIB-17), the board descriptor (DIB-13) and CI (owner)._
 
 _2026-11-22: partly in, https://github.com/immediately-run/Dibber/pull/1._
+
+_2026-11-25: The worked example and initialization parity test pass. GitHub CI passes the source CLI check, and the published v0.4.0 CLI passes locally. The ticket’s exact published-CLI-in-CI criterion remains open._
