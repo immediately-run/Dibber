@@ -1,6 +1,6 @@
 ---
 id: launch
-kind: project
+page: project
 title: Launch the app
 ---
 

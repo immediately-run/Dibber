@@ -13,6 +13,10 @@ import { SKILL_HOMES, skillInstallProblem } from './init.mjs';
 import { readStore, rel, CLOSED, STATUSES, ID_RE, QUALIFIED_RE, asList } from './store.mjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
+export const legacyPageKind = (meta) =>
+  meta.page === undefined && meta.status === undefined && typeof meta.kind === 'string' &&
+  meta.kind !== '' && meta.kind !== 'ticket' ? meta.kind : undefined;
+
 export const TICKET_SCHEMA = JSON.parse(readFileSync(join(HERE, '..', 'ticket.schema.json'), 'utf8'));
 const CONFIG_SCHEMA = JSON.parse(readFileSync(join(HERE, '..', 'config.schema.json'), 'utf8'));
 
@@ -62,6 +66,14 @@ export function checkStore(root) {
       validateItem = ajv.compile(JSON.parse(readFileSync(itemSchemaPath, 'utf8')));
     } catch (e) {
       err('R-DIB-3', rel(root, itemSchemaPath), `the store's item.schema.json does not load: ${e.message}`);
+    }
+  }
+
+  for (const page of store.pages) {
+    if (legacyPageKind(page.meta)) {
+      warn('R-DIB-1', page.file, 'legacy kind page marker; run dibber migrate');
+    } else if (page.meta.id !== undefined && page.meta.page === undefined && page.meta.status === undefined) {
+      err('R-DIB-5', page.file, 'an entry with an id needs status for a ticket or page for a page');
     }
   }
 
@@ -138,11 +150,11 @@ export function checkStore(root) {
   for (const id of [...byId.keys()].sort()) visit(id, []);
 
   // Conventions: warnings only.
-  const projects = new Set(store.pages.filter((p) => p.meta.kind === 'project').map((p) => String(p.meta.id)));
+  const projects = new Set(store.pages.filter((p) => (p.meta.page ?? legacyPageKind(p.meta)) === 'project').map((p) => String(p.meta.id)));
   for (const t of store.tickets) {
     const project = t.meta.project;
     if (typeof project === 'string' && !projects.has(project)) {
-      warn('R-DIB-10', t.file, `\`project\` names \`${project}\`, but no page in the store has \`kind: project\` and that id`);
+      warn('R-DIB-10', t.file, `\`project\` names \`${project}\`, but no page in the store has \`page: project\` and that id`);
     }
     const m = /^\*\*Depends on:\*\*\s*(.*)$/m.exec(t.body);
     if (m) {

@@ -58,3 +58,8 @@ test("every id in this repository's store uses the prefix .dibber/config.json na
   assert.equal(store.settings.prefix, 'DIB');
   assert.deepEqual(store.tickets.map((t) => t.meta.id).filter((id) => !id.startsWith('DIB-')), []);
 });
+
+test('a kind field does not hide a ticket (DIB-27)', () => {
+  const { store } = checkStore(join(FIX, 'valid', 'kind-tickets'));
+  assert.deepEqual(store.tickets.map((ticket) => ticket.meta.id), ['X-1']);
+});

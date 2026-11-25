@@ -8,6 +8,7 @@ import { checkStore } from './check.mjs';
 import { Refusal, newTicket, setStatus, claim, listTickets, STATUSES } from './tickets.mjs';
 import { init, defaultPrefix } from './init.mjs';
 import { importTickets } from './import.mjs';
+import { migrateStore } from './migrate.mjs';
 import { intakeGitHub } from './intake.mjs';
 
 const HELP = `dibber — Git as your issue tracker: an open format built on Markdown (https://github.com/immediately-run/dibber)
@@ -29,6 +30,7 @@ Usage: dibber <command> [options]        (every command takes --json and --root 
       [--id ID] [--offline] [--body-file PATH] [--field KEY=VALUE]…
       [--parent ID] [--tags a,b] [--project P] [--order N] [--brief "…"] [--mdx]
                                    file a ticket with the next free id
+  migrate                          update legacy page markers and custom types in place
   intake github <issue.json>       file a quoted GitHub issue report
   import github|linear|jira <export> [--source-url URL]
                                    import tickets from a local export
@@ -147,6 +149,10 @@ export async function run(argv, { cwd = process.cwd(), interactive = true } = {}
       });
       if (flags.json) json(r);
       else stdout.push(`filed ${r.id}: ${r.file}${r.offline ? ' (offline allocation)' : ''}`);
+    } else if (cmd === 'migrate') {
+      const updated = migrateStore(root);
+      if (flags.json) json({ updated });
+      else stdout.push(updated.length ? updated.map((path) => `migrated ${path}`).join('\n') : 'No migration needed.');
     } else if (cmd === 'intake') {
       const [source, file] = rest;
       if (source !== 'github' || !file) throw new Refusal('usage: dibber intake github <issue.json>');

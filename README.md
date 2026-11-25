@@ -126,8 +126,8 @@ renders ticket stores as a wiki with a read-only board. See the [format's Reader
 
 ## Changing the format
 
-By pull request against `SPEC.md`. A change that keeps every valid store valid amends the
-current version; one that would not is a new version ([`SPEC.md`](SPEC.md#versions)).
+By pull request against `SPEC.md`. During active development, changes apply in place.
+Breaking changes ship with a migration. See [Versions](SPEC.md#versions).
 
 ## Licence
 

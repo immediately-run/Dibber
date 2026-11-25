@@ -1,6 +1,6 @@
 ---
 id: guide
-kind: doc
+page: doc
 title: How we file tickets
 ---
 

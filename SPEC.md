@@ -32,10 +32,10 @@ ticket file.
 - **R-DIB-1 (a folder of files, one per ticket).** A Dibber store is one folder in a git
   repository: `tickets/` by convention, or the folder the repository's settings name
   ([R-DIB-14](#1-the-store)).
-  Every `*.md` or `*.mdx` file under it, at any depth, whose frontmatter carries an `id` and no
-  `kind` other than `ticket`, is a ticket. Every other file is not: the folder may also hold
-  pages for people, and a page that carries an `id` of its own says what it is with `kind`
-  (`project`, `goal`, `doc`, `view`, …), so no reader has to know which folders hold pages. A
+  Every `*.md` or `*.mdx` file under it, at any depth, whose frontmatter carries `id` and
+  `status` and omits `page` is a ticket. A page may give its role with `page` (`project`,
+  `goal`, `doc`, `view`, and so on). An entry with an `id` must have either a ticket's
+  `status` or a page marker. A
   ticket is one file, named after its id: `<id>.md`, or `<id>.mdx` (read alike) in a store
   rendered as MDX ([R-DIB-13](#7-a-store-that-is-also-a-wiki)). Plain `.md` is the default,
   since a stray `<` or `{` in prose does not compile as MDX.
@@ -102,7 +102,6 @@ ticket file.
   | `assignee` | a name or handle | who says they are working on it: advisory, never a lock ([Coordination state](#coordination-state)) |
   | `updated` | a date | when the ticket last changed in substance |
   | `not_before` | a date or time | the earliest it should be started |
-  | `kind` | `ticket` | optional: any other value makes the file a page ([R-DIB-1](#1-the-store)) |
 
   A store can define its own `priority` in `item.schema.json`. The shared queue rank is `order`.
 
@@ -143,7 +142,7 @@ ticket file.
 
 - **R-DIB-9 (tags).** Tags are free words. A reader may give some of them a meaning of its own,
   documented in its specification; every other tag is the repository's.
-- **R-DIB-10 (projects).** A project is a page whose frontmatter says `kind: project`, in the
+- **R-DIB-10 (projects).** A project is a page whose frontmatter says `page: project`, in the
   store's `projects/` folder by convention; a ticket's `project` names it by its `id`. A project groups tickets for
   people: it is not a ticket and holds no state.
 
@@ -172,9 +171,8 @@ ticket file.
 ## 7. A store that is also a wiki
 
 - **R-DIB-13 (rendering is optional).** A store may also be published as pages: a home page, a
-  layout, a site descriptor, project pages and views such as a board — files with no `id`, or
-  with a `kind` that is not `ticket` ([R-DIB-1](#1-the-store)). Nothing in the format depends on it, and a reader skips those
-  files.
+  layout, a site descriptor, project pages and views such as a board. Readers identify
+  these pages by [R-DIB-1](#1-the-store).
 
 ## Coordination state
 
@@ -195,19 +193,14 @@ record.
 
 ## Versions
 
-This page is **Dibber 1**. A change that leaves every valid store valid and every reader correct
-— a new optional key, a new convention — amends this version in place. A change that would make
-a valid store invalid, or change what a key means, is a new version, and this page says how a
-store moves to it.
+During active development, this specification changes in place. A change that breaks
+existing stores ships with a `dibber migrate` step.
 
-Amended in place since Dibber 1 was first published: `.dibber/config.json`
-([R-DIB-14](#1-the-store)), the optional `assignee` key, `.md` as the default file name, and the
-one-writer allocation rule ([R-DIB-4](#2-ids)), and closing in place
-([R-DIB-2](#1-the-store)), which replaced moving a closed ticket to `archive/`, and a
-`superseded` dependency counting as done for readiness ([R-DIB-8](#4-relations)). Every store
-valid before stays valid; a reader that took closure from the `archive/` path reads `status`
-instead, as R-DIB-6 always said it should, and a reader that counts only `done` holds a ticket
-on a superseded dependency longer than it need, never starting work too early.
+Run `dibber migrate` to replace old page markers such as `kind: project` on files without
+a status. The migration changes them to `page: project`. It moves a ticket's custom
+`type` value outside the standard vocabulary to `legacy_type`. If the store schema
+requires a custom `type`, update it to describe `legacy_type` before migrating.
+Ticket paths and Markdown bodies stay in place.
 
 ## Readers
 
