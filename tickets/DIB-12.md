@@ -1,7 +1,7 @@
 ---
 id: DIB-12
 title: "DIB-12 — Make the Readers section true and checkable"
-status: in-progress
+status: done
 description: The README and SPEC list Baton, Fieldhouse and Grove as readers, but none of them names Dibber or tests against it. Verify each claim and have each reader run the conformance fixtures.
 depends_on: [DIB-5]
 order: 140
@@ -9,6 +9,8 @@ tags: [spec, readers]
 project: wide-audience
 repos: [immediately-run/baton, immediately-run/fieldhouse, immediately-run/grove, immediately-run/baton-board]
 assignee: Peter Neumark
+prs: [https://github.com/immediately-run/dibber/pull/33]
+updated: 2026-11-25
 ---
 
 **Brief:** suggested in the 2026-11-22 planning session on what Dibber lacks for a wide audience.
@@ -33,7 +35,7 @@ A newcomer who follows a Readers link should find the claim true.
 
 ### Exit criteria
 
-- [ ] each reader's test suite runs the conformance fixtures and passes
+- [x] each reader's test suite runs the conformance fixtures and passes
 - [x] every Readers entry links to a file or spec section in that reader's repository
 
 ## Status
@@ -43,3 +45,5 @@ _filed 2026-11-22._
 _2026-11-23: Unrelated errors in readers' stores, found by `dibber check` on 2026-11-23: baton's tickets/archive/B-94.mdx and tickets/archive/B-97.mdx carry non-string `prs` entries (R-DIB-5, three errors). Fieldhouse (64 tickets) and hq (6) pass._
 
 _2026-11-25: claimed by Peter Neumark._
+
+_2026-11-25: Dibber Board #10 and Baton #422 run the 11 pinned valid stores. Viewer tests and typecheck passed locally and Baton full CI passed, https://github.com/immediately-run/dibber/pull/33._
