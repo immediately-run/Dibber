@@ -405,3 +405,13 @@ test('GitHub intake keeps outside text entirely in Reported (DIB-10)', async () 
     id, file: ticket.file, existing: true,
   });
 });
+
+test("this repository has every setup file written by init (DIB-11)", async () => {
+  const { dir } = repo();
+  assert.equal((await dibber(dir, 'init', '--yes', '--prefix', 'DIB')).code, 0);
+  const root = fileURLToPath(new URL('../', import.meta.url));
+  for (const file of tree(dir)) {
+    if (file === './tickets/DIB-1.md') continue;
+    assert.ok(existsSync(join(root, file)), file);
+  }
+});

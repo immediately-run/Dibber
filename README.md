@@ -21,6 +21,14 @@ Dibber is in active development, and its work is tracked in Dibber itself. The
 shows every ticket by status — what is ready, in progress and in review, and what is done —
 read straight from [`tickets/`](tickets/).
 
+## This repository is an example
+
+Dibber tracks its own work here. Compare an [open ticket](tickets/DIB-15.md)
+with a [closed ticket](tickets/DIB-10.md). The closed ticket keeps its path
+and links to the pull request that shipped it. The [project page](tickets/projects/wide-audience.md)
+groups the work, and [repository settings](.dibber/config.json) name the
+store and its ID prefix.
+
 ## A ticket
 
 `tickets/B-7.md`:
