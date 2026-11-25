@@ -89,6 +89,27 @@ configure its allocator in `.dibber/config.json`:
 Use `--offline` for local allocation when the coordinator is unavailable. Commit
 ticket changes through your usual Git workflow.
 
+## Install the skills in your agent
+
+For Claude Code, run `/plugin marketplace add immediately-run/dibber` and then
+`/plugin install dibber@dibber`. Recent versions also support
+`/plugin install dibber --marketplace immediately-run/dibber`.
+
+For Codex, add the repository as a plugin marketplace and install Dibber:
+
+```sh
+codex plugin marketplace add immediately-run/dibber
+codex plugin add dibber@dibber
+```
+
+For opencode or Antigravity, use the cross-harness installer:
+
+```sh
+npx skills add immediately-run/dibber --global --agent opencode antigravity
+```
+
+Run `dibber init` inside a repository to set up its ticket store.
+
 ## Readers
 
 Baton, Fieldhouse and Grove read Dibber stores; see [`SPEC.md`](SPEC.md#readers). A tool that

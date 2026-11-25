@@ -3,7 +3,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
 import { readdirSync, readFileSync, existsSync, lstatSync, realpathSync } from 'node:fs';
-import { join, dirname } from 'node:path';
+import { join, dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { splitFrontmatter } from '../src/store.mjs';
 import { SKILL_HOMES } from '../src/init.mjs';
@@ -39,7 +39,29 @@ test('every skill states the trust rule', () => {
 
 const hasClaude = (() => { try { execFileSync('claude', ['--version'], { stdio: 'ignore' }); return true; } catch { return false; } })();
 test('the Claude Code plugin and marketplace manifests validate', { skip: !hasClaude && 'claude is not installed' }, () => {
-  const out = execFileSync('claude', ['plugin', 'validate', ROOT], { encoding: 'utf8' });
+  const out = execFileSync('claude', ['plugin', 'validate', '--strict', ROOT], { encoding: 'utf8' });
   assert.match(out, /Validation passed/);
   assert.ok(existsSync(join(ROOT, '.claude-plugin', 'marketplace.json')));
+});
+
+test('documented plugin installs resolve to the published manifests (DIB-23)', () => {
+  const read = (path) => readFileSync(join(ROOT, path), 'utf8');
+  const readme = read('README.md');
+  const marketplace = JSON.parse(read('.claude-plugin/marketplace.json'));
+  const claude = JSON.parse(read('.claude-plugin/plugin.json'));
+  const portable = JSON.parse(read('plugin.json'));
+  const repository = claude.repository.replace('https://github.com/', '');
+  const selector = `${claude.name}@${marketplace.name}`;
+  for (const line of [
+    `/plugin marketplace add ${repository}`,
+    `/plugin install ${selector}`,
+    `/plugin install ${claude.name} --marketplace ${repository}`,
+    `codex plugin marketplace add ${repository}`,
+    `codex plugin add ${selector}`,
+    `npx skills add ${repository} --global --agent opencode antigravity`,
+  ]) assert.ok(readme.includes(line), line);
+  assert.equal(portable.name, claude.name);
+  const entry = marketplace.plugins.find((plugin) => plugin.name === claude.name);
+  assert.equal(resolve(ROOT, entry.source), ROOT);
+  assert.ok(existsSync(join(ROOT, claude.icon)));
 });

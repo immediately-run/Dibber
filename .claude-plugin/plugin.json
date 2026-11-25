@@ -15,5 +15,6 @@
     "git",
     "markdown",
     "project-management"
-  ]
+  ],
+  "icon": "./icon.jpeg"
 }
