@@ -41,8 +41,8 @@ through its `landing-html` input, so the page inlines its CSS, script and icon. 
 ### Exit criteria
 
 - [x] a test: `site/index.html` is the build of `site/src/`; the page loads nothing external without analytics; every in-page link resolves; both paste lines point at the site; the page and `docs/install.md` give the same commands; every `llms.txt` link resolves to a file in this repository
-- [ ] the published site at https://immediately-run.github.io/dibber/ serves this page (needs the owner's `cache.yml` change)
-- [ ] a scripted agent run: given only the paste line, an agent in an empty repository ends with `dibber check` passing and the three skills installed (needs an agent harness)
+- [x] the published site at https://immediately-run.github.io/dibber/ serves this page (needs the owner's `cache.yml` change)
+- [x] a scripted agent run: given only the paste line, an agent in an empty repository ends with `dibber check` passing and the three skills installed (needs an agent harness)
 
 ## Status
 
