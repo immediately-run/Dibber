@@ -1,0 +1,14 @@
+---
+layoutRole: root
+description: "The board's page shell: the wiki's nav, sidebar and footer, with each ticket's header line above it and its relations below, and a project's tickets below a project page. Each component shows only on its own kind of page, so the board and other pages pass through untouched."
+---
+
+<GroveNav />
+<GroveSidebar />
+<main className="grove-content">
+  <RoadmapMeta />
+  <Outlet />
+  <Dependencies />
+  <ProjectMembers />
+</main>
+<GroveFooter />

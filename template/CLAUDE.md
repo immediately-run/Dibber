@@ -1,0 +1,2 @@
+<!-- dibber:claude -->
+@AGENTS.md

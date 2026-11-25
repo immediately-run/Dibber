@@ -5,6 +5,7 @@ import { execFileSync } from 'node:child_process';
 import { cpSync, mkdtempSync, readFileSync, existsSync, writeFileSync, readdirSync, lstatSync, readlinkSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { run } from '../src/cli.mjs';
 import { checkStore } from '../src/check.mjs';
 
@@ -318,4 +319,15 @@ test('new and set use the conformance store schema for full tickets (DIB-33)', a
   assert.equal((await dibber(dir, 'set', id, 'in-progress', '--field', 'priority=high')).code, 0);
   assert.deepEqual(checkStore(dir).errors, []);
   assert.equal(git('diff', '--cached', '--name-only'), '');
+});
+
+test('the GitHub starter folder matches dibber init (DIB-19)', async () => {
+  const { dir } = repo();
+  assert.equal((await dibber(dir, 'init', '--yes', '--prefix', 'APP')).code, 0);
+  const template = new URL('../template/', import.meta.url);
+  const normalize = ([file, content]) => [
+    file,
+    file === './tickets/APP-1.md' ? content.replace(/\b\d{4}-\d{2}-\d{2}\b/g, 'DATE') : content,
+  ];
+  assert.deepEqual(snapshot(dir).map(normalize), snapshot(fileURLToPath(template)).map(normalize));
 });

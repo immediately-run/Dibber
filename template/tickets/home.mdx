@@ -1,0 +1,22 @@
+---
+title: Tickets
+description: Every open ticket, by status, with the next one to start. A query over this folder, never a hand-kept list.
+nav: Board
+order: 0
+render: safe
+---
+
+Welcome. This is a [Dibber](https://github.com/immediately-run/dibber) board for this repository.
+Tickets are updated by your agent, but you can also edit them on immediately.run or in your favorite
+editor: tickets are just files in your git repository, one Markdown file per ticket in
+`tickets/`. This page is a query over that folder, so a new ticket shows up here with no edit.
+
+## Next to start
+
+The ready ticket with the lowest `order`: `available`, and everything it depends on done.
+
+<NextAvailable />
+
+## The board
+
+<RoadmapBoard />
