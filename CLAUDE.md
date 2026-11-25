@@ -1,2 +1,1 @@
-<!-- dibber:claude -->
-@AGENTS.md
+AGENTS.md

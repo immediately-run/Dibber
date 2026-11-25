@@ -36,7 +36,7 @@ published by hand, so that's done.
 ## Each release
 
 ```
-npm version 0.2.0        # sets package.json and .claude-plugin/ to 0.2.0, commits, tags v0.2.0
+npm version 0.2.0        # sets package.json and the plugin manifests to 0.2.0, commits, tags v0.2.0
 git push --follow-tags   # on a branch, through a PR; tag the merge commit on main if you prefer
 ```
 

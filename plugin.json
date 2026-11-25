@@ -1,0 +1,7 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "dibber",
+  "version": "0.3.0",
+  "description": "Git as your issue tracker, in an open format built on Markdown. Skills to file a ticket, work the next one, and summarize the board, for a repository that keeps its tickets as Dibber files.",
+  "license": "Apache-2.0"
+}
