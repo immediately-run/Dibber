@@ -19,7 +19,7 @@ is on it, but cannot stop two people writing their names at once.
 Dibber is in active development, and its work is tracked in Dibber itself. The
 [board](https://immediately.run/present/github/immediately-run/dibber/main/bundle/tickets/)
 shows every ticket by status — what is ready, in progress and in review, and what is done —
-read straight from [`tickets/`](tickets/).
+read straight from `tickets/`.
 
 ## This repository is an example
 
@@ -71,7 +71,7 @@ keeps working.
 - [`skills/`](skills/), [`bin/`](bin/), [`src/`](src/) — optional tooling: the `dibber`
   command (`check`, `list`, `new`, `claim`, `done`, `init`) and the agent skills `dibber init`
   installs for Claude Code, Codex, opencode and Antigravity. The format needs none of it.
-- [`tickets/`](tickets/) — Dibber's own work, kept as a Dibber store: an example of what a
+- [`tickets/`](https://immediately.run/present/github/immediately-run/dibber/main/bundle/tickets/) — Dibber's own work, kept as a Dibber store: an example of what a
   Dibber-tracked project looks like.
 
 ## CLI
