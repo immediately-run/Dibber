@@ -1,12 +1,14 @@
 ---
 id: DIB-23
 title: "DIB-23 — List the skills where agent harnesses look: Claude Code marketplace, cross-harness installers, Codex plugins"
-status: in-progress
+status: done
 depends_on: [DIB-9, DIB-21]
 order: 159
 tags: [agents, integrations]
 project: wide-audience
 assignee: Peter Neumark
+prs: [https://github.com/immediately-run/dibber/pull/29]
+updated: 2026-11-25
 ---
 
 **Brief:** from the owner, 2026-11-23: follows the discovery question for Claude Code, Codex, opencode and Antigravity users.
@@ -22,11 +24,13 @@ assignee: Peter Neumark
 
 ### Exit criteria
 
-- [ ] `claude plugin validate .` passes with no warnings
-- [ ] a test: each install line in the docs names a manifest that exists in this repository
+- [x] `claude plugin validate .` passes with no warnings
+- [x] a test: each install line in the docs names a manifest that exists in this repository
 
 ## Status
 
 _filed 2026-11-23._
 
 _2026-11-25: claimed by Peter Neumark._
+
+_2026-11-25: done, https://github.com/immediately-run/dibber/pull/29._
