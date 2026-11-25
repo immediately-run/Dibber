@@ -120,8 +120,9 @@ Run `dibber init` inside a repository to set up its ticket store.
 
 ## Readers
 
-Baton, Fieldhouse and Grove read Dibber stores; see [`SPEC.md`](SPEC.md#readers). A tool that
-reads or writes the format is welcome to add itself there.
+[Baton's Markdown source](https://github.com/immediately-run/baton/blob/main/spec/BATON_SPEC/04-tickets-syncs-board.md#sec-4-2)
+reads tickets to coordinate work. [Dibber Board](https://github.com/immediately-run/dibber-board/blob/main/src/components/roadmapLib.ts)
+renders ticket stores as a wiki with a read-only board. See the [format's Readers section](SPEC.md#readers).
 
 ## Changing the format
 

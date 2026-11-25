@@ -208,12 +208,12 @@ on a superseded dependency longer than it need, never starting work too early.
 
 ## Readers
 
-Tools known to read or write Dibber stores. Each documents its own keys and tags.
+- **[Baton](https://github.com/immediately-run/baton/blob/main/spec/BATON_SPEC/04-tickets-syncs-board.md#sec-4-2)**
+  coordinates work and imports ticket metadata through its default Markdown source.
+- **[Dibber Board](https://github.com/immediately-run/dibber-board/blob/main/src/components/roadmapLib.ts)**
+  reads ticket frontmatter and renders a read-only board, ticket views and project views
+  on the [Grove wiki shell](https://github.com/immediately-run/grove/blob/main/src/GroveWiki.tsx).
+  Edits go through the repository.
 
-- **[Baton](https://github.com/immediately-run/baton)** — a lease server for teams of people and
-  agents. Its default ticket source, the markdown source, reads and writes a Dibber store
-  ([BATON_SPEC R-BTN-74](https://github.com/immediately-run/baton/blob/main/spec/BATON_SPEC/04-tickets-syncs-board.md#sec-4-2)).
-- **[Fieldhouse](https://github.com/immediately-run/fieldhouse)** — a software factory; its homes
-  keep their tickets in Dibber stores.
-- **[Grove](https://github.com/immediately-run/grove)** — renders a store as a wiki with a board
-  ([R-DIB-13](#7-a-store-that-is-also-a-wiki)).
+[Fieldhouse's ticket schema](https://github.com/immediately-run/fieldhouse/blob/main/tickets/item.schema.json)
+shows a project using store-specific ticket fields.
