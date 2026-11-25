@@ -1,13 +1,15 @@
 ---
 id: DIB-4
 title: "DIB-4 — Decide: assignee, priority and type for people without a coordinator"
-status: in-progress
+status: done
 description: Newcomers expect assignee, priority and type. Dibber keeps "who holds it" out of the ticket by design. Decide whether to add optional advisory keys or to say clearly why not.
 depends_on: []
 order: 40
 tags: [spec, decision]
 project: wide-audience
 assignee: Peter Neumark
+prs: [https://github.com/immediately-run/dibber/pull/34]
+updated: 2026-11-25
 ---
 
 **Brief:** suggested in the 2026-11-22 planning session on what Dibber lacks for a wide audience.
@@ -50,3 +52,5 @@ _2026-11-22: assignee decided by the owner: an optional, advisory `assignee` for
 _2026-11-25: claimed by Peter Neumark._
 
 _2026-11-25: Owner agreed to optional type with task, bug, feature, epic, and chore. Priority remains store-specific and order ranks ready tickets. Existing custom type values outside the enum need the DIB-27 migration before release._
+
+_2026-11-25: done, https://github.com/immediately-run/dibber/pull/34._
