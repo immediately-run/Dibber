@@ -1,13 +1,14 @@
 ---
 id: DIB-18
 title: "DIB-18 — Rename the ticket-wiki viewer baton-board to dibber-board"
-status: available
+status: done
 description: The viewer renders Dibber stores for Baton, Fieldhouse, hq and docs alike, so its name should be the format's. Move every opensWith marker across in a window, without a must-land-together set.
 depends_on: []
 order: 155
 tags: [integrations, immediately-run, migration]
 project: wide-audience
 repos: [immediately-run/baton-board, immediately-run/baton, immediately-run/fieldhouse, immediately-run/docs, immediately-run/hq]
+updated: 2026-11-25
 ---
 
 **Brief:** from the owner, 2026-11-22: `baton-board` would be better named `dibber-board`.
@@ -44,7 +45,7 @@ and cut over last.
 
 ### Exit criteria
 
-- [ ] `gh api -X GET search/code -f q='org:immediately-run "immediately-run/baton-board" filename:immediately.run.json'` finds no live marker
+- [x] `gh api -X GET search/code -f q='org:immediately-run "immediately-run/baton-board" filename:immediately.run.json'` finds no live marker
 - [ ] each consumer's ticket wiki opens on immediately.run in `dibber-board` (a Playwright check per consumer; needs a browser)
 
 ## Status
@@ -56,3 +57,5 @@ _2026-11-23: The owner renamed the repository to `immediately-run/dibber-board`.
 _2026-11-23: Baton's marker now names dibber-board (baton#387, merged). Left: fieldhouse's and hq's markers, then the cutover._
 
 _2026-11-23: Consumers: baton's marker moved (baton#387, merged). hq's marker moves in hq#3, which also fixes its version range "^1", refused by the host since 2026-11-04, to "1.0". Fieldhouse's wiki opens with open-wiki, not the viewer, so it has no marker to move; FLDH-36 and FLDH-28, which plan the switch, name dibber-board in fieldhouse#55. Once hq#3 merges, no live marker names baton-board. Left: the per-consumer Playwright check (hq is private, so it needs a signed-in browser), and the cutover._
+
+_2026-11-25: Owner confirmed the cutover is complete. hq#3 and fieldhouse#55 are merged. Organization code search returned only a historical host test fixture. Signed-in Playwright was not rerun in this session._
