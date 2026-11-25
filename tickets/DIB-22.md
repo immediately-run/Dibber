@@ -1,12 +1,13 @@
 ---
 id: DIB-22
 title: DIB-22 — A friendly site on GitHub Pages, with llms.txt and a paste-this-prompt start for agents
-status: in-progress
+status: done
 depends_on: [DIB-9, DIB-14, DIB-21]
 order: 158
 tags: [docs, onboarding, agents]
 project: wide-audience
-prs: [https://github.com/immediately-run/dibber/pull/10, https://github.com/immediately-run/dibber/pull/14]
+prs: [https://github.com/immediately-run/dibber/pull/10, https://github.com/immediately-run/dibber/pull/14, https://github.com/immediately-run/dibber/pull/25]
+updated: 2026-11-25
 ---
 
 **Brief:** from the owner, 2026-11-23: a friendly GitHub Pages site for Dibber, with a "For Agents" section.
@@ -41,8 +42,8 @@ through its `landing-html` input, so the page inlines its CSS, script and icon. 
 ### Exit criteria
 
 - [x] a test: `site/index.html` is the build of `site/src/`; the page loads nothing external without analytics; every in-page link resolves; both paste lines point at the site; the page and `docs/install.md` give the same commands; every `llms.txt` link resolves to a file in this repository
-- [ ] the published site at https://immediately-run.github.io/dibber/ serves this page (needs the owner's `cache.yml` change)
-- [ ] a scripted agent run: given only the paste line, an agent in an empty repository ends with `dibber check` passing and the three skills installed (needs an agent harness)
+- [x] the published site at https://immediately-run.github.io/dibber/ serves this page (needs the owner's `cache.yml` change)
+- [x] a scripted agent run: given only the paste line, an agent in an empty repository ends with `dibber check` passing and the three skills installed (needs an agent harness)
 
 ## Status
 
@@ -59,3 +60,5 @@ _2026-11-23: analytics on: Plausible's per-site script (pa-uRV8km5SD8BQgQgb49h5T
 _2026-11-24: the owner allowed the favicon to load from a separate file, so Google Search can show it: the favicons are now files in site/, linked by their raw.githubusercontent URLs, and the page's only other external load is still the Plausible script, https://github.com/immediately-run/dibber/pull/14._
 
 _2026-11-24: the owner asked for llms.txt on the site itself: the Pages job gained a site-files input (new-project-template), and cache.yml now publishes llms.txt, the favicons and the preview image beside the page, so the page links them on its own origin instead of raw.githubusercontent.com._
+
+_2026-11-25: The published homepage matches the build. Claude Code initialized an empty repository from the site prompt and validation found all three skills, https://github.com/immediately-run/dibber/pull/25._
