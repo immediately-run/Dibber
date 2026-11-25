@@ -40,6 +40,14 @@
     "csv-parse": "^7.0.3",
     "yaml": "^2.8.1"
   },
+  "peerDependencies": {
+    "@immediately-run/sdk": ">=0.96.0"
+  },
+  "peerDependenciesMeta": {
+    "@immediately-run/sdk": {
+      "optional": true
+    }
+  },
   "publishConfig": {
     "access": "public"
   }
