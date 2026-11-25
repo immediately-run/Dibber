@@ -8,6 +8,7 @@ import { checkStore } from './check.mjs';
 import { Refusal, newTicket, setStatus, claim, listTickets, STATUSES } from './tickets.mjs';
 import { init, defaultPrefix } from './init.mjs';
 import { importTickets } from './import.mjs';
+import { intakeGitHub } from './intake.mjs';
 
 const HELP = `dibber — Git as your issue tracker: an open format built on Markdown (https://github.com/immediately-run/dibber)
 
@@ -28,6 +29,7 @@ Usage: dibber <command> [options]        (every command takes --json and --root 
       [--id ID] [--offline] [--body-file PATH] [--field KEY=VALUE]…
       [--parent ID] [--tags a,b] [--project P] [--order N] [--brief "…"] [--mdx]
                                    file a ticket with the next free id
+  intake github <issue.json>       file a quoted GitHub issue report
   import github|linear|jira <export> [--source-url URL]
                                    import tickets from a local export
   claim <id> [--as NAME] [--force] available → in-progress, with you as assignee
@@ -145,6 +147,12 @@ export async function run(argv, { cwd = process.cwd(), interactive = true } = {}
       });
       if (flags.json) json(r);
       else stdout.push(`filed ${r.id}: ${r.file}${r.offline ? ' (offline allocation)' : ''}`);
+    } else if (cmd === 'intake') {
+      const [source, file] = rest;
+      if (source !== 'github' || !file) throw new Refusal('usage: dibber intake github <issue.json>');
+      const r = intakeGitHub(root, resolve(cwd, file));
+      if (flags.json) json(r);
+      else stdout.push(`${r.existing ? 'already filed' : 'filed'} ${r.id}: ${r.file}`);
     } else if (cmd === 'import') {
       const [source, file] = rest;
       if (!file) throw new Refusal('usage: dibber import github|linear|jira <export> [--source-url URL]');

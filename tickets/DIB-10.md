@@ -1,12 +1,13 @@
 ---
 id: DIB-10
 title: "DIB-10 — Bug intake: GitHub issues become tickets, marked as outside text"
-status: available
+status: in-progress
 description: An app's users report bugs as GitHub issues. A triage skill or Action turns them into tickets, keeping the issue's text marked as written by an outsider.
 depends_on: [DIB-9]
 order: 130
 tags: [agents, integrations, security]
 project: wide-audience
+assignee: Peter Neumark
 ---
 
 **Brief:** suggested in the 2026-11-22 planning session on what Dibber lacks for a wide audience.
@@ -39,3 +40,5 @@ open an issue, and the agent that works the ticket reads its text.
 ## Status
 
 _filed 2026-11-22._
+
+_2026-11-25: claimed by Peter Neumark._

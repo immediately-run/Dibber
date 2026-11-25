@@ -176,7 +176,7 @@ Reading at night hurts.
   <ol class="agent-steps">
     <li>Check that Node.js 18 or later is installed (<code>node --version</code>). If it isn't, tell the person and stop.</li>
     <li>Pick a short upper-case ticket prefix from the repository's name, such as <code>APP</code> for <code>my-app</code>. Ask the person only if there's no obvious one.</li>
-    <li>Run <code>npx -y @immediately-run/dibber init --yes --prefix APP</code>, using your prefix. It adds <code>tickets/</code>, <code>.dibber/config.json</code>, an <code>AGENTS.md</code> section, three skills in <code>.agents/skills/</code> and <code>.claude/skills/</code>, and the files that open your tickets as a board on immediately.run (<code>--no-immediately-run</code> leaves those out). It never overwrites a file.</li>
+    <li>Run <code>npx -y @immediately-run/dibber init --yes --prefix APP</code>, using your prefix. It adds <code>tickets/</code>, <code>.dibber/config.json</code>, an <code>AGENTS.md</code> section, Dibber skills in <code>.agents/skills/</code> and <code>.claude/skills/</code>, and the files that open your tickets as a board on immediately.run (<code>--no-immediately-run</code> leaves those out). It never overwrites a file.</li>
     <li>Run <code>npx -y @immediately-run/dibber check</code>. It must report no problems.</li>
     <li>Tell the person what was added, and commit it when they agree. The skills load in your next session.</li>
     <li>Ask what they'd like to work on first, and file it as their first ticket.</li>
