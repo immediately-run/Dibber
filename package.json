@@ -41,7 +41,7 @@
     "yaml": "^2.8.1"
   },
   "peerDependencies": {
-    "@immediately-run/sdk": ">=0.96.0"
+    "@immediately-run/sdk": ">=0.97.0"
   },
   "peerDependenciesMeta": {
     "@immediately-run/sdk": {
