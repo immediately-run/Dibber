@@ -94,6 +94,7 @@ ticket file.
   | `depends_on` | a list of ids, local or qualified | tickets this one waits for: it is ready only once each is done or superseded ([R-DIB-8](#4-relations)) |
   | `parent` | a local id | the ticket this one is a child of ([R-DIB-8](#4-relations)) |
   | `order` | a number | rank among ready tickets, lower first |
+  | `type` | `task`, `bug`, `feature`, `epic`, or `chore` | the kind of work |
   | `tags` | a list of words | free labels ([R-DIB-9](#5-tags-and-projects)) |
   | `project` | a project page's name | the project the ticket belongs with ([R-DIB-10](#5-tags-and-projects)) |
   | `repos` | a list of repositories | the other repositories its work changes, `owner/name` or a name the reader maps |
@@ -102,6 +103,8 @@ ticket file.
   | `updated` | a date | when the ticket last changed in substance |
   | `not_before` | a date or time | the earliest it should be started |
   | `kind` | `ticket` | optional: any other value makes the file a page ([R-DIB-1](#1-the-store)) |
+
+  A store can define its own `priority` in `item.schema.json`. The shared queue rank is `order`.
 
   **Other keys.** A key that only one tool gives a meaning to (a coordinator's workflow name, a
   wiki's layout) is that tool's, documented in its own specification. Dibber does not list them,

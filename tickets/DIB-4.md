@@ -1,12 +1,13 @@
 ---
 id: DIB-4
 title: "DIB-4 — Decide: assignee, priority and type for people without a coordinator"
-status: available
+status: in-progress
 description: Newcomers expect assignee, priority and type. Dibber keeps "who holds it" out of the ticket by design. Decide whether to add optional advisory keys or to say clearly why not.
 depends_on: []
 order: 40
 tags: [spec, decision]
 project: wide-audience
+assignee: Peter Neumark
 ---
 
 **Brief:** suggested in the 2026-11-22 planning session on what Dibber lacks for a wide audience.
@@ -37,11 +38,15 @@ is who holds the work, which the spec deliberately leaves to coordinators.
 ### Exit criteria
 
 - [x] the assignee decision is recorded in this ticket's Status, and SPEC.md and `ticket.schema.json` carry `assignee`
-- [ ] the priority and type decision is recorded in this ticket's Status
-- [ ] SPEC.md and `ticket.schema.json` match it (no change if neither is added)
+- [x] the priority and type decision is recorded in this ticket's Status
+- [x] SPEC.md and `ticket.schema.json` match it (no change if neither is added)
 
 ## Status
 
 _filed 2026-11-22._
 
 _2026-11-22: assignee decided by the owner: an optional, advisory `assignee` for solo users. Added to R-DIB-5's table, to `ticket.schema.json`, and to Coordination state, which says it is not a hold. Priority and type are still open: option a less assignee, or c._
+
+_2026-11-25: claimed by Peter Neumark._
+
+_2026-11-25: Owner agreed to optional type with task, bug, feature, epic, and chore. Priority remains store-specific and order ranks ready tickets. Existing custom type values outside the enum need the DIB-27 migration before release._

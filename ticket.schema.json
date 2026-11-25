@@ -28,6 +28,7 @@
     "depends_on": { "type": "array", "items": { "$ref": "#/definitions/ref" }, "uniqueItems": true },
     "parent": { "$ref": "#/definitions/id" },
     "order": { "type": "number" },
+    "type": { "enum": ["task", "bug", "feature", "epic", "chore"] },
     "tags": { "type": "array", "items": { "type": "string" } },
     "project": { "type": "string" },
     "repos": { "type": "array", "items": { "type": "string" } },

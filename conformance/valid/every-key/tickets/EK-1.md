@@ -5,6 +5,7 @@ status: available
 description: The page people land on first.
 depends_on: [EK-2, "other:OT-9"]
 order: 10
+type: feature
 tags: [web]
 project: launch
 repos: [example/site]

@@ -52,7 +52,8 @@ takes over the work, and `withdrawn` when the request is canceled.
 | Labels | `tags` |
 | Project or milestone | `project` |
 | Assignee | `assignee` records who says they are working on it. The name is advisory. |
-| Priority | `order` controls what to pick up first among ready tickets. Lower numbers come first. |
+| Issue type | Optional `type` with values `task`, `bug`, `feature`, `epic`, and `chore`. |
+| Priority | A store can define its own `priority`. Use `order` to pick among ready tickets, with lower numbers first. |
 | Estimate | A store can define an estimate in its own `item.schema.json`. |
 
 ## Dibber alone, or with Baton
