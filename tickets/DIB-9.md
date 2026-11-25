@@ -1,13 +1,14 @@
 ---
 id: DIB-9
 title: "DIB-9 — Agent skills: create, work and review tickets, in any agent harness"
-status: in-progress
+status: done
 description: Skills that let an agent file a ticket from a conversation, pick up and work the next ready ticket, and give an overview, shipped for Claude Code and as a harness-neutral AGENTS.md section.
 depends_on: [DIB-7]
 order: 90
 tags: [agents, skills]
 project: wide-audience
-prs: [https://github.com/immediately-run/Dibber/pull/1]
+prs: [https://github.com/immediately-run/Dibber/pull/1, https://github.com/immediately-run/dibber/pull/25]
+updated: 2026-11-25
 ---
 
 **Brief:** from the owner's list, 2026-11-22: agent harness skills that implement ticket creation, processing and overview.
@@ -70,3 +71,5 @@ _2026-11-22: partly in, https://github.com/immediately-run/Dibber/pull/1._
 _2026-11-23: skills are one copy: .claude/skills links to .agents/skills in users' repositories, and both link to skills/ here; checked with headless Claude Code, which lists all three skills through the links._
 
 _2026-11-23: the skills are copied by default again, with --link-skills to opt in; dibber check warns about a broken install (a link checked out as a text file) and init --update-skills repairs it. Only this repository links .agents/skills and .claude/skills to skills/._
+
+_2026-11-25: Claude Code filed TRIAL-2, ran its exit criterion, and closed it in place. Both store checks passed, https://github.com/immediately-run/dibber/pull/25._
